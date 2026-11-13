@@ -2273,11 +2273,13 @@ See the License for the specific language governing permissions and
 limitations under the License.
 --------------------------------------------------------------------------------
 cross_file
+cupertino_ui
 file_selector_linux
 file_selector_macos
 file_selector_platform_interface
 file_selector_windows
 flutter_plugin_android_lifecycle
+google_fonts
 image_picker_for_web
 image_picker_macos
 image_picker_platform_interface
@@ -2285,6 +2287,7 @@ in_app_purchase
 in_app_purchase_android
 in_app_purchase_platform_interface
 in_app_purchase_storekit
+material_ui
 path_provider_android
 path_provider_foundation
 shared_preferences
