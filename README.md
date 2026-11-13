@@ -51,6 +51,35 @@ SSH is closed on this server, so deploy through cPanel's File Manager with the p
    - `/privacy-policy` and `/terms-of-use` load. The app and the store listings link to them.
    - `/sitemap.xml` returns XML. Submit it in Google Search Console.
 
+### Automatic deploys (GitHub Actions)
+
+`.github/workflows/deploy.yml` runs on every push to `main` and can also be started by hand from the *Actions* tab via *Run workflow*. It runs three stages:
+
+1. **Check:** lints every PHP file and smoke-tests all pages and APIs with PHP's built-in server. If anything fails, nothing is deployed.
+2. **Deploy:** uploads to the cPanel home folder over FTPS, using the same layout as the zip (`public_html/` plus the private folders). Only changed files are uploaded. The workflow never deletes or overwrites files it didn't upload itself, so `data/` (the database), `config/local.php`, mail and everything else on the account are left alone.
+3. **Verify:** checks the live `app-ads.txt`, `assetlinks.json` (on both the apex domain and `www.`), `sitemap.xml`, the privacy policy and the version API.
+
+**One-time setup:** in GitHub → *Settings → Secrets and variables → Actions*, add three repository secrets:
+
+| Secret | Value |
+|---|---|
+| `FTP_SERVER` | `ftp.floorplandesigner.app` (or `cloud526.thundercloud.uk`) |
+| `FTP_USERNAME` | your **main cPanel FTP user**, whose root is the home folder that contains `public_html`. Don't use an FTP account restricted to `public_html`. |
+| `FTP_PASSWORD` | that user's password |
+
+If your FTP root isn't the home folder, also add a repository **variable** `FTP_SERVER_DIR` with the remote path of the home folder, for example `/home/username/`.
+
+Before the first automatic deploy, back up `public_html/` and remove the React files (deployment steps 2 and 3 above), and set the PHP version (step 5).
+
+**First admin without SSH:**
+
+1. Generate a token on your computer with `openssl rand -hex 32`.
+2. Add it as the secret `ADMIN_SETUP_TOKEN`, then deploy.
+3. Open `https://floorplandesigner.app/admin/setup.php?token=<token>` and create your admin.
+4. Delete the secret. The next deploy then removes the token file from the server.
+
+You can skip this if you already created an admin with the zip's setup link.
+
 **Troubleshooting**
 
 - **"unable to open database file":** PHP can't write to `data/`. Set its permissions to 755 in File Manager, or 775 if PHP runs as a different user.

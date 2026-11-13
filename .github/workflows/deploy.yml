@@ -1,0 +1,143 @@
+# Deploys the website to floorplandesigner.app (cPanel) over FTPS on every push to main.
+#
+# Required repository secrets (Settings → Secrets and variables → Actions):
+#   FTP_SERVER    e.g. ftp.floorplandesigner.app  (or the server host, cloud526.thundercloud.uk)
+#   FTP_USERNAME  the cPanel account's main FTP user (its root must be the HOME folder,
+#                 i.e. the folder that contains public_html)
+#   FTP_PASSWORD  that user's password
+# Optional repository variable:
+#   FTP_SERVER_DIR  remote path of the home folder, default "./" (the FTP root)
+#
+# Only files this workflow uploaded are ever updated or deleted on the server
+# (tracked in .ftp-deploy-sync-state.json). The SQLite database in data/,
+# config/local.php and anything else already on the server are never touched.
+name: Deploy website
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: Lint and smoke test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: PHP version and extensions
+        run: |
+          php -v
+          php -m | grep -qx pdo_sqlite
+          php -m | grep -qx mbstring
+
+      - name: Lint every PHP file
+        run: |
+          status=0
+          while IFS= read -r -d '' f; do
+            out=$(php -l "$f" 2>&1) || { echo "$out"; status=1; }
+          done < <(find . -name '*.php' -not -path './.git/*' -print0)
+          [ $status -eq 0 ] && echo "All PHP files passed lint"
+          exit $status
+
+      - name: Smoke test with the built-in server
+        run: |
+          printf "<?php return ['db_path' => '%s/test.sqlite'];\n" "$RUNNER_TEMP" > config/local.php
+          php -S 127.0.0.1:8080 -t public public/index.php > "$RUNNER_TEMP/server.log" 2>&1 &
+          sleep 2
+          fail=0
+          for p in / /features /download /support /contact /privacy-policy /terms-of-use \
+                   /sitemap.xml /app-ads.txt /.well-known/assetlinks.json /admin/login.php \
+                   "/api/v1/version.php?platform=android&version=3.0.2%2B32"; do
+            code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:8080$p")
+            echo "$code $p"
+            [ "$code" = "200" ] || fail=1
+          done
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/does-not-exist)
+          echo "$code /does-not-exist (expect 404)"; [ "$code" = "404" ] || fail=1
+          if grep -iE 'warning|fatal|error' "$RUNNER_TEMP/server.log"; then fail=1; fi
+          rm -f config/local.php
+          exit $fail
+
+  deploy:
+    name: Deploy to floorplandesigner.app
+    needs: check
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://floorplandesigner.app
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check secrets are set
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          missing=""
+          [ -n "$FTP_SERVER" ]   || missing="$missing FTP_SERVER"
+          [ -n "$FTP_USERNAME" ] || missing="$missing FTP_USERNAME"
+          [ -n "$FTP_PASSWORD" ] || missing="$missing FTP_PASSWORD"
+          if [ -n "$missing" ]; then
+            echo "::error::Missing repository secrets:$missing (Settings → Secrets and variables → Actions)"
+            exit 1
+          fi
+
+      - name: Stage cPanel home-folder layout
+        env:
+          ADMIN_SETUP_TOKEN: ${{ secrets.ADMIN_SETUP_TOKEN }}
+        run: |
+          mkdir -p deploy/public_html deploy/data
+          cp -R public/. deploy/public_html/
+          cp -R src views config bin deploy/
+          touch deploy/data/.gitkeep
+          rm -f deploy/config/local.php deploy/config/setup_token.txt
+          # Optional: enables /admin/setup.php?token=... until the first admin exists.
+          # Remove the secret afterwards; the next deploy then deletes the file.
+          if [ -n "$ADMIN_SETUP_TOKEN" ]; then
+            if [ ${#ADMIN_SETUP_TOKEN} -lt 32 ]; then
+              echo "::error::ADMIN_SETUP_TOKEN must be at least 32 characters"; exit 1
+            fi
+            printf '%s\n' "$ADMIN_SETUP_TOKEN" > deploy/config/setup_token.txt
+            echo "Admin setup token included"
+          fi
+          find deploy -maxdepth 2 | sort
+
+      - name: Upload over FTPS (changed files only)
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          protocol: ftps
+          port: 21
+          local-dir: ./deploy/
+          server-dir: ${{ vars.FTP_SERVER_DIR || './' }}
+          log-level: standard
+
+      - name: Verify the live site
+        run: |
+          sleep 5
+          B=https://floorplandesigner.app
+          fail=0
+          check() { # url, expected text
+            body=$(curl -fsSL --max-time 20 "$B$1") || { echo "FAIL $1 (HTTP error)"; fail=1; return; }
+            if printf '%s' "$body" | grep -q "$2"; then echo "ok   $1"; else echo "FAIL $1 (missing: $2)"; fail=1; fi
+          }
+          check /app-ads.txt "pub-5915273738908099"
+          check /.well-known/assetlinks.json "com.buildsmart.homedesigns"
+          check /sitemap.xml "<urlset"
+          check /privacy-policy "Privacy Policy"
+          check "/api/v1/version.php?platform=android&version=3.0.2%2B32" '"status"'
+          # App Links verification does not follow redirects: www must answer 200 directly
+          code=$(curl -s -o /dev/null -w '%{http_code}' https://www.floorplandesigner.app/.well-known/assetlinks.json)
+          echo "$code www assetlinks (expect 200)"; [ "$code" = "200" ] || fail=1
+          exit $fail
