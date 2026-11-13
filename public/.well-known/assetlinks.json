@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.buildsmart.homedesigns",
+      "sha256_cert_fingerprints": [
+        "EB:46:03:13:25:6C:67:28:D9:BD:81:29:01:E8:5D:3B:C7:58:67:2A:C4:8A:10:AC:30:7C:1D:6F:94:F6:F3:E4"
+      ]
+    }
+  }
+]

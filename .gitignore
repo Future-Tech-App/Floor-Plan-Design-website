@@ -1,0 +1,8 @@
+# Local configuration and secrets
+config/local.php
+
+# SQLite database and WAL files (never commit live data)
+data/*.sqlite
+data/*.sqlite-*
+data/*
+!data/.gitkeep
