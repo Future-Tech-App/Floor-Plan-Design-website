@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 29.85 30">
+  <defs>
+    <style>
+      .cls-1, .cls-2 {
+        fill: #e6e2d6;
+      }
+
+      .cls-3 {
+        fill: #fff;
+      }
+
+      .cls-2 {
+        mix-blend-mode: screen;
+        opacity: .56;
+      }
+
+      .cls-4 {
+        isolation: isolate;
+      }
+
+      .cls-5 {
+        fill: #bfbfbf;
+      }
+
+      .cls-6 {
+        fill: url(#_Áåçûìÿííûé_ãðàäèåíò_150);
+        mix-blend-mode: multiply;
+      }
+
+      .cls-7 {
+        fill: #c4af78;
+      }
+
+      .cls-8 {
+        fill: #545454;
+      }
+    </style>
+    <radialGradient id="_Áåçûìÿííûé_ãðàäèåíò_150" data-name="Áåçûìÿííûé ãðàäèåíò 150" cx="14.88" cy="8.5" fx="14.88" fy="8.5" r="21.65" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#fff"/>
+      <stop offset=".22" stop-color="#fffdf9"/>
+      <stop offset=".5" stop-color="#fff9ea"/>
+      <stop offset=".79" stop-color="#fff3d2"/>
+      <stop offset=".91" stop-color="#fff1c7"/>
+    </radialGradient>
+  </defs>
+  <g class="cls-4">
+    <g id="Layer_2" data-name="Layer 2">
+      <g id="Layer_1-2" data-name="Layer 1">
+        <g>
+          <rect class="cls-7" x="18.54" y="29.02" width="1.19" height=".79" transform="translate(-9.31 8.86) rotate(-21.1)"/>
+          <rect class="cls-7" x="23.48" y="26.54" width="1.19" height=".79" transform="translate(-11.47 20.5) rotate(-37.94)"/>
+          <path class="cls-1" d="M0,0h29.85v15.82c0,7.74-6.28,14.02-14.02,14.02h-1.8C6.28,29.85,0,23.56,0,15.82V0H0Z"/>
+          <path class="cls-2" d="M2.11,22.54c.8,1.35,1.81,2.57,2.99,3.61l5.92-13.56-1.14-1-7.76,10.95Z"/>
+          <path class="cls-2" d="M27.8,22.47c-.8,1.35-1.81,2.57-2.99,3.61l-5.92-13.56,1.14-1,7.76,10.95Z"/>
+          <path class="cls-6" d="M0,0h29.85v15.82c0,7.74-6.28,14.02-14.02,14.02h-1.8C6.28,29.85,0,23.56,0,15.82V0H0Z"/>
+          <path class="cls-8" d="M14.92,13.83c-3.81,0-6.91-3.1-6.91-6.91V0h13.83v6.91c0,3.81-3.1,6.91-6.91,6.91Z"/>
+          <path class="cls-3" d="M14.92,12.9c-3.3,0-5.98-2.68-5.98-5.98V.93h11.97v5.98c0,3.3-2.68,5.98-5.98,5.98Z"/>
+          <path class="cls-5" d="M20.91,6.81V.93h-11.96l11.78,7.49c.14-.51.18-1.06.18-1.61Z"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

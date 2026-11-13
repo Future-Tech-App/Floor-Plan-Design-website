@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" xmlns="http://www.w3.org/2000/svg" version="1.1" viewBox="0 0 102.8 102.8">
+  <!-- Generator: Adobe Illustrator 30.3.0, SVG Export Plug-In . SVG Version: 2.1.1 Build 22)  -->
+  <defs>
+    <style>
+      .st0 {
+        fill: none;
+        stroke: #000;
+        stroke-miterlimit: 10;
+        stroke-width: 1.5px;
+      }
+
+      .st1 {
+        fill: #0b43b2;
+      }
+    </style>
+  </defs>
+  <g id="Layer_3">
+    <g>
+      <path d="M51.4,102.2C23.4,102.2.7,79.4.7,51.4S23.4.7,51.4.7s50.8,22.8,50.8,50.7-22.8,50.8-50.8,50.8ZM51.4,2.2C24.3,2.2,2.2,24.3,2.2,51.4s22.1,49.3,49.2,49.3,49.3-22.1,49.3-49.2S78.6,2.2,51.4,2.2Z"/>
+      <g>
+        <line class="st0" x1="51.4" y1="1.7" x2="51.4" y2="51.4"/>
+        <g>
+          <circle class="st1" cx="51.4" cy="51.4" r="1.7"/>
+          <circle class="st1" cx="51.4" cy="1.7" r="1.7"/>
+        </g>
+      </g>
+      <g>
+        <line class="st0" x1="101.2" y1="51.4" x2="51.4" y2="51.4"/>
+        <g>
+          <circle class="st1" cx="51.4" cy="51.4" r="1.7"/>
+          <circle class="st1" cx="101.2" cy="51.4" r="1.7"/>
+        </g>
+      </g>
+      <g>
+        <line class="st0" x1="51.4" y1="101.2" x2="51.4" y2="51.4"/>
+        <g>
+          <circle class="st1" cx="51.4" cy="51.4" r="1.7"/>
+          <circle class="st1" cx="51.4" cy="101.2" r="1.7"/>
+        </g>
+      </g>
+      <g>
+        <line class="st0" x1="1.7" y1="51.4" x2="51.4" y2="51.4"/>
+        <g>
+          <circle class="st1" cx="51.4" cy="51.4" r="1.7"/>
+          <circle class="st1" cx="1.7" cy="51.4" r="1.7"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

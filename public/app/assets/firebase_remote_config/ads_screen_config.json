@@ -1,0 +1,39 @@
+{
+  "_comment": "Per-screen ad config. Paste this whole object as the VALUE of the Firebase Remote Config parameter 'ads_screen_config'. The app only reads the 'screens' object; keys starting with '_' are docs and ignored. NATIVE gating: global 'ads_enabled' AND a screen's 'enabled' (format 1-4 use the screen's native unit; format 0 uses the global banner). INTERSTITIAL gating: global 'ads_enabled' AND 'ads_interstitial_enabled' AND a screen's 'interstitial'. 'int_freq' sets the per-screen interstitial cadence: N>1 = show on the 1st action and every Nth after; 0 or 1 = show every time; -1 = disable the interstitial on that screen (never loads).",
+  "_formats": {
+    "0": "adaptive banner",
+    "1": "full native card (~250dp)",
+    "2": "small native, media thumbnail left (~128dp)",
+    "3": "small native, app icon left full width CTA",
+    "4": "medium native with media (~220dp, large_ media view style)"
+  },
+  "_interstitial": "Per-screen interstitial switch, mirroring the native 'enabled' toggle, with 'int_freq' for cadence (N>1 every Nth, 0/1 every time, -1 disabled). An interstitial only shows where a trigger is wired: 'home' (every home menu navigation, int_freq 0), 'editor' (every save, int_freq 0), 'calculator' (every calculator card tap, int_freq 0), 'language' (Done → onboarding, int_freq 0), 'splash' (splash screen), 'premium' (paywall/IAP close button — shows on every close; set 'interstitial': false or 'int_freq': -1 to disable). Setting 'interstitial': true on a screen with no trigger has no effect yet.",
+  "screens": {
+    "home":             { "enabled": true, "format": 3, "interstitial": true, "int_freq": 4 },
+    "editor":           { "enabled": true, "format": 3, "interstitial": true, "int_freq": 2 },
+    "preview":          { "enabled": true, "format": 3, "interstitial": false },
+    "preview_3d":       { "enabled": true, "format": 0, "interstitial": false },
+    "saved_plans":      { "enabled": true, "format": 3, "interstitial":  false},
+    "language":         { "enabled": true, "format": 1, "interstitial": false},
+    "measure":          { "enabled": true, "format": 3, "interstitial": false },
+    "exported_files":   { "enabled": true, "format": 3, "interstitial": false },
+    "templates":        { "enabled": true, "format": 3, "interstitial": false},
+    "template_details": { "enabled": true, "format": 3, "interstitial": false},
+    "calculator":       { "enabled": true, "format": 3, "interstitial": true, "int_freq":6 },
+    "settings":         { "enabled": true, "format": 0, "interstitial": false },
+    "onboarding":       { "enabled": true, "format": 0, "interstitial": false},
+    "ai_input":         { "enabled": true, "format": 3, "interstitial": false},
+    "ai_creator":       { "enabled": true, "format": 3, "interstitial": false },
+    "ai_preview":       { "enabled": true, "format": 3, "interstitial": false},
+    "analyzer":         { "enabled": true, "format": 3, "interstitial": false },
+    "bubble_level":     { "enabled": true, "format": 3, "interstitial": false},
+    "compass":          { "enabled": true, "format": 3, "interstitial": false},
+    "export":           { "enabled": true, "format": 3, "interstitial": false},
+    "notes":            { "enabled": true, "format": 3, "interstitial": false },
+    "base_converter":   { "enabled": true, "format": 3, "interstitial": false },
+    "fuel_converter":   { "enabled": true, "format": 3, "interstitial": false},
+    "premium":          { "enabled": false, "format": 0, "interstitial": true, "int_freq": 0 },
+    "splash":           { "enabled": false, "format": 0, "interstitial": false }
+  }
+}
+

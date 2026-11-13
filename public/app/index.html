@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!--
+    /app/ is replaced by `flutter build web --base-href`.
+    The website serves this app from /app/ (see tool/build_web.sh).
+  -->
+  <base href="/app/">
+
+  <meta charset="UTF-8">
+  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="description" content="Floor Plan Designer in your browser: draw walls and rooms, add doors, windows and furniture, preview in 3D, calculate materials and export PDFs.">
+  <meta name="theme-color" content="#2196F3">
+
+  <!-- iOS meta tags & icons -->
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black">
+  <meta name="apple-mobile-web-app-title" content="Floor Plan">
+  <link rel="apple-touch-icon" href="icons/Icon-192.png">
+
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="favicon.png"/>
+
+  <title>Floor Plan Designer — Web App</title>
+  <link rel="manifest" href="manifest.json">
+
+  <style>
+    html, body { margin: 0; height: 100%; background: #121212; }
+    #loading {
+      position: fixed; inset: 0; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: 18px;
+      font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #cbd5e1;
+      transition: opacity .3s;
+    }
+    #loading img { width: 72px; height: 72px; border-radius: 16px; }
+    #loading .bar { width: 160px; height: 4px; border-radius: 4px; background: #1f2a37; overflow: hidden; }
+    #loading .bar::after {
+      content: ""; display: block; height: 100%; width: 40%; background: #2196F3; border-radius: 4px;
+      animation: slide 1.1s ease-in-out infinite;
+    }
+    @keyframes slide { 0% { transform: translateX(-100%); } 100% { transform: translateX(250%); } }
+    #loading a { color: #64b5f6; }
+  </style>
+</head>
+<body>
+  <div id="loading" role="status" aria-live="polite">
+    <img src="icons/Icon-192.png" alt="">
+    <div>Loading Floor Plan Designer…</div>
+    <div class="bar"></div>
+    <noscript>Please enable JavaScript to use the web app, or <a href="/download">get the mobile app</a>.</noscript>
+  </div>
+  <script>
+    // Remove the loading screen once Flutter has rendered its first frame.
+    window.addEventListener('flutter-first-frame', function () {
+      var el = document.getElementById('loading');
+      if (!el) return;
+      el.style.opacity = '0';
+      setTimeout(function () { el.remove(); }, 300);
+    });
+  </script>
+  <script src="flutter_bootstrap.js" async></script>
+</body>
+</html>

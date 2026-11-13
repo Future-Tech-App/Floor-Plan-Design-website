@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 18.4 30">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: url(#_Áåçûìÿííûé_ãðàäèåíò_101);
+      }
+
+      .cls-1, .cls-2 {
+        mix-blend-mode: multiply;
+        opacity: .26;
+      }
+
+      .cls-3 {
+        fill: #444443;
+      }
+
+      .cls-4 {
+        mix-blend-mode: screen;
+        opacity: .25;
+      }
+
+      .cls-4, .cls-5 {
+        fill: #f0ead3;
+      }
+
+      .cls-2 {
+        fill: url(#_Áåçûìÿííûé_ãðàäèåíò_111);
+      }
+
+      .cls-6 {
+        isolation: isolate;
+      }
+    </style>
+    <linearGradient id="_Áåçûìÿííûé_ãðàäèåíò_101" data-name="Áåçûìÿííûé ãðàäèåíò 101" x1=".3" y1="-.84" x2="19.4" y2="18.27" gradientUnits="userSpaceOnUse">
+      <stop offset=".03" stop-color="#eeeadc"/>
+      <stop offset=".24" stop-color="#eae2c8"/>
+      <stop offset=".67" stop-color="#e2ce96"/>
+      <stop offset=".93" stop-color="#ddc175"/>
+    </linearGradient>
+    <linearGradient id="_Áåçûìÿííûé_ãðàäèåíò_111" data-name="Áåçûìÿííûé ãðàäèåíò 111" x1="-.9" y1="15.85" x2="14.74" y2="31.49" gradientTransform="translate(-14.85 11.53) rotate(-44.91) skewX(.18)" gradientUnits="userSpaceOnUse">
+      <stop offset=".03" stop-color="#eeeadc"/>
+      <stop offset=".23" stop-color="#eae2c8"/>
+      <stop offset=".65" stop-color="#e2ce96"/>
+      <stop offset=".9" stop-color="#ddc175"/>
+    </linearGradient>
+  </defs>
+  <g class="cls-6">
+    <g id="Layer_2" data-name="Layer 2">
+      <g id="Layer_1-2" data-name="Layer 1">
+        <g>
+          <path class="cls-3" d="M12.98,29.23s-.03,0-.04-.01c-.02-.02-.02-.06,0-.08,4.98-5.3,5.12-12.31,5.12-12.38,0-.03.02-.05.05-.05h0s.05.03.05.06c0,.07-.14,7.13-5.15,12.46-.01.01-.03.02-.04.02Z"/>
+          <rect class="cls-5" x="-2.19" y="22.82" width="17.62" height="1.12" transform="translate(18.47 2.16) rotate(45)"/>
+          <polygon class="cls-5" points=".71 0 .71 15.62 .71 16.8 18.4 16.8 18.4 15.62 18.4 0 .71 0"/>
+          <rect class="cls-1" x=".71" y=".03" width="17.69" height="16.77"/>
+          <polygon class="cls-4" points="18.4 3.87 4.55 16.8 11.98 16.8 18.4 11.05 18.4 3.87"/>
+          <polygon class="cls-4" points="8.45 0 .71 7.87 .71 10.65 11.38 0 8.45 0"/>
+          <polygon class="cls-3" points="12.09 8.73 12.09 8.45 11.84 8.45 12.18 8.11 11.99 7.91 11.45 8.45 9.86 8.45 10.99 7.32 11.75 7.32 11.75 7.04 11.27 7.04 11.45 6.86 11.25 6.66 11.08 6.84 11.08 6.36 10.8 6.36 10.8 7.12 9.69 8.22 9.69 6.66 10.23 6.13 10.03 5.93 9.69 6.27 9.69 6.03 9.42 6.03 9.42 6.27 9.08 5.93 8.88 6.13 9.42 6.66 9.42 8.22 8.31 7.12 8.31 6.36 8.03 6.36 8.03 6.84 7.86 6.66 7.66 6.86 7.84 7.04 7.36 7.04 7.36 7.32 8.12 7.32 9.25 8.45 7.66 8.45 7.13 7.88 6.92 8.08 7.28 8.45 7.02 8.45 7.02 8.73 7.27 8.73 6.93 9.07 7.12 9.27 7.66 8.73 9.19 8.73 8.12 9.8 7.36 9.8 7.36 10.08 7.84 10.08 7.66 10.25 7.86 10.45 8.03 10.28 8.03 10.76 8.31 10.76 8.31 10 9.42 8.89 9.42 10.45 8.88 10.99 9.08 11.19 9.42 10.85 9.42 11.09 9.69 11.09 9.69 10.85 10.03 11.19 10.23 10.99 9.69 10.45 9.69 8.89 10.8 10 10.8 10.76 11.08 10.76 11.08 10.28 11.25 10.45 11.45 10.25 11.27 10.08 11.75 10.08 11.75 9.8 10.99 9.8 9.92 8.73 11.45 8.73 11.99 9.27 12.18 9.07 11.84 8.73 12.09 8.73"/>
+          <rect class="cls-2" x="-2.19" y="22.82" width="17.62" height="1.12" transform="translate(18.47 2.16) rotate(45)"/>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg>

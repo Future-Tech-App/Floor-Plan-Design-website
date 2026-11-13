@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg id="Layer_2" data-name="Layer 2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 39.93 30">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: #bbbfc3;
+      }
+
+      .cls-2 {
+        fill: #878a95;
+      }
+    </style>
+  </defs>
+  <g id="Layer_1-2" data-name="Layer 1">
+    <g id="Toilet_Paper_Holder" data-name="Toilet Paper Holder">
+      <g>
+        <rect class="cls-1" x="2.4" y="18.89" width="35.14" height="6.39"/>
+        <path class="cls-2" d="M37.8,25.55H2.13v-6.92h35.67v6.92ZM2.66,25.01h34.61v-5.86H2.66v5.86Z"/>
+      </g>
+      <g>
+        <path class="cls-1" d="M38.6,29.73h0c-.59,0-1.06-.48-1.06-1.06V.27h2.13v28.4c0,.59-.48,1.06-1.06,1.06Z"/>
+        <path class="cls-2" d="M38.6,30c-.73,0-1.33-.6-1.33-1.33V0h2.66v28.67c0,.73-.6,1.33-1.33,1.33ZM37.8.53v28.14c0,.44.36.8.8.8s.8-.36.8-.8V.53h-1.6Z"/>
+      </g>
+      <g>
+        <path class="cls-1" d="M1.33,29.73h0c-.59,0-1.06-.48-1.06-1.06V.27h2.13v28.4c0,.59-.48,1.06-1.06,1.06Z"/>
+        <path class="cls-2" d="M1.33,30c-.73,0-1.33-.6-1.33-1.33V0h2.66v28.67c0,.73-.6,1.33-1.33,1.33ZM.53.53v28.14c0,.44.36.8.8.8s.8-.36.8-.8V.53H.53Z"/>
+      </g>
+      <g>
+        <rect class="cls-1" x=".27" y=".27" width="39.4" height="2.92"/>
+        <path class="cls-2" d="M39.93,3.45H0V0h39.93v3.45ZM.53,2.92h38.87V.53H.53v2.39Z"/>
+      </g>
+    </g>
+  </g>
+</svg>
