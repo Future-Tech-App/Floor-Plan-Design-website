@@ -15,6 +15,7 @@ if (version_compare(PHP_VERSION, '8.1.0', '<')) {
 }
 
 require_once ROOT_DIR . '/src/helpers.php';
+require_once ROOT_DIR . '/src/icons.php';
 require_once ROOT_DIR . '/src/Database.php';
 require_once ROOT_DIR . '/src/Repository.php';
 require_once ROOT_DIR . '/src/VersionGate.php';

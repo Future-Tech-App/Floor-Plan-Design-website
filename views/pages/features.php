@@ -1,69 +1,94 @@
 <?php
+$bannerTitle  = 'Features';
+$bannerKicker = 'Everything in one app';
+$bannerLead   = 'A complete floor-planning toolkit — design, visualize, measure, calculate and share.';
+require ROOT_DIR . '/views/partials/page_banner.php';
+
 $groups = [
-    'Design' => [
-        ['Wall tools', 'Straight walls, freehand drawing and a room tool that draws four walls at once. Default wall thickness is 15 cm and fully adjustable.'],
-        ['Doors & windows', 'Six door swing types plus a catalogue of windows that cut openings in the wall automatically.'],
-        ['Stairs & columns', 'Add stairs, posts and columns for realistic structural layouts.'],
-        ['Furniture library', 'Furniture, appliances, kitchen, bathroom, electrical, HVAC, garden, pool and vehicle icons.'],
-        ['Templates', 'Start from one, two or three bedroom apartment templates and customise them.'],
-        ['Undo / redo', 'Full edit history so you can experiment freely.'],
+    [
+        'kicker' => 'Design',
+        'title'  => 'Draw accurate plans in minutes',
+        'image'  => 'ill/design.png',
+        'items'  => [
+            ['pencil', 'Wall tools', 'Straight walls, freehand drawing and a room tool that draws four walls at once. Wall thickness starts at 15 cm and is fully adjustable.'],
+            ['home', 'Doors, windows, stairs & columns', 'Six door swing types and a window catalogue that cut openings in walls automatically.'],
+            ['layers', 'Templates, layers & undo', 'Start from 1, 2 or 3 bedroom templates, organize with layers and experiment freely with full undo/redo.'],
+        ],
     ],
-    'Visualize' => [
-        ['3D preview', 'Isometric 3D with depth-sorted rendering, wall openings and adaptive furniture heights.'],
-        ['Textures', 'Terrazzo, concrete, wood, marble and grass floors with directional lighting.'],
-        ['Gestures', 'Rotate with inertia and pinch-to-zoom from 0.4× to 4×.'],
-        ['Multi-floor & layers', 'Design multi-storey buildings with independent levels and layer management.'],
+    [
+        'kicker' => 'Furnish & visualize',
+        'title'  => 'See your space before it’s built',
+        'image'  => 'ill/3d.png',
+        'items'  => [
+            ['chair', 'Furniture library', 'Furniture, appliances, kitchens, bathrooms, electrical, HVAC, garden, pool and vehicles.'],
+            ['cube', 'Interactive 3D', 'Isometric 3D with depth-sorted rendering, wall openings, textured floors and directional lighting.'],
+            ['layers', 'Multi-floor buildings', 'Design multi-storey buildings with independent floors and layer management.'],
+        ],
     ],
-    'Measure & calculate' => [
-        ['Measure ruler', 'Distances in ft, m, cm, in and mm.'],
-        ['Area calculator', 'Areas and volumes for common shapes.'],
-        ['Construction calculator', 'Material estimates for bricks, concrete, paint and tiles with local pricing.'],
-        ['Bubble level', 'A digital spirit level using your phone\'s accelerometer.'],
+    [
+        'kicker' => 'Measure & calculate',
+        'title'  => 'Plan your budget with confidence',
+        'image'  => 'ill/furniture.png',
+        'items'  => [
+            ['ruler', 'Measure ruler & area calculator', 'Distances in ft, m, cm, in and mm; areas and volumes of common shapes.'],
+            ['calculator', 'Construction calculator', 'Material estimates for bricks, blocks, concrete, plaster, paint, steel and tiles — with local pricing.'],
+            ['compass', 'Bubble level & compass', 'A digital spirit level and compass using your phone’s sensors.'],
+        ],
     ],
-    'Share' => [
-        ['PDF & image export', '300 DPI output ready for printing or sending to a contractor.'],
-        ['Notes', 'Attach notes and annotations to a project.'],
-        ['40+ languages', 'Use the app in English, Urdu, Hindi, Arabic, Chinese, Spanish, French, German and many more.'],
-        ['Offline first', 'Plans are stored on your device; the editor works without internet.'],
+    [
+        'kicker' => 'AI & sharing',
+        'title'  => 'Smarter starts, professional results',
+        'image'  => 'ill/share.png',
+        'items'  => [
+            ['sparkles', 'AI floor plan generator & analyzer', 'Describe a building to generate a layout, or upload a photo of a plan to detect its rooms.'],
+            ['download', '300 DPI PDF & image export', 'Title block, scale bar, north arrow and room schedule on A4, A3, Letter or Legal.'],
+            ['globe', '40+ languages', 'English, Urdu, Hindi, Arabic, Chinese, Spanish, French, German and many more.'],
+        ],
     ],
 ];
 ?>
-<section class="page-hero">
-    <div class="container">
-        <h1>Features</h1>
-        <p class="lead">A complete floor-planning toolkit in your pocket.</p>
-    </div>
-</section>
 
-<?php foreach ($groups as $group => $items): ?>
-<section class="section<?= $group === 'Visualize' || $group === 'Share' ? ' section-alt' : '' ?>">
-    <div class="container">
-        <h2><?= e($group) ?></h2>
-        <div class="card-grid">
-            <?php foreach ($items as [$name, $text]): ?>
-                <article class="card">
-                    <h3><?= e($name) ?></h3>
-                    <p><?= e($text) ?></p>
-                </article>
-            <?php endforeach; ?>
+<?php foreach ($groups as $i => $g): ?>
+<section class="section<?= $i % 2 ? ' section-tint' : '' ?>">
+    <div class="container feature-row<?= $i % 2 ? ' reverse' : '' ?>">
+        <div class="feature-media reveal">
+            <img src="<?= e(url('/assets/img/' . $g['image'])) ?>" alt="" loading="lazy">
+        </div>
+        <div class="reveal">
+            <p class="kicker"><?= e($g['kicker']) ?></p>
+            <h2><?= e($g['title']) ?></h2>
+            <div class="feature-list">
+                <?php foreach ($g['items'] as [$ic, $name, $text]): ?>
+                    <div class="feature-list-item">
+                        <span class="card-icon"><?= icon($ic) ?></span>
+                        <div>
+                            <h3><?= e($name) ?></h3>
+                            <p><?= e($text) ?></p>
+                        </div>
+                    </div>
+                <?php endforeach; ?>
+            </div>
         </div>
     </div>
 </section>
 <?php endforeach; ?>
 
 <section class="section">
-    <div class="container">
-        <h2>Web, Free and Pro</h2>
-        <div class="table-wrap">
+    <div class="container narrow">
+        <div class="section-head reveal">
+            <p class="kicker">Compare</p>
+            <h2>Web, Free and Pro</h2>
+        </div>
+        <div class="table-wrap reveal">
             <table class="compare">
                 <thead><tr><th>Feature</th><th>Web app</th><th>Mobile free</th><th>Mobile Pro</th></tr></thead>
                 <tbody>
-                    <tr><td>Editor, furniture, 3D preview</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>AI floor plan generator &amp; analyzer</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>Measure ruler &amp; calculators</td><td>✓</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>Bubble level &amp; compass</td><td>Phones/tablets¹</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>PDF &amp; image export</td><td>Downloads</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>Ad-free</td><td>✓</td><td>—</td><td>✓</td></tr>
+                    <tr><td>Editor, furniture, 3D preview</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                    <tr><td>AI floor plan generator &amp; analyzer</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                    <tr><td>Measure ruler &amp; calculators</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                    <tr><td>Bubble level &amp; compass</td><td>Phones/tablets¹</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                    <tr><td>PDF &amp; image export</td><td>Downloads</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                    <tr><td>Ad-free</td><td class="yes">✓</td><td>—</td><td class="yes">✓</td></tr>
                 </tbody>
             </table>
         </div>

@@ -8,7 +8,7 @@
 return [
     // Branding / site
     'app_name'      => 'Floor Plan Designer',
-    'tagline'       => 'Design, visualize and export floor plans from your phone.',
+    'tagline'       => 'Design, visualize and export floor plans — in your browser or on your phone.',
     'company'       => 'Floor Plan Designer',
     'support_email' => 'support@floorplandesigner.app',
     'site_url'      => 'https://floorplandesigner.app',

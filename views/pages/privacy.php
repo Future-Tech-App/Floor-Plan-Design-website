@@ -1,10 +1,10 @@
 <?php /** @var array $site */ ?>
-<section class="page-hero">
-    <div class="container">
-        <h1>Privacy Policy</h1>
-        <p class="lead">Last updated: November 13, 2026</p>
-    </div>
-</section>
+<?php
+$bannerTitle  = 'Privacy Policy';
+$bannerKicker = 'Legal';
+$bannerLead   = 'Last updated: November 13, 2026';
+require ROOT_DIR . '/views/partials/page_banner.php';
+?>
 
 <section class="section">
     <div class="container narrow prose">
@@ -35,7 +35,7 @@
         <p>Purchases are processed by Google Play or the Apple App Store. We receive confirmation of the purchase but never your payment details. In-app review and update prompts are provided by the store.</p>
 
         <h2>4. This website and the web app</h2>
-        <p>When you send a message through our contact form we store your name, email, subject, message, IP address and browser user-agent so we can reply and prevent spam. We use a session cookie for security (CSRF protection) only — no advertising cookies are set by this site.</p>
+        <p>When you send a message through our contact form we store your name, email, subject, message, IP address and browser user-agent so we can reply and prevent spam. We use a session cookie for security (CSRF protection) only — no advertising cookies are set by this site. The site loads its fonts from Google Fonts, so your browser sends your IP address to Google when you visit.</p>
         <p>The web app at <a href="<?= e(url('/app/')) ?>">/app</a> stores your plans and settings in your browser's local storage on your device; we do not receive them. Clearing your browser data deletes them. The web app shows no ads and has no in-app purchases. It uses Firebase Analytics for usage statistics, as the mobile app does.</p>
         <p>When you use the AI generator or analyzer in the web app, your text or photo is sent to our server, which forwards it to the AI provider. Our server does not store the text or photo; it records your IP address and the time of the request for up to two days to prevent abuse (rate limiting).</p>
 

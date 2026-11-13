@@ -27,14 +27,18 @@ $faqs = [
 ];
 $total = array_sum(array_map('count', $faqs));
 ?>
-<section class="page-hero">
-    <div class="container">
+<section class="page-banner">
+    <div class="container page-banner-inner">
+        <p class="kicker kicker-light">Help center</p>
         <h1>Support &amp; FAQ</h1>
-        <p class="lead"><?= $total ?> answers to common questions.</p>
+        <p class="page-banner-lead"><?= $total ?> answers to common questions.</p>
         <label class="search">
             <span class="visually-hidden">Search the FAQ</span>
             <input type="search" id="faq-search" placeholder="Search questions, e.g. export, wall, refund…" autocomplete="off">
         </label>
+        <nav class="crumbs" aria-label="Breadcrumb">
+            <a href="<?= e(url('/')) ?>">Home</a><span aria-hidden="true">/</span><span aria-current="page">Support</span>
+        </nav>
     </div>
 </section>
 
@@ -55,11 +59,14 @@ $total = array_sum(array_map('count', $faqs));
     </div>
 </section>
 
-<section class="section section-alt">
-    <div class="container center">
+<section class="section section-tint">
+    <div class="container narrow center reveal">
+        <p class="kicker">We're here to help</p>
         <h2>Still need help?</h2>
-        <p>Send us a message and include your phone model and app version (<?= e($site['version']) ?> is the latest).</p>
-        <a class="btn" href="<?= e(url('/contact?subject=Support')) ?>">Contact support</a>
-        <a class="btn btn-ghost" href="<?= e(url('/contact?subject=Bug%20report')) ?>">Report a bug</a>
+        <p class="lead">Send us a message and include your device and app version (<?= e($site['version']) ?> is the latest).</p>
+        <div class="cta-row" style="justify-content:center">
+            <a class="btn" href="<?= e(url('/contact?subject=Support')) ?>">Contact support</a>
+            <a class="btn btn-ghost" href="<?= e(url('/contact?subject=Bug%20report')) ?>">Report a bug</a>
+        </div>
     </div>
 </section>

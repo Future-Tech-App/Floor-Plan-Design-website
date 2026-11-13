@@ -1,10 +1,10 @@
 <?php /** @var array $site */ ?>
-<section class="page-hero">
-    <div class="container">
-        <h1>Terms of Use</h1>
-        <p class="lead">Last updated: November 13, 2026</p>
-    </div>
-</section>
+<?php
+$bannerTitle  = 'Terms of Use';
+$bannerKicker = 'Legal';
+$bannerLead   = 'Last updated: November 13, 2026';
+require ROOT_DIR . '/views/partials/page_banner.php';
+?>
 
 <section class="section">
     <div class="container narrow prose">
