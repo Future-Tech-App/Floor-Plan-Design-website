@@ -4,6 +4,8 @@ $faqs = [
         ['Is Floor Plan Designer free?', 'Yes. All design tools are free to use. Non-Pro users see ads; buying Pro inside the app removes them.'],
         ['Do I need an account?', 'No. The app has no sign-up or login. Your plans are saved on your device.'],
         ['Does it work offline?', 'Yes. The editor, 3D preview, calculators and export all work without internet. Only the optional AI features and ads need a connection.'],
+        ['Can I use it on a computer?', 'Yes. Open floorplandesigner.app/app in any modern browser for the same tools — free and without ads. Plans are saved in that browser, and exports are downloaded to your Downloads folder.'],
+        ['Will my web plans appear on my phone?', 'Not automatically: web plans are stored in your browser and mobile plans on your device. Use Share on a saved plan to download its file.'],
         ['Can I start from a template?', 'Yes. Pick a one, two or three bedroom apartment template from the home screen and edit it like any other plan.'],
     ],
     'Editor' => [

@@ -9,6 +9,11 @@
 <section class="section">
     <div class="container card-grid two">
         <article class="card store-card">
+            <h2>Web browser</h2>
+            <p>Use every tool right now in Chrome, Edge, Safari or Firefox — on a computer, tablet or phone. Free, no ads, nothing to install. Plans are saved in your browser.</p>
+            <a class="btn" href="<?= e(url('/app/')) ?>">Open the web app</a>
+        </article>
+        <article class="card store-card">
             <h2>Android</h2>
             <p>For Android phones and tablets. Updates install automatically through Google Play.</p>
             <?php if ($site['android_url']): ?>

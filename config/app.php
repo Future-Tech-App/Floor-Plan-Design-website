@@ -35,6 +35,14 @@ return [
         'window_minutes' => 15,
     ],
 
+    // AI proxy for the web app (/api/v1/ai.php). The key is NEVER sent to browsers.
+    // Set it in config/secrets.php (or the GROQ_API_KEY environment variable).
+    'groq_api_key'   => getenv('GROQ_API_KEY') ?: '',
+    'ai_models'      => ['meta-llama/llama-4-scout-17b-16e-instruct'],
+    'ai_max_tokens'  => 8000,
+    'ai_max_body_mb' => 8,          // analyzer sends a base64 photo
+    'ai_rate_limit'  => ['max' => 30, 'window_minutes' => 60],
+
     // Admin area
     'admin_session_minutes' => 120,
 

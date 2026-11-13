@@ -61,6 +61,16 @@ final class Database
         SQL);
 
         $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS ai_requests (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip         TEXT NOT NULL,
+                status     INTEGER NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            )
+        SQL);
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_ai_ip_created ON ai_requests (ip, created_at)');
+
+        $pdo->exec(<<<SQL
             CREATE TABLE IF NOT EXISTS admin_users (
                 id            INTEGER PRIMARY KEY AUTOINCREMENT,
                 username      TEXT NOT NULL UNIQUE,

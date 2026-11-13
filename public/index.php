@@ -7,8 +7,11 @@ declare(strict_types=1);
  */
 // PHP built-in dev server: let it serve real files (assets, api/*.php, admin/*.php) itself.
 if (PHP_SAPI === 'cli-server') {
-    $file = __DIR__ . parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
-    if ($file !== __DIR__ . '/' && is_file($file)) {
+    // Decode once, like Apache does: Flutter web asset folders are literally named
+    // "onBoarding%20screen" and the browser requests them as "onBoarding%2520screen".
+    $file = realpath(__DIR__ . rawurldecode((string) parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH)));
+    $inside = $file !== false && str_starts_with($file, __DIR__ . DIRECTORY_SEPARATOR);
+    if ($inside && (is_file($file) || is_file($file . '/index.html'))) {
         return false;
     }
 }
@@ -28,8 +31,8 @@ if ($path !== '/') {
 switch ($path) {
     case '/':
         render('pages/home', [
-            'title'       => config('app_name') . ' — Floor Plan Designer for Mobile',
-            'description' => 'Draw walls, add doors and furniture, preview in 3D and export 300 DPI PDFs. Floor Plan Designer runs fully on your phone.',
+            'title'       => config('app_name') . ' — Floor Plans in Your Browser & on Your Phone',
+            'description' => 'Draw walls, add doors and furniture, preview in 3D and export 300 DPI PDFs — in your browser or with the Android and iOS apps.',
             'canonical'   => '/',
             'page'        => 'home',
         ]);
@@ -84,6 +87,11 @@ switch ($path) {
         ]);
         break;
 
+    case '/app':
+        // The Flutter web app lives in public/app/ and needs the trailing slash
+        header('Location: ' . url('/app/'), true, 301);
+        exit;
+
     case '/sitemap.xml':
         output_sitemap();
         break;
@@ -98,6 +106,7 @@ function output_sitemap(): void
     $base = rtrim((string) config('site_url'), '/');
     $pages = [
         '/'               => ['weekly', '1.0'],
+        '/app/'           => ['weekly', '0.9'],
         '/features'       => ['monthly', '0.8'],
         '/download'       => ['monthly', '0.8'],
         '/support'        => ['monthly', '0.7'],

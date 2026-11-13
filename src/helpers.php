@@ -11,9 +11,13 @@ function config(string $key, mixed $default = null): mixed
     static $items = null;
     if ($items === null) {
         $items = require ROOT_DIR . '/config/app.php';
-        $local = ROOT_DIR . '/config/local.php';
-        if (is_file($local)) {
-            $items = array_replace($items, require $local);
+        // local.php: per-server settings. secrets.php: API keys (written by the
+        // deploy workflow from GitHub secrets). Both are git-ignored.
+        foreach (['local.php', 'secrets.php'] as $override) {
+            $file = ROOT_DIR . '/config/' . $override;
+            if (is_file($file)) {
+                $items = array_replace($items, require $file);
+            }
         }
     }
     return $items[$key] ?? $default;

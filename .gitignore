@@ -1,5 +1,6 @@
 # Local configuration and secrets
 config/local.php
+config/secrets.php
 config/setup_token.txt
 
 # Deploy packages built by bin/build-deploy.sh

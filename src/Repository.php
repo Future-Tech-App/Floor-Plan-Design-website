@@ -114,6 +114,25 @@ final class Repository
         return (int) Database::pdo()->query('SELECT COUNT(*) FROM contact_messages WHERE is_read = 0')->fetchColumn();
     }
 
+    /* ---------- AI proxy usage ---------- */
+
+    public static function recentAiRequestCount(string $ip, int $windowMinutes): int
+    {
+        $stmt = Database::pdo()->prepare(
+            "SELECT COUNT(*) FROM ai_requests WHERE ip = ? AND created_at >= datetime('now', ?)"
+        );
+        $stmt->execute([$ip, '-' . $windowMinutes . ' minutes']);
+        return (int) $stmt->fetchColumn();
+    }
+
+    public static function logAiRequest(string $ip, int $status): void
+    {
+        $pdo = Database::pdo();
+        $pdo->prepare('INSERT INTO ai_requests (ip, status) VALUES (?, ?)')->execute([$ip, $status]);
+        // Keep the table small: drop rows older than 2 days
+        $pdo->exec("DELETE FROM ai_requests WHERE created_at < datetime('now', '-2 days')");
+    }
+
     /* ---------- Admin users ---------- */
 
     public static function findAdmin(string $username): ?array

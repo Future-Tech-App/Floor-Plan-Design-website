@@ -49,7 +49,7 @@ $nav = [
             <?php foreach ($nav as $key => [$href, $label]): ?>
                 <a href="<?= e(url($href)) ?>" class="<?= $page === $key ? 'active' : '' ?>"<?= $page === $key ? ' aria-current="page"' : '' ?>><?= e($label) ?></a>
             <?php endforeach; ?>
-            <a class="btn btn-small" href="<?= e(url('/download')) ?>">Get the app</a>
+            <a class="btn btn-small" href="<?= e(url('/app/')) ?>">Open web app</a>
         </nav>
     </div>
 </header>
@@ -74,6 +74,7 @@ $nav = [
         </div>
         <div>
             <p class="footer-title">Product</p>
+            <a href="<?= e(url('/app/')) ?>">Web app</a>
             <a href="<?= e(url('/features')) ?>">Features</a>
             <a href="<?= e(url('/download')) ?>">Download</a>
         </div>

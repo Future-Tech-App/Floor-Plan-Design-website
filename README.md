@@ -2,14 +2,53 @@
 
 A plain-PHP (no framework, no Composer) website and backend for the Floor Plan Designer app.
 
+- **Web app (`/app/`):** the Flutter app itself, compiled for browsers, with the same editor, 3D preview, templates, calculators, AI generator and analyzer, and export as the mobile app. See [Web app](#web-app-app) below.
 - **Public site:** Home, Features, Download, Support/FAQ (live search), Contact, Privacy Policy, Terms of Use. Its URLs match the current site (`/support`, `/contact`, `/privacy-policy`, `/terms-of-use`).
 - **Backend:** stores contact messages in SQLite, applies rate limiting and a honeypot to block spam, and uses CSRF protection, prepared statements and security headers.
-- **JSON API:** `/api/v1/version.php` (version gate) and `/api/v1/contact.php` (contact form).
+- **JSON API:** `/api/v1/version.php` (version gate), `/api/v1/contact.php` (contact form) and `/api/v1/ai.php` (the web app's AI proxy).
 - **Admin panel:** `/admin/` lets you read, mark and delete messages, and manage the latest version and the force/optional update rules.
 
 ## Requirements
 
-- PHP **8.1+** with the `pdo_sqlite` and `mbstring` extensions
+- PHP **8.1+** with the `pdo_sqlite`, `mbstring` and `curl` extensions
+
+## Web app (`/app/`)
+
+`public/app/` holds the release web build of the Flutter app. Don't edit it by hand. Rebuild it from the Flutter project:
+
+```bash
+tool/build_web.sh      # run in the Flutter app repo; writes php-website/public/app/
+```
+
+The script runs `flutter build web --base-href /app/`, refuses to continue if any API key appears in the output, leaves out the local CanvasKit copy (browsers load it from Google's CDN), and writes an `.htaccess` that tells browsers to check for a new version on every load.
+
+How the web build differs from the mobile apps (all changes are guarded by `kIsWeb`, so the mobile apps behave exactly as before):
+
+| Area | Web behavior |
+|---|---|
+| Saved plans | Stored in the browser's local storage. Clearing browser data deletes them. |
+| Export, Share and 3D snapshot | The file downloads to the browser's Downloads folder. |
+| AI generator and analyzer | Sent to `/api/v1/ai.php`, which adds the Groq key on the server. The key never reaches the browser. |
+| Pro, purchases and ads | There are no ads or purchases on the web. Pro buttons explain this and link to the apps. |
+| Bubble level | Works on phones and tablets (iOS asks for motion permission). On computers it explains that no sensor is available. |
+| Compass | Browsers don't provide magnetometer data, so it points users to the mobile app. |
+
+### AI proxy
+
+`POST /api/v1/ai.php` accepts the same JSON as Groq's chat-completions API, without the `Authorization` header. It:
+
+- rejects cross-origin requests;
+- only allows models listed in `ai_models`;
+- caps `max_tokens` (default 8,000) and the request size (default 8 MB, enough for the analyzer's photo);
+- limits each IP to 30 requests per hour (`ai_rate_limit`).
+
+Set the key either with the `GROQ_API_KEY` GitHub secret, which the deploy workflow writes to `config/secrets.php`, or by creating that file yourself:
+
+```php
+<?php return ['groq_api_key' => 'gsk_…'];
+```
+
+Without a key, the generator falls back to its built-in layouts and the analyzer shows "AI features are not configured on this server yet".
 - Apache with `mod_rewrite` (or Nginx; see below)
 
 ## Quick start (local)
@@ -66,6 +105,7 @@ SSH is closed on this server, so deploy through cPanel's File Manager with the p
 | `FTP_SERVER` | `ftp.floorplandesigner.app` (or `cloud526.thundercloud.uk`) |
 | `FTP_USERNAME` | your **main cPanel FTP user**, whose root is the home folder that contains `public_html`. Don't use an FTP account restricted to `public_html`. |
 | `FTP_PASSWORD` | that user's password |
+| `GROQ_API_KEY` | *(optional)* the Groq key for the web app's AI tools. It's written to `config/secrets.php`, outside the web root. |
 
 If your FTP root isn't the home folder, also add a repository **variable** `FTP_SERVER_DIR` with the remote path of the home folder, for example `/home/username/`.
 

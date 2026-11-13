@@ -47,6 +47,14 @@ jobs:
           [ $status -eq 0 ] && echo "All PHP files passed lint"
           exit $status
 
+      - name: No API keys in public files
+        run: |
+          if grep -rIlE 'gsk_[A-Za-z0-9]{20,}|sk-ant-[A-Za-z0-9_-]{20,}' public; then
+            echo "::error::An API key was found in public/ — it would be served to every visitor."
+            exit 1
+          fi
+          echo "No API keys in public/"
+
       - name: Smoke test with the built-in server
         run: |
           printf "<?php return ['db_path' => '%s/test.sqlite'];\n" "$RUNNER_TEMP" > config/local.php
@@ -55,6 +63,7 @@ jobs:
           fail=0
           for p in / /features /download /support /contact /privacy-policy /terms-of-use \
                    /sitemap.xml /app-ads.txt /.well-known/assetlinks.json /admin/login.php \
+                   /app/ /app/main.dart.js /app/flutter_bootstrap.js \
                    "/api/v1/version.php?platform=android&version=3.0.2%2B32"; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:8080$p")
             echo "$code $p"
@@ -94,12 +103,23 @@ jobs:
       - name: Stage cPanel home-folder layout
         env:
           ADMIN_SETUP_TOKEN: ${{ secrets.ADMIN_SETUP_TOKEN }}
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
           mkdir -p deploy/public_html deploy/data
           cp -R public/. deploy/public_html/
           cp -R src views config bin deploy/
           touch deploy/data/.gitkeep
-          rm -f deploy/config/local.php deploy/config/setup_token.txt
+          rm -f deploy/config/local.php deploy/config/secrets.php deploy/config/setup_token.txt
+          # AI proxy key for the web app (/api/v1/ai.php). Lives outside the web
+          # root and is never sent to browsers.
+          if [ -n "$GROQ_API_KEY" ]; then
+            php -r 'file_put_contents($argv[1], "<?php\n// Written by the deploy workflow from the GROQ_API_KEY secret.\nreturn " . var_export(["groq_api_key" => getenv("GROQ_API_KEY")], true) . ";\n");' deploy/config/secrets.php
+            chmod 600 deploy/config/secrets.php
+            php -l deploy/config/secrets.php
+            echo "AI proxy key included"
+          else
+            echo "::warning::GROQ_API_KEY secret not set — AI features in the web app will be unavailable."
+          fi
           # Optional: enables /admin/setup.php?token=... until the first admin exists.
           # Remove the secret afterwards; the next deploy then deletes the file.
           if [ -n "$ADMIN_SETUP_TOKEN" ]; then
@@ -136,6 +156,7 @@ jobs:
           check /.well-known/assetlinks.json "com.buildsmart.homedesigns"
           check /sitemap.xml "<urlset"
           check /privacy-policy "Privacy Policy"
+          check /app/ "flutter_bootstrap.js"
           check "/api/v1/version.php?platform=android&version=3.0.2%2B32" '"status"'
           # App Links verification does not follow redirects: www must answer 200 directly
           code=$(curl -s -o /dev/null -w '%{http_code}' https://www.floorplandesigner.app/.well-known/assetlinks.json)

@@ -53,18 +53,20 @@ $groups = [
 
 <section class="section">
     <div class="container">
-        <h2>Free vs Pro</h2>
+        <h2>Web, Free and Pro</h2>
         <div class="table-wrap">
             <table class="compare">
-                <thead><tr><th>Feature</th><th>Free</th><th>Pro</th></tr></thead>
+                <thead><tr><th>Feature</th><th>Web app</th><th>Mobile free</th><th>Mobile Pro</th></tr></thead>
                 <tbody>
-                    <tr><td>Editor, furniture, 3D preview</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>Measure, calculators, bubble level</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>PDF &amp; image export</td><td>✓</td><td>✓</td></tr>
-                    <tr><td>Ad-free experience</td><td>—</td><td>✓</td></tr>
+                    <tr><td>Editor, furniture, 3D preview</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                    <tr><td>AI floor plan generator &amp; analyzer</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                    <tr><td>Measure ruler &amp; calculators</td><td>✓</td><td>✓</td><td>✓</td></tr>
+                    <tr><td>Bubble level &amp; compass</td><td>Phones/tablets¹</td><td>✓</td><td>✓</td></tr>
+                    <tr><td>PDF &amp; image export</td><td>Downloads</td><td>✓</td><td>✓</td></tr>
+                    <tr><td>Ad-free</td><td>✓</td><td>—</td><td>✓</td></tr>
                 </tbody>
             </table>
         </div>
-        <p class="muted small">Pro is available as a 1-day pass, monthly, 6-month, yearly or lifetime purchase inside the app. Prices are shown in your local currency by the store.</p>
+        <p class="muted small">¹ Browsers only provide motion sensors on phones and tablets, and most browsers don't provide compass data — use the mobile app for the compass. Pro is available inside the mobile apps as a 1-day pass, monthly, 6-month, yearly or lifetime purchase.</p>
     </div>
 </section>

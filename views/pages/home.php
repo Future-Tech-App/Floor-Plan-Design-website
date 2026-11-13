@@ -11,12 +11,13 @@ $features = [
 <section class="hero">
     <div class="container hero-grid">
         <div class="hero-copy">
-            <p class="eyebrow">Version <?= e($site['version']) ?> · Android &amp; iOS</p>
+            <p class="eyebrow">Version <?= e($site['version']) ?> · Web, Android &amp; iOS</p>
             <h1>Design your home's floor plan <span class="accent">right from your phone</span></h1>
             <p class="lead">Draw rooms, place doors, windows and furniture, then see it all in 3D. Measure, calculate materials and export professional plans — no laptop required.</p>
             <div class="cta-row">
+                <a class="btn" href="<?= e(url('/app/')) ?>">Open in your browser</a>
                 <?php if ($site['android_url']): ?>
-                    <a class="btn" href="<?= e($site['android_url']) ?>" target="_blank" rel="noopener">Get it on Google Play</a>
+                    <a class="btn btn-ghost" href="<?= e($site['android_url']) ?>" target="_blank" rel="noopener">Get it on Google Play</a>
                 <?php endif; ?>
                 <?php if ($site['ios_url']): ?>
                     <a class="btn btn-dark" href="<?= e($site['ios_url']) ?>" target="_blank" rel="noopener">Download on the App Store</a>
@@ -25,6 +26,7 @@ $features = [
                 <?php endif; ?>
             </div>
             <ul class="hero-points">
+                <li>Web, Android &amp; iOS</li>
                 <li>Works offline</li>
                 <li>40+ languages</li>
                 <li>Multi-floor &amp; layers</li>
@@ -86,7 +88,10 @@ $features = [
 <section class="section cta-band">
     <div class="container center">
         <h2>Ready to design your space?</h2>
-        <p>Free to download. Upgrade to Pro any time to remove ads.</p>
-        <a class="btn btn-light" href="<?= e(url('/download')) ?>">Download now</a>
+        <p>Start right now in your browser — free and ad-free — or download the mobile app.</p>
+        <div class="cta-row" style="justify-content:center">
+            <a class="btn btn-light" href="<?= e(url('/app/')) ?>">Open the web app</a>
+            <a class="btn btn-ghost" style="color:#fff;border-color:#fff" href="<?= e(url('/download')) ?>">Download</a>
+        </div>
     </div>
 </section>
