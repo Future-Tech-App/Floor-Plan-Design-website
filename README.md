@@ -36,17 +36,26 @@ The SQLite database is created automatically at `data/floorplan.sqlite` the firs
 
 The domain is hosted on Thundercloud: its nameservers are `ns0/ns1.thundercloud.uk` and the server sends an `nginx` header. If the account uses cPanel, the site files live in `public_html/`.
 
-1. **Back up `public_html/` first.** It contains `.well-known/assetlinks.json`, which isn't in this repo; a copy is included in `public/.well-known/`.
-2. Upload everything **except** `public/` to your home folder, so `src/`, `views/`, `config/`, `data/` and `bin/` sit **next to** `public_html/` and not inside it.
-3. Replace the contents of `public_html/` with the contents of `public/`, including the hidden `.htaccess` and `.well-known/`. The scripts look for `src/` one level above the web root, so this layout works without code changes.
-4. Make `data/` writable by PHP (`chmod 750 data`, or 770 if PHP runs as a different user).
-5. In cPanel → *Select PHP Version*, choose PHP 8.1 or newer with `pdo_sqlite` and `mbstring` enabled.
-6. Over SSH, run `php bin/create-admin.php <username>` from your home folder. If you don't have SSH, upload `bin/create-admin.php`, run it once with the cPanel Terminal, then delete it.
-7. Check these URLs after the switch:
+SSH is closed on this server, so deploy through cPanel's File Manager with the prebuilt zip:
+
+1. **Build the zip** on your computer: run `bin/build-deploy.sh`. This creates `dist/floorplandesigner-deploy.zip`, plus `dist/ADMIN_SETUP_URL.txt` containing a one-time admin setup link.
+2. **Back up the current site.** In cPanel → File Manager, open `public_html/`, select all (turn on *Show Hidden Files* in Settings), then use *Compress* to make a zip and download it. This backup includes the live `.well-known/assetlinks.json`; the new zip contains a copy too.
+3. **Clear out the React build.** Delete everything inside `public_html/` except `.well-known/`.
+4. **Upload and extract.** Go to your **home folder**, the one that *contains* `public_html`, not `public_html` itself. Upload `floorplandesigner-deploy.zip`, right-click it, choose *Extract*, and confirm overwriting. This fills `public_html/` and creates `src/`, `views/`, `config/`, `bin/` and `data/` next to it. Delete the zip afterwards.
+5. **Choose the PHP version.** In cPanel → *Select PHP Version* (or *MultiPHP Manager*), choose PHP 8.1 or newer and make sure `pdo_sqlite` and `mbstring` are enabled.
+6. **Create the admin account.** Open the link from `dist/ADMIN_SETUP_URL.txt`. The page only works while no admin exists and the token matches, and it disables itself once the first admin is created.
+   - If you have SSH elsewhere, you can instead run `php bin/create-admin.php <username>` from the home folder.
+7. **Check these URLs after the switch:**
    - `https://floorplandesigner.app/app-ads.txt` shows the AdMob line. **AdMob needs this file.**
    - `https://floorplandesigner.app/.well-known/assetlinks.json` returns JSON with a 200 status and no redirect, on both the apex domain and `www.`. **Android App Links need this.**
    - `/privacy-policy` and `/terms-of-use` load. The app and the store listings link to them.
    - `/sitemap.xml` returns XML. Submit it in Google Search Console.
+
+**Troubleshooting**
+
+- **"unable to open database file":** PHP can't write to `data/`. Set its permissions to 755 in File Manager, or 775 if PHP runs as a different user.
+- **Too many redirects:** the host's proxy isn't passing an HTTPS signal. Comment out the second redirect block in `public_html/.htaccess` and enable *Force HTTPS Redirect* in cPanel → *Domains* instead.
+- **The old React page still shows:** a leftover `index.html` is cached or still present. Delete it from `public_html/`.
 
 `.htaccess` 301-redirects `http://` and `www.` to `https://floorplandesigner.app`. `/.well-known/` is excluded, because Android won't follow redirects when it verifies App Links. If the server runs Nginx only, without Apache behind it, `.htaccess` is ignored and the host must apply the Nginx rules below.
 

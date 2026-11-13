@@ -124,6 +124,11 @@ final class Repository
         return $row === false ? null : $row;
     }
 
+    public static function adminCount(): int
+    {
+        return (int) Database::pdo()->query('SELECT COUNT(*) FROM admin_users')->fetchColumn();
+    }
+
     public static function saveAdmin(string $username, string $passwordHash): void
     {
         $stmt = Database::pdo()->prepare(
