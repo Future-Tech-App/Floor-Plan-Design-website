@@ -63,7 +63,10 @@ jobs:
           fail=0
           for p in / /features /download /support /contact /privacy-policy /terms-of-use \
                    /sitemap.xml /app-ads.txt /.well-known/assetlinks.json /admin/login.php \
-                   /app/ /app/main.dart.js /app/flutter_bootstrap.js \
+                   /app /app/editor /app/templates /app/plans /app/notes /app/about /app/settings \
+                   /app/calculators /app/calculators/area "/app/calculators/area?calc=1" \
+                   /app/tools/measure /app/tools/level /app/tools/compass /app/ai \
+                   /classic/ /classic/main.dart.js /classic/flutter_bootstrap.js \
                    "/api/v1/version.php?platform=android&version=3.0.2%2B32"; do
             code=$(curl -s -o /dev/null -w '%{http_code}' "http://127.0.0.1:8080$p")
             echo "$code $p"
@@ -156,7 +159,10 @@ jobs:
           check /.well-known/assetlinks.json "com.buildsmart.homedesigns"
           check /sitemap.xml "<urlset"
           check /privacy-policy "Privacy Policy"
-          check /app/ "flutter_bootstrap.js"
+          check /app "Floor Plan Designer"
+          check /app/editor "editor.js"
+          check /app/calculators "calc-tile"
+          check /classic/ "flutter_bootstrap.js"
           check "/api/v1/version.php?platform=android&version=3.0.2%2B32" '"status"'
           # App Links verification does not follow redirects: www must answer 200 directly
           code=$(curl -s -o /dev/null -w '%{http_code}' https://www.floorplandesigner.app/.well-known/assetlinks.json)

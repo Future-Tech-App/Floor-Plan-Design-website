@@ -1,0 +1,2560 @@
+{
+"gates": [
+{
+"label": "3ft Gate",
+"file": "3ft-gate.svg",
+"w": 30.0,
+"h": 35.0
+},
+{
+"label": "4ft Gate",
+"file": "4ft-gate.svg",
+"w": 30.0,
+"h": 35.0
+},
+{
+"label": "4ft Gate R",
+"file": "4ft-gate-r.svg",
+"w": 30.0,
+"h": 35.0
+},
+{
+"label": "5ft Gate",
+"file": "5ft-gate.svg",
+"w": 30.0,
+"h": 35.0
+},
+{
+"label": "5ft Gate R",
+"file": "5ft-gate-r.svg",
+"w": 30.0,
+"h": 35.0
+},
+{
+"label": "6ft Gate",
+"file": "6ft-gate.svg",
+"w": 30.0,
+"h": 35.0
+},
+{
+"label": "6ft Gate R",
+"file": "6ft-gate-r.svg",
+"w": 30.0,
+"h": 35.0
+},
+{
+"label": "6ft Double Gate",
+"file": "6ft-double-gate.svg",
+"w": 50.0,
+"h": 35.0
+},
+{
+"label": "8ft Double Gate",
+"file": "8ft-double-gate.svg",
+"w": 50.0,
+"h": 35.0
+},
+{
+"label": "10ft Double Gate",
+"file": "10ft-double-gate.svg",
+"w": 50.0,
+"h": 35.0
+},
+{
+"label": "12ft Double Gate",
+"file": "12ft-double-gate.svg",
+"w": 50.0,
+"h": 35.0
+}
+],
+"havc": [
+{
+"label": "Centrifugal Fan",
+"file": "centrifugal-fan.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Centrifugal Pump",
+"file": "centrifugal-pump.svg",
+"w": 60.0,
+"h": 20.0
+},
+{
+"label": "Chiller",
+"file": "chiller.svg",
+"w": 80.0,
+"h": 20.0
+},
+{
+"label": "Condenser",
+"file": "condenser.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Pump",
+"file": "pump.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Reciprocating Pump",
+"file": "reciprocating-pump.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Rotary Pump",
+"file": "rotary-pump.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Screw Pump",
+"file": "screw-pump.svg",
+"w": 80.0,
+"h": 20.0
+}
+],
+"basic": [
+{
+"label": "Angle",
+"file": "angle.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Arrow",
+"file": "arrow.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Check Mark",
+"file": "check-mark.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Circle",
+"file": "circle.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Concentricity",
+"file": "concentricity.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Diameter",
+"file": "diameter.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Diamond",
+"file": "diamond.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Down Arrow",
+"file": "down-arrow.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Hexagon",
+"file": "hexagon.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Left Arrow",
+"file": "left-arrow.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Left Turn",
+"file": "left-turn.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Left Right",
+"file": "leftright.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Man",
+"file": "man.svg",
+"w": 20.0,
+"h": 40.0
+},
+{
+"label": "Octagon",
+"file": "octagon.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Oval",
+"file": "oval.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Parallel",
+"file": "parallel.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Pentagon",
+"file": "pentagon.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Perpendicular",
+"file": "perpendicular.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Pointer 1",
+"file": "pointer-1.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Pointer 2",
+"file": "pointer-2.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Rectangle",
+"file": "rectangle.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Red X",
+"file": "redx.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Right Arrow",
+"file": "right-arrow.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Right Turn Down",
+"file": "right-turn-down.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Right Turn",
+"file": "right-turn.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Square",
+"file": "square.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Star",
+"file": "star.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Straight or Left",
+"file": "straight-or-left.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Straight or Right",
+"file": "straight-or-right.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Triangle",
+"file": "triangle.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Up Arrow",
+"file": "up-arrow.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Up Down",
+"file": "up-down.svg",
+"w": 40.0,
+"h": 40.0
+}
+],
+"architecture": [
+{
+"label": "180 Left Turn",
+"file": "180-left-turn.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "180 Right Turn",
+"file": "180-right-turn.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "Checkpoint",
+"file": "checkpoint.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Elevator",
+"file": "elevator.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Hall",
+"file": "hall.svg",
+"w": 70.0,
+"h": 20.0
+},
+{
+"label": "North Arrow",
+"file": "north-arrow.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Pillar Circle",
+"file": "pillar-circle.svg",
+"w": 20.0,
+"h": 20.0
+},
+{
+"label": "Pillar",
+"file": "pillar.svg",
+"w": 20.0,
+"h": 20.0
+},
+{
+"label": "Room",
+"file": "room.svg",
+"w": 100.0,
+"h": 100.0
+},
+{
+"label": "Spiral",
+"file": "spiral.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Staircase Scissor",
+"file": "staircase-scissor.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "Staircase",
+"file": "stairscase.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "Staircase Single",
+"file": "stairscase-single.svg",
+"w": 40.0,
+"h": 80.0
+}
+],
+"appliance": [
+{
+"label": "AC",
+"file": "ac.svg",
+"w": 80.0,
+"h": 20.0
+},
+{
+"label": "Dish Washer",
+"file": "dish-washer.svg",
+"w": 40.0,
+"h": 45.0
+},
+{
+"label": "Dryer 2",
+"file": "dryer-2.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Dryer",
+"file": "dryer.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "DW",
+"file": "dw.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Electric Range",
+"file": "electric-range.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Espresso Machine",
+"file": "espresso-machine.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Fridge Side by Side",
+"file": "fridge-side-by-side.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Gas Range",
+"file": "gas-range.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Grill",
+"file": "grill.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Oven 1",
+"file": "oven-1.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Oven",
+"file": "oven.svg",
+"w": 100.0,
+"h": 40.0
+},
+{
+"label": "Ref",
+"file": "ref.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Refrigerator 1",
+"file": "refrigerator-1.svg",
+"w": 40.0,
+"h": 70.0
+},
+{
+"label": "Refrigerator 2",
+"file": "refrigerator-2.svg",
+"w": 40.0,
+"h": 70.0
+}
+],
+"cooking": [
+{
+"label": "1 Burner w/Griddle",
+"file": "1-burner-w-griiddle.svg",
+"w": 50.0,
+"h": 40.0
+},
+{
+"label": "2 Burner",
+"file": "2-burner.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "2 Burner",
+"file": "2-burner-1.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "4 Burner w/Griddle",
+"file": "4-burner-w-griiddle.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "4 Burner w/Griddle 2",
+"file": "4-burner-w-griiddle-2.svg",
+"w": 50.0,
+"h": 40.0
+},
+{
+"label": "4 Burner w/Griddle 3",
+"file": "4-burner-w-griiddle-3.svg",
+"w": 50.0,
+"h": 40.0
+},
+{
+"label": "5 Burner Stove",
+"file": "5-burner-stove.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "6 Burner Stove",
+"file": "6-burner-stove.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Double Deck Oven",
+"file": "double-deck-oven.svg",
+"w": 40.0,
+"h": 50.0
+},
+{
+"label": "Double Wall Oven",
+"file": "double-wall-oven.svg",
+"w": 40.0,
+"h": 50.0
+},
+{
+"label": "Fryer",
+"file": "fryer.svg",
+"w": 40.0,
+"h": 50.0
+},
+{
+"label": "Fryer 2",
+"file": "fryer-2.svg",
+"w": 40.0,
+"h": 50.0
+},
+{
+"label": "Fryer 3",
+"file": "fryer-3.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Microwave",
+"file": "microwave.svg",
+"w": 40.0,
+"h": 30.0
+},
+{
+"label": "Microwave 2",
+"file": "microwave-2.svg",
+"w": 40.0,
+"h": 30.0
+},
+{
+"label": "Microwave",
+"file": "microwave-1.svg",
+"w": 40.0,
+"h": 30.0
+},
+{
+"label": "Oven",
+"file": "oven.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Range",
+"file": "range.svg",
+"w": 40.0,
+"h": 50.0
+},
+{
+"label": "Range 2",
+"file": "rang-2.svg",
+"w": 40.0,
+"h": 50.0
+},
+{
+"label": "Range 3",
+"file": "range-3.svg",
+"w": 40.0,
+"h": 50.0
+},
+{
+"label": "Range Front",
+"file": "range-front.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Vent Hood",
+"file": "venthood.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Vent Hood 2",
+"file": "venthood-2.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Vent Hood 3",
+"file": "venthood-3.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Vent Hood 4",
+"file": "venthood-4.svg",
+"w": 30.0,
+"h": 50.0
+},
+{
+"label": "Wall Oven",
+"file": "wall-oven.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Wall Oven",
+"file": "wall-oven-1.svg",
+"w": 40.0,
+"h": 60.0
+}
+],
+"custom": [
+{
+"label": "1 Drawer Cabinet",
+"file": "1-drawer-cabinet.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "12 Base Cab 1Dr",
+"file": "12-base-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "12 Base Cab",
+"file": "12-base-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "15 Base Cab 1Dr",
+"file": "15-base-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "15 Base Cab",
+"file": "15-base-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "15 Wall Cabinet",
+"file": "15-wall-cabinet.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "15x30 Wall Cab 1Dr",
+"file": "15x30-wall-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "18 Base Cab 1Dr",
+"file": "18-base-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "18 Base Cab",
+"file": "18-base-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "18 Wall Cab",
+"file": "18-wall-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "18x30 Wall Cab 1Dr",
+"file": "18x30-wall-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "2 Drawer Cabinet",
+"file": "2-drawer-cabinet.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "2 Side 1 Drawer Cabinet",
+"file": "2-side-1-drawer-cabinet.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "2 Side 2 Drawer Cabinet",
+"file": "2-side-2-drawer-cabinet.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "21 Base Cab 1Dr",
+"file": "21-base-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "21 Base Cab",
+"file": "21-base-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "21 Wall Cab",
+"file": "21-wall-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "21x30 Wall Cab 1Dr",
+"file": "21x30-wall-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "24 Bas Cab 1Dr",
+"file": "24-bas-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "24 Base Cab 2Dr",
+"file": "24-base-cab-2dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "24 Base Cab",
+"file": "24-base-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "24 Wall Cab 1Dr",
+"file": "24-wall-cab-1dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "24 Wall Cab Horiz",
+"file": "24-wall-cab-horiz.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "24x36 Cabinet",
+"file": "24x36-cabient.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "30 Base Cab 2Dr",
+"file": "30-base-cab-2dr.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "30 Base Cab",
+"file": "30-base-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "30 Wall Cab Horiz",
+"file": "30-wal-cab-horiz.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "30 Wall Cab",
+"file": "30-wal-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "36 Base Cab 2Dr",
+"file": "36-base-cab-2dr-1.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "36 Base Cab",
+"file": "36-base-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "36 Wall Cab Horiz",
+"file": "36-wal-cab-horiz.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "36 Wall Cab",
+"file": "36-wal-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Angle Cabinet",
+"file": "angle-cabinet.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Asset 447",
+"file": "asset-447.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bathroom",
+"file": "bathroom.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bedroom",
+"file": "bedroom.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Blind Corner 1 Drawer",
+"file": "blind-corner-1-drawer.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Blind Corner 2 Drawer",
+"file": "blind-corner-2-drawer.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bookcase 2",
+"file": "bookcase-2.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bookcase 3 Shelf 18",
+"file": "bookcase-3-shelf-18.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bookcase 3 Shelf 3",
+"file": "bookcase-3-shelf-3.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bookcase 3",
+"file": "bookcase-3.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bookcase 6 Shelf 3",
+"file": "bookcase-6-shelf-3.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bush 1",
+"file": "bush-1.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bush 2",
+"file": "bush-2.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bush 3",
+"file": "bush-3.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Bush 3 Alt",
+"file": "bush-3-1.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Cabinet 24x36",
+"file": "cabinet-24x36.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Cabinet 30x36",
+"file": "cabinet-30x36.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Cabinet 36x36",
+"file": "cabinet-36x36.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Cabinet 48x36",
+"file": "cabinet-48x36.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Cabinet 60x36",
+"file": "cabinet-60x36.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Cabinet 70x36",
+"file": "cabinet-70x36.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Cellar",
+"file": "cellar.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Changing Table",
+"file": "changing-table.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Closet",
+"file": "closet.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Conservatory",
+"file": "conservatory.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Corner Cab Section",
+"file": "corner-cab-section.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Corner Cab",
+"file": "corner-cab.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Dining Room",
+"file": "dining-room.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Driveway",
+"file": "driveway.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "End Shelf",
+"file": "end-shelf.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Flower 1",
+"file": "flower-1.svg",
+"w": 30.0,
+"h": 30.0
+},
+{
+"label": "Flower 2",
+"file": "flower-2.svg",
+"w": 30.0,
+"h": 30.0
+},
+{
+"label": "Flower 3",
+"file": "flower-3.svg",
+"w": 30.0,
+"h": 30.0
+},
+{
+"label": "Flower 4",
+"file": "flower-4.svg",
+"w": 30.0,
+"h": 30.0
+},
+{
+"label": "Game Room",
+"file": "game-room.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Garage",
+"file": "garage.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Garden",
+"file": "garden.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Gate",
+"file": "gate.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Guest Bath",
+"file": "guest-bath.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Guest Room",
+"file": "guest-room.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Gym",
+"file": "gym.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Hand Dryer",
+"file": "hand-dryer.svg",
+"w": 30.0,
+"h": 30.0
+},
+{
+"label": "Home Theater",
+"file": "home-theater.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Kennel",
+"file": "kennel.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Kids Bedrooms",
+"file": "kids-bedrooms.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Kitchen",
+"file": "kitchen.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Laundry Room",
+"file": "laundry-room.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Laundry",
+"file": "laundry.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Library",
+"file": "library.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Mud Room",
+"file": "mud-room.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "One Side Stall",
+"file": "one-side-stall.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Pantry",
+"file": "pantry.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Residence",
+"file": "residence.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Single Stall",
+"file": "single-stall.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Storage Room",
+"file": "storage-room.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Urinal Wall Mount",
+"file": "urinal-wall-mount.svg",
+"w": 30.0,
+"h": 40.0
+},
+{
+"label": "Walkway",
+"file": "walkway.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Wine Cellar",
+"file": "wine-cellar.svg",
+"w": 40.0,
+"h": 40.0
+}
+],
+"desk": [
+{
+"label": "Computer Desk",
+"file": "computer-desk.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Computer Desk 2",
+"file": "computer-desk-2.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Desk",
+"file": "desk.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Desk Top Down",
+"file": "desk-top-down.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Double Drawer Desk",
+"file": "double-drawer-desk.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Workstation Front",
+"file": "workstation-front.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Workstation Side",
+"file": "workstation-side.svg",
+"w": 40.0,
+"h": 60.0
+}
+],
+"dishwashers": [
+{
+"label": "Dishwasher",
+"file": "dishwasher.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Dishwasher 2",
+"file": "dishwasher-1.svg",
+"w": 40.0,
+"h": 40.0
+}
+],
+"furniture": [
+{
+"label": "Bed 1",
+"file": "bed-1.svg",
+"w": 80.0,
+"h": 50.0
+},
+{
+"label": "Bed 2",
+"file": "bed-2.svg",
+"w": 80.0,
+"h": 50.0
+},
+{
+"label": "Bed 3",
+"file": "bed-3.svg",
+"w": 60.0,
+"h": 80.0
+},
+{
+"label": "Bed 4",
+"file": "bed-4.svg",
+"w": 60.0,
+"h": 80.0
+},
+{
+"label": "Bed 5",
+"file": "bed-5.svg",
+"w": 60.0,
+"h": 80.0
+},
+{
+"label": "Bed 6",
+"file": "bed-6.svg",
+"w": 60.0,
+"h": 80.0
+},
+{
+"label": "Bed 7",
+"file": "bed-7.svg",
+"w": 60.0,
+"h": 80.0
+},
+{
+"label": "Bed 8",
+"file": "bed-8.svg",
+"w": 80.0,
+"h": 60.0
+},
+{
+"label": "Bed 9",
+"file": "bed-9.svg",
+"w": 80.0,
+"h": 60.0
+},
+{
+"label": "Bed 10",
+"file": "bed-10.svg",
+"w": 80.0,
+"h": 60.0
+},
+{
+"label": "Bed 11",
+"file": "bed-11.svg",
+"w": 80.0,
+"h": 60.0
+},
+{
+"label": "Chaise Lounger",
+"file": "chaise-lounger.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Chaise Lounger 2",
+"file": "chaise-lounger-2.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Grand Piano",
+"file": "grand-piano.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Outdoor Set",
+"file": "outdoorset.svg",
+"w": 80.0,
+"h": 80.0
+},
+{
+"label": "Round Table w/ 4 Chairs",
+"file": "round-table-w-4-chairs.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Sofa 1",
+"file": "sofa-1.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Sofa 2",
+"file": "sofa-2.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 3",
+"file": "sofa-3.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Sofa 4",
+"file": "sofa-4.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Sofa 5",
+"file": "sofa-5.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 6",
+"file": "sofa-6.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Sofa 7",
+"file": "sofa-7.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Sofa 8",
+"file": "sofa-8.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Sofa 9",
+"file": "sofa-9.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 10",
+"file": "sofa-10.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 11",
+"file": "sofa-11.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Sofa 12",
+"file": "sofa-12.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Sofa 13",
+"file": "sofa-13.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Sofa 14",
+"file": "sofa-14.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Sofa 15",
+"file": "sofa-15.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Sofa 16",
+"file": "sofa-16.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Sofa 17",
+"file": "sofa-17.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 18",
+"file": "sofa-18.svg",
+"w": 40.0,
+"h": 50.0
+},
+{
+"label": "Sofa 19",
+"file": "sofa-19.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 20",
+"file": "sofa-20.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 21",
+"file": "sofa-21.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 22",
+"file": "sofa-22.svg",
+"w": 60.0,
+"h": 30.0
+},
+{
+"label": "Sofa 23",
+"file": "sofa-23.svg",
+"w": 60.0,
+"h": 30.0
+},
+{
+"label": "Sofa 24",
+"file": "sofa-24.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sofa 25",
+"file": "sofa-25.svg",
+"w": 60.0,
+"h": 30.0
+}
+],
+"tables": [
+{
+"label": "Coffee Table",
+"file": "coffee-table.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Coffee Table 2",
+"file": "coffee-table-2.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Oval Table 10 Chairs",
+"file": "oval-table-10-chairs.svg",
+"w": 100.0,
+"h": 60.0
+},
+{
+"label": "Side Table",
+"file": "side-table.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Side Table 2",
+"file": "side-table-2.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Oval Table8 10 Chairs",
+"file": "oval-table8-10-chairs.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Round Table6 8 Chairs",
+"file": "round-table6-8-chairs.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Square Table 12 12 Chairs",
+"file": "square-table-12-12-chairs.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Square Table 6 10 Chairs",
+"file": "square-table-6-10-chairs.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Table 11 12 Chairs",
+"file": "table-11-12-chairs.svg",
+"w": 60.0,
+"h": 60.0
+}
+],
+"sinks": [
+{
+"label": "Sink 1",
+"file": "sink-1.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Sink 2",
+"file": "sink-2.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Sink 3",
+"file": "sink-3.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sink 4",
+"file": "sink-4.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sink 5",
+"file": "sink-5.svg",
+"w": 50.0,
+"h": 40.0
+},
+{
+"label": "Sink 6",
+"file": "sink-6.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Sink 7",
+"file": "sink-7.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Sink 8",
+"file": "sink-8.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "Sink 9",
+"file": "sink-9.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Sink 10",
+"file": "sink-10.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sink 11",
+"file": "sink-11.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Sink 12",
+"file": "sink-12.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Sink 13",
+"file": "sink-13.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Sink 14",
+"file": "sink-14.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Sink 15",
+"file": "sink-15.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Sink 16",
+"file": "sink-16.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Sink 17",
+"file": "sink-17.svg",
+"w": 40.0,
+"h": 70.0
+},
+{
+"label": "Sink 18",
+"file": "sink-18.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Double Sink w/ Dryboard",
+"file": "double-equile-sinkw-dry-board.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Double Sink w/ Dryboard 2",
+"file": "double-equile-sinkw-dry-board-2.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Mop Sink",
+"file": "mop-sink.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Offset Sink",
+"file": "offset-sink.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Single Sink w/ Dryboard",
+"file": "single-sinkw-dryboard.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Single Sink w/ Dryboard 2",
+"file": "single-sinkw-dryboard-2.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Triple Sink",
+"file": "triple-sink.svg",
+"w": 100.0,
+"h": 40.0
+}
+],
+"electrical": [
+{
+"label": "Battery",
+"file": "battery.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Field",
+"file": "field.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "Light Ceiling",
+"file": "lightcelling.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Pendant Lamp",
+"file": "pendant-lamp.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Smoke Alarm",
+"file": "smokealarm.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Water Heater",
+"file": "waterheater.svg",
+"w": 40.0,
+"h": 40.0
+}
+],
+"toilet": [
+{
+"label": "Toilet 1",
+"file": "toilet-1.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 2",
+"file": "toilet-2.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 3",
+"file": "toilet-3.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 4",
+"file": "toilet-4.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 5",
+"file": "toilet-5.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 6",
+"file": "toilet-6.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 7",
+"file": "toilet-7.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 8",
+"file": "toilet-8.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 9",
+"file": "toilet-9.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 10",
+"file": "toilet-10.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 11",
+"file": "toilet-11.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 12",
+"file": "toilet-12.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 13",
+"file": "toilet-13.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet 14",
+"file": "toilet-14.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet Front 15",
+"file": "toilet-front-15.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet Wall Mount 16",
+"file": "toilet-wall-mount-16.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Toilet Wall Mount 17",
+"file": "toilet-wall-mount-17.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Toilet 18",
+"file": "toilet-18.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Toilet Wall Mount 19",
+"file": "toilet-wall-mount-19.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Toilet Wall Mount 20",
+"file": "toilet-wall-mount-20.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Toilet 21",
+"file": "toilet-21.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "Toilet Wall Mount 22",
+"file": "toilet-wall-mount-22.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Toilet Wall Mount 23",
+"file": "toilet-wall-mount-23.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Toilet 24",
+"file": "toilet-24.svg",
+"w": 40.0,
+"h": 60.0
+}
+],
+"rooms": [
+{
+"label": "Square Room",
+"file": "square-room.svg",
+"w": 100.0,
+"h": 100.0
+},
+{
+"label": "L Shape Room",
+"file": "l-shape-room.svg",
+"w": 100.0,
+"h": 100.0
+},
+{
+"label": "T Shape Room",
+"file": "t-shape-room.svg",
+"w": 100.0,
+"h": 100.0
+},
+{
+"label": "U Shape Room",
+"file": "u-shape-room.svg",
+"w": 100.0,
+"h": 100.0
+},
+{
+"label": "H Shape Room",
+"file": "h-shape-room.svg",
+"w": 100.0,
+"h": 100.0
+},
+{
+"label": "Wall",
+"file": "wall.svg",
+"w": 80.0,
+"h": 20.0
+}
+],
+"communication": [
+{
+"label": "2-Way Power Divider",
+"file": "2-way-poer-divider.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "3-Way Power Divider",
+"file": "3-way-poer-divider.svg",
+"w": 40.0,
+"h": 60.0
+},
+{
+"label": "Ceiling Antenna",
+"file": "ceiling-antenna.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Combiner",
+"file": "combiner.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "Coupler 10dB",
+"file": "coupler-10db.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Coupler 6dB",
+"file": "coupler-6db.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "Coupler",
+"file": "coupler.svg",
+"w": 40.0,
+"h": 60.0
+}
+],
+"bathtub": [
+{
+"label": "Corner Tub 1",
+"file": "corner-tub-1.svg",
+"w": 80.0,
+"h": 80.0
+},
+{
+"label": "Corner Tub 2",
+"file": "corner-tub-2.svg",
+"w": 80.0,
+"h": 80.0
+},
+{
+"label": "Tub 1",
+"file": "tub-1.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Tub 2",
+"file": "tub-2.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Tub 3",
+"file": "tub-3.svg",
+"w": 80.0,
+"h": 40.0
+}
+],
+"linegates": [
+{
+"label": "3ft Gate",
+"file": "3ft-gate.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "3ft Gate 2",
+"file": "3ft-gate-2.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "4ft Gate",
+"file": "4ft-gate.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "4ft Gate 2",
+"file": "4ft-gate-2.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "5ft Gate",
+"file": "5ft-gate.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "5ft Gate 2",
+"file": "5ft-gate-2.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "6ft Gate",
+"file": "6ft-gate.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "6ft Gate 2",
+"file": "6ft-gate-2.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "8ft Gate 2",
+"file": "8-ft-gate-2.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "8ft Gate 2_1",
+"file": "8-ft-gate-2-1.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "10ft Gate",
+"file": "10ft-gate.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "10ft Gate 2",
+"file": "10ft-gate-2.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "12ft Gate",
+"file": "12ft-gate.svg",
+"w": 40.0,
+"h": 20.0
+},
+{
+"label": "12ft Gate 2",
+"file": "12ft-gate-2.svg",
+"w": 40.0,
+"h": 20.0
+}
+],
+"number-gates": [
+{
+"label": "3 Gate",
+"file": "3-gate.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "4 Gate",
+"file": "4-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "5 Gate",
+"file": "5-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "6 Gate",
+"file": "6-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "6 Gate 2",
+"file": "6-gate-2.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "7 Gate",
+"file": "7gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "8 Gate",
+"file": "8-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "8 Gate 2",
+"file": "8-gate-2.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "9 Gate",
+"file": "9-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "10 Gate",
+"file": "10-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "11 Gate",
+"file": "11-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "12 Gate",
+"file": "12-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "12 Gate 2",
+"file": "12-gate-2.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "13 Gate",
+"file": "13-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "14 Gate",
+"file": "14-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "14 Gate 2",
+"file": "14-gate-2.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "15 Gate",
+"file": "15-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "16 Gate",
+"file": "16-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "18 Gate",
+"file": "18-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "20 Gate",
+"file": "20-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "22 Gate",
+"file": "22-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "24 Gate",
+"file": "24-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "26 Gate",
+"file": "26-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "28 Gate",
+"file": "28-gate.svg",
+"w": 60.0,
+"h": 40.0
+},
+{
+"label": "30 Gate",
+"file": "30-gate.svg",
+"w": 60.0,
+"h": 40.0
+}
+],
+"posts": [
+{
+"label": "Blank Posts",
+"file": "blank-posts.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Corner Post",
+"file": "corner-post.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Corner Post 2",
+"file": "corner-post-1.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Corner Posts",
+"file": "corner-posts.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "End Post",
+"file": "end-post.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "End Posts",
+"file": "end-posts.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Gate Post",
+"file": "gate-post.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Gate Posts",
+"file": "gate-posts.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Line Post",
+"file": "line-post.svg",
+"w": 40.0,
+"h": 40.0
+},
+{
+"label": "Terminal Post",
+"file": "terminal-post.svg",
+"w": 40.0,
+"h": 40.0
+}
+],
+"stairs": [
+{
+"label": "Straight Stairs",
+"file": "straight-stairs.svg",
+"w": 40.0,
+"h": 80.0
+},
+{
+"label": "Wide Stairs",
+"file": "wide-stairs.svg",
+"w": 70.0,
+"h": 80.0
+},
+{
+"label": "L Shape Stairs",
+"file": "l-shape-stairs.svg",
+"w": 80.0,
+"h": 80.0
+},
+{
+"label": "U Stairs 180 Left",
+"file": "u-stairs-180-left.svg",
+"w": 70.0,
+"h": 80.0
+},
+{
+"label": "Spiral Stairs",
+"file": "spiral-stairs.svg",
+"w": 60.0,
+"h": 60.0
+}
+],
+"garden": [
+{
+"label": "Tree 1",
+"file": "tree-1.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Tree 2",
+"file": "tree-2.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Pine Tree",
+"file": "pine-tree.svg",
+"w": 55.0,
+"h": 55.0
+},
+{
+"label": "Palm Tree",
+"file": "palm-tree.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Potted Plant 1",
+"file": "potted-plant-1.svg",
+"w": 25.0,
+"h": 25.0
+},
+{
+"label": "Potted Plant 2",
+"file": "potted-plant-2.svg",
+"w": 25.0,
+"h": 25.0
+},
+{
+"label": "Hedge Bush",
+"file": "hedge-bush.svg",
+"w": 80.0,
+"h": 40.0
+},
+{
+"label": "Grass Patch",
+"file": "grass-patch.svg",
+"w": 60.0,
+"h": 60.0
+}
+],
+"pool": [
+{
+"label": "Pool 1",
+"file": "pool-1.svg",
+"w": 100.0,
+"h": 80.0
+},
+{
+"label": "Pool 2",
+"file": "pool-2.svg",
+"w": 100.0,
+"h": 80.0
+},
+{
+"label": "Pool 3",
+"file": "pool-3.svg",
+"w": 100.0,
+"h": 80.0
+},
+{
+"label": "Pool 4",
+"file": "pool-4.svg",
+"w": 100.0,
+"h": 80.0
+},
+{
+"label": "Pool 5",
+"file": "pool-5.svg",
+"w": 100.0,
+"h": 80.0
+},
+{
+"label": "Pool 6",
+"file": "pool-6.svg",
+"w": 100.0,
+"h": 80.0
+}
+],
+"doors": [
+{
+"label": "Bypassdoor",
+"file": "bypassdoor.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Door Opening",
+"file": "door-opening.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Double Door Dou",
+"file": "double-door-dou.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Doubledoor",
+"file": "doubledoor.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Foldingdoor",
+"file": "foldingdoor.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Geragedoor",
+"file": "geragedoor.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Opposingdoor",
+"file": "opposingdoor.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Pocketdoor",
+"file": "pocketdoor.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Revolvingdoor",
+"file": "revolvingdoor.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Single Door Dou",
+"file": "single-door-dou.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Singledoor",
+"file": "singledoor.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Unevendoor",
+"file": "unevendoor.svg",
+"w": 60.0,
+"h": 60.0
+}
+],
+"windows": [
+{
+"label": "Awningwindow",
+"file": "awningwindow.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Baywindow",
+"file": "baywindow.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Casement",
+"file": "casement.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Casementsingle",
+"file": "casementsingle.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Doublehung",
+"file": "doublehung.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Fixedwindow",
+"file": "fixedwindow.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Hopperwindow",
+"file": "hopperwindow.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Jalousiewindow",
+"file": "jalousiewindow.svg",
+"w": 60.0,
+"h": 60.0
+},
+{
+"label": "Slidingwindow",
+"file": "slidingwindow.svg",
+"w": 60.0,
+"h": 60.0
+}
+]
+}

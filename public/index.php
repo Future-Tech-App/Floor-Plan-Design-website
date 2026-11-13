@@ -28,6 +28,12 @@ if ($path !== '/') {
     $path = rtrim($path, '/');
 }
 
+// Web app (PHP pages + JavaScript editor) lives under /app.
+if ($path === '/app' || str_starts_with($path, '/app/')) {
+    WebApp::dispatch(substr($path, 4));
+    exit;
+}
+
 switch ($path) {
     case '/':
         render('pages/home', [
@@ -87,11 +93,6 @@ switch ($path) {
         ]);
         break;
 
-    case '/app':
-        // The Flutter web app lives in public/app/ and needs the trailing slash
-        header('Location: ' . url('/app/'), true, 301);
-        exit;
-
     case '/sitemap.xml':
         output_sitemap();
         break;
@@ -106,7 +107,10 @@ function output_sitemap(): void
     $base = rtrim((string) config('site_url'), '/');
     $pages = [
         '/'               => ['weekly', '1.0'],
-        '/app/'           => ['weekly', '0.9'],
+        '/app'            => ['weekly', '0.9'],
+        '/app/editor'     => ['monthly', '0.8'],
+        '/app/templates'  => ['monthly', '0.7'],
+        '/app/calculators' => ['monthly', '0.7'],
         '/features'       => ['monthly', '0.8'],
         '/download'       => ['monthly', '0.8'],
         '/support'        => ['monthly', '0.7'],
