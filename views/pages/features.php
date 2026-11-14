@@ -30,9 +30,9 @@ $groups = [
         'title'  => 'Plan your budget with confidence',
         'image'  => 'ill/furniture.png',
         'items'  => [
-            ['ruler', 'Measure ruler & area calculator', 'Distances in ft, m, cm, in and mm; areas and volumes of common shapes.'],
+            ['ruler', 'Area calculator & unit converters', 'Areas and perimeters of common room shapes, plus length, area, volume and weight converters.'],
             ['calculator', 'Construction calculator', 'Material estimates for bricks, blocks, concrete, plaster, paint, steel and tiles — with local pricing.'],
-            ['compass', 'Bubble level & compass', 'A digital spirit level and compass using your phone’s sensors.'],
+            ['compass', 'Measure, level & compass', 'In the Android and iOS apps: an on-screen ruler, a digital spirit level and a compass using your phone’s sensors.'],
         ],
     ],
     [
@@ -85,13 +85,13 @@ $groups = [
                 <tbody>
                     <tr><td>Editor, furniture, 3D preview</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
                     <tr><td>AI floor plan generator &amp; analyzer</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-                    <tr><td>Measure ruler &amp; calculators</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
-                    <tr><td>Bubble level &amp; compass</td><td>Phones/tablets¹</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                    <tr><td>Construction, area &amp; unit calculators</td><td class="yes">✓</td><td class="yes">✓</td><td class="yes">✓</td></tr>
+                    <tr><td>Measure ruler, bubble level &amp; compass</td><td>—</td><td class="yes">✓</td><td class="yes">✓</td></tr>
                     <tr><td>PDF &amp; image export</td><td>Downloads</td><td class="yes">✓</td><td class="yes">✓</td></tr>
                     <tr><td>Ad-free</td><td class="yes">✓</td><td>—</td><td class="yes">✓</td></tr>
                 </tbody>
             </table>
         </div>
-        <p class="muted small">¹ Browsers only provide motion sensors on phones and tablets, and most browsers don't provide compass data — use the mobile app for the compass. Pro is available inside the mobile apps as a 1-day pass, monthly, 6-month, yearly or lifetime purchase.</p>
+        <p class="muted small">The measure ruler, bubble level and compass use your phone's sensors and are in the Android and iOS apps only. Pro is available inside the mobile apps as a 1-day pass, monthly, 6-month, yearly or lifetime purchase.</p>
     </div>
 </section>

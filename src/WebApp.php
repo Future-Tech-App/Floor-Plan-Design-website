@@ -27,10 +27,8 @@ final class WebApp
             ],
             'measure' => [
                 ['construction', 'Construction Calculator', 'Bricks, concrete, paint, tiles & costs', 'calculator', '/app/calculators'],
-                ['area', 'Area Calculator', 'Areas and volumes of common shapes', 'ruler', '/app/calculators/area'],
-                ['measure', 'Measure', 'On-screen ruler in cm, inches & more', 'ruler', '/app/tools/measure'],
-                ['level', 'Bubble Level', 'Check surfaces with your phone’s sensors', 'level', '/app/tools/level'],
-                ['compass', 'Compass', 'Magnetic heading (phones with a compass)', 'compass', '/app/tools/compass'],
+                ['area', 'Area Calculator', 'Areas and perimeters of common room shapes', 'ruler', '/app/calculators/area'],
+                ['converters', 'Unit Converters', 'Length, area, volume, weight and more', 'globe', '/app/calculators#converter'],
             ],
         ];
     }
@@ -75,11 +73,6 @@ final class WebApp
         }
         if ($sub === '/ai' || $sub === '/ai/analyzer') {
             self::page($sub === '/ai' ? 'app/ai_generator' : 'app/ai_analyzer', $sub === '/ai' ? 'AI Floor Plans' : 'AI Analyzer', 'ai', $base);
-            return;
-        }
-        if (preg_match('#^/tools/(measure|level|compass)$#', $sub, $m)) {
-            $titles = ['measure' => 'Measure', 'level' => 'Bubble Level', 'compass' => 'Compass'];
-            self::page('app/tools/' . $m[1], $titles[$m[1]], 'tools', $base);
             return;
         }
         if ($sub === '/calculators') {

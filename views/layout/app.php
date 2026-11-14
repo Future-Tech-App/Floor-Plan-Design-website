@@ -60,8 +60,8 @@ $footCols = [
         ['/app/templates', 'Plan Templates'], ['/app/plans', 'Saved Plans & 3D'], ['/app/notes', 'Notes'],
     ],
     'Tools' => [
-        ['/app/calculators', 'Construction Calculator'], ['/app/calculators/area', 'Area Calculator'], ['/app/calculators#converter', 'Unit Converters'],
-        ['/app/tools/measure', 'Measure'], ['/app/tools/level', 'Bubble Level'], ['/app/tools/compass', 'Compass'],
+        ['/app/calculators', 'Construction Calculator'], ['/app/calculators#metal', 'Metal Calculator'], ['/app/calculators/area', 'Area Calculator'],
+        ['/app/calculators#converter', 'Unit Converters'], ['/app/plans', '3D View'], ['/app/settings', 'Settings'],
     ],
     'Company' => [
         ['/app/about', 'About'], ['/support', 'Help & FAQ', true], ['/contact', 'Contact Us', true],

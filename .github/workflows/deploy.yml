@@ -65,7 +65,7 @@ jobs:
                    /sitemap.xml /app-ads.txt /.well-known/assetlinks.json /admin/login.php \
                    /app /app/editor /app/templates /app/plans /app/notes /app/about /app/settings \
                    /app/calculators /app/calculators/area "/app/calculators/area?calc=1" \
-                   /app/tools/measure /app/tools/level /app/tools/compass /app/ai /app/ai/analyzer \
+                   /app/ai /app/ai/analyzer \
                    "/app/3d?plan=x" /assets/app/vendor/three/three.module.min.js \
                    /classic/ /classic/main.dart.js /classic/flutter_bootstrap.js \
                    "/api/v1/version.php?platform=android&version=3.0.2%2B32"; do
