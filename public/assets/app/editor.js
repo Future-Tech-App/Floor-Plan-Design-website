@@ -115,7 +115,7 @@
 
     // ------------------------------------------------------------------ undo / save
     function record() { undoStack.push(JSON.stringify(plan)); if (undoStack.length > 150) undoStack.shift(); redoStack = []; updateButtons(); }
-    function changed() { scheduleSave(); render(); }
+    function changed() { scheduleSave(); render(); queueInfo(); }
     function undo() {
         if (!undoStack.length) return;
         redoStack.push(JSON.stringify(plan)); plan = JSON.parse(undoStack.pop());
@@ -127,24 +127,25 @@
         sel = null; draft = null; showProps(); updateButtons(); changed();
     }
     function updateButtons() {
-        root.querySelector('[data-cmd=undo]').disabled = !undoStack.length;
-        root.querySelector('[data-cmd=redo]').disabled = !redoStack.length;
+        root.querySelectorAll('[data-cmd=undo]').forEach(function (b) { b.disabled = !undoStack.length; });
+        root.querySelectorAll('[data-cmd=redo]').forEach(function (b) { b.disabled = !redoStack.length; });
     }
     function isEmpty() { return !(plan.walls.length || plan.rooms.length || plan.items.length || plan.labels.length || plan.dims.length); }
     var saveState = document.getElementById('save-state');
+    function setSaveState(state, text) { saveState.textContent = text; saveState.parentNode.setAttribute('data-state', state); }
     function scheduleSave() {
-        if (isEmpty() && !savedOnce) { saveState.textContent = 'Not saved'; return; }
-        saveState.textContent = 'Saving…';
+        if (isEmpty() && !savedOnce) { setSaveState('new', 'Not saved yet'); return; }
+        setSaveState('saving', 'Saving…');
         clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 700);
     }
     function saveNow() {
         clearTimeout(saveTimer);
         plan.name = (document.getElementById('plan-name').value || '').trim() || 'Untitled plan';
         var saved = FPStore.save(plan);
-        if (!saved) { saveState.textContent = 'Could not save'; return; }
+        if (!saved) { setSaveState('error', 'Could not save'); return; }
         plan = saved; savedOnce = true;
         if (!/[?&]plan=/.test(location.search)) { try { history.replaceState(null, '', location.pathname + '?plan=' + encodeURIComponent(plan.id)); } catch (e) { /* ignore */ } }
-        saveState.textContent = 'Saved · ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        setSaveState('saved', 'Saved in this browser · ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     }
     window.addEventListener('beforeunload', function () { if (saveTimer) saveNow(); });
 
@@ -310,7 +311,53 @@
         ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, W, H);
         drawPlan(ctx, view, { grid: settings.grid, selection: true, dims: settings.dimensions, w: W, h: H });
         drawDraft();
+        drawRulers();
         document.getElementById('zoom-label').textContent = Math.round(view.s / 0.5 * 100) + '%';
+    }
+
+    // Rulers along the top and left edges, in metres or feet, with the pointer position marked.
+    var RS = 22;
+    function rulerStep() {
+        var steps = settings.units === 'imperial' ? [30.48, 60.96, 152.4, 304.8, 609.6, 1524, 3048, 6096] : [10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000];
+        for (var i = 0; i < steps.length; i++) if (steps[i] * view.s >= 56) return steps[i];
+        return steps[steps.length - 1];
+    }
+    function rulerLabel(v) {
+        var n = settings.units === 'imperial' ? Math.round(v / 30.48) : +(v / 100).toFixed(2);
+        if (n === 0) return settings.units === 'imperial' ? "0'" : '0 m';
+        return (n < 0 ? '−' : '') + Math.abs(n) + (settings.units === 'imperial' ? "'" : '');
+    }
+    function drawRulers() {
+        var c = ctx, step = rulerStep(), minor = step / 5, x, y, v;
+        c.save();
+        c.fillStyle = 'rgba(247,249,252,.96)'; c.fillRect(0, 0, W, RS); c.fillRect(0, 0, RS, H);
+        c.strokeStyle = '#d5dce4'; c.lineWidth = 1;
+        c.beginPath(); c.moveTo(0, RS + .5); c.lineTo(W, RS + .5); c.moveTo(RS + .5, 0); c.lineTo(RS + .5, H); c.stroke();
+        c.fillStyle = '#6b7684'; c.font = '600 10px Mulish, sans-serif'; c.textBaseline = 'middle';
+        c.strokeStyle = '#a7b2be';
+        var w0 = toWorld(RS, RS), w1 = toWorld(W, H);
+        c.beginPath();
+        for (v = Math.floor(w0.x / minor) * minor; v <= w1.x; v += minor) {
+            x = Math.round(v * view.s + view.x) + .5; if (x < RS) continue;
+            var major = Math.abs(v / step - Math.round(v / step)) < 1e-6;
+            c.moveTo(x, RS); c.lineTo(x, major ? 4 : RS - 5);
+            if (major) { c.textAlign = 'left'; c.fillText(rulerLabel(Math.round(v / step) * step), x + 3, 9); }
+        }
+        for (v = Math.floor(w0.y / minor) * minor; v <= w1.y; v += minor) {
+            y = Math.round(v * view.s + view.y) + .5; if (y < RS) continue;
+            var majorY = Math.abs(v / step - Math.round(v / step)) < 1e-6;
+            c.moveTo(RS, y); c.lineTo(majorY ? 4 : RS - 5, y);
+            if (majorY) { c.save(); c.translate(9, y + 3); c.rotate(-Math.PI / 2); c.textAlign = 'right'; c.fillText(rulerLabel(Math.round(v / step) * step), 0, 0); c.restore(); }
+        }
+        c.stroke();
+        if (hoverRaw) {
+            var hp = toScreen(hoverPt ? hoverPt.x : hoverRaw.x, hoverPt ? hoverPt.y : hoverRaw.y);
+            c.fillStyle = '#1e88e5';
+            if (hp.x > RS) c.fillRect(Math.round(hp.x) - 1, 0, 2, RS);
+            if (hp.y > RS) c.fillRect(0, Math.round(hp.y) - 1, RS, 2);
+        }
+        c.fillStyle = '#eef2f6'; c.fillRect(0, 0, RS, RS);
+        c.restore();
     }
 
     function drawDraft() {
@@ -655,13 +702,16 @@
         dim: 'Drag to measure a distance.',
         pan: 'Drag to move around. Scroll or pinch to zoom.'
     };
+    var TOOL_NAMES = { select: 'Select', wall: 'Wall', room: 'Room', door: 'Door', window: 'Window', furniture: 'Library', label: 'Text', dim: 'Measure', pan: 'Pan' };
     var hintEl = document.getElementById('hint'), hintTimer;
     function flashHint(text) { hintEl.textContent = text; hintEl.hidden = false; clearTimeout(hintTimer); hintTimer = setTimeout(function () { hintEl.hidden = true; }, 4500); }
     function setTool(t) {
         if (draft && t !== tool) { if (draft.kind === 'wall') finishWallDraft(false); draft = null; }
         tool = t;
+        if (startEl && !startEl.hidden) showStart(false);
         root.querySelectorAll('[data-tool]').forEach(function (b) { b.classList.toggle('is-active', b.getAttribute('data-tool') === t); });
         canvas.className = 'tool-' + t;
+        document.getElementById('status-tool').textContent = TOOL_NAMES[t] || t;
         flashHint(HINTS[t]);
         if (t === 'furniture') openLibrary(); else if (!pendingSymbol) document.getElementById('library').hidden = true;
         if (t !== 'furniture') pendingSymbol = null;
@@ -669,7 +719,9 @@
     }
     root.querySelectorAll('[data-tool]').forEach(function (b) { b.addEventListener('click', function () { setTool(b.getAttribute('data-tool')); }); });
     function setStatus(wp) {
-        document.getElementById('status').textContent = 'X ' + fmtLen(Math.abs(wp.x)).replace(/^/, wp.x < 0 ? '−' : '') + '   Y ' + fmtLen(Math.abs(wp.y)).replace(/^/, wp.y < 0 ? '−' : '') + '   ·   ' + tool.charAt(0).toUpperCase() + tool.slice(1);
+        var t = 'X ' + (wp.x < 0 ? '−' : '') + fmtLen(Math.abs(wp.x)) + '    Y ' + (wp.y < 0 ? '−' : '') + fmtLen(Math.abs(wp.y));
+        if (draft && draft.kind === 'wall' && draft.pts.length && hoverPt) t += '    Length ' + fmtLen(dist(draft.pts[draft.pts.length - 1], hoverPt));
+        document.getElementById('status').textContent = t;
     }
 
     // ------------------------------------------------------------------ library
@@ -701,7 +753,12 @@
         if (window.matchMedia('(max-width: 760px)').matches) document.getElementById('library').hidden = true;
         renderLibrary();
     });
-    function openLibrary() { document.getElementById('library').hidden = false; document.getElementById('props').hidden = true; renderLibrary(); }
+    function wideScreen() { return window.matchMedia('(min-width: 1181px)').matches; }
+    function openLibrary() {
+        document.getElementById('library').hidden = false;
+        if (!wideScreen()) { root.classList.remove('show-side'); sideForced = false; }
+        renderLibrary();
+    }
 
     // ------------------------------------------------------------------ properties panel
     var props = document.getElementById('props'), propsBody = document.getElementById('props-body'), propsTitle = document.getElementById('props-title');
@@ -709,8 +766,9 @@
     function num(name, value, step) { return '<input type="number" step="' + (step || 'any') + '" min="0" name="' + name + '" value="' + value + '">'; }
     function showProps() {
         var obj = sel && find(sel.type, sel.id);
-        if (!obj) { props.hidden = true; return; }
-        document.getElementById('library').hidden = true;
+        if (!obj) { props.hidden = true; planInfo.hidden = false; if (!sideForced) root.classList.remove('show-side'); return; }
+        if (!wideScreen()) document.getElementById('library').hidden = true;
+        planInfo.hidden = !wideScreen(); root.classList.add('show-side');
         var u = lenInputUnit(), html = '';
         if (sel.type === 'wall') {
             propsTitle.textContent = 'Wall';
@@ -739,6 +797,7 @@
         }
         html += '<div class="ed-actions-row"><button type="button" class="ed-small-btn danger" data-act="delete">Delete</button></div>';
         propsBody.innerHTML = html; props.hidden = false;
+        highlightRoomList();
     }
     propsBody.addEventListener('change', function (ev) {
         var obj = sel && find(sel.type, sel.id), el = ev.target; if (!obj || !el.name) return;
@@ -777,10 +836,77 @@
     root.querySelectorAll('[data-close]').forEach(function (b) {
         b.addEventListener('click', function () {
             var id = b.getAttribute('data-close'); document.getElementById(id).hidden = true;
-            if (id === 'props') { sel = null; render(); }
+            if (id === 'props') { sel = null; showProps(); render(); }
             if (id === 'library' && tool === 'furniture' && !pendingSymbol) setTool('select');
         });
     });
+
+
+    // ------------------------------------------------------------------ plan overview sidebar
+    var planInfo = document.getElementById('plan-info'), sideForced = false, infoQueued = false;
+    function queueInfo() { if (infoQueued) return; infoQueued = true; requestAnimationFrame(function () { infoQueued = false; renderInfo(); }); }
+    function renderInfo() {
+        var area = 0;
+        plan.rooms.forEach(function (r) { if (r.pts.length > 2) area += polyArea(r.pts); });
+        var doors = plan.openings.filter(function (o) { return o.kind === 'door'; }).length;
+        var stats = [['Total floor area', fmtArea(area)], ['Rooms', plan.rooms.length], ['Walls', plan.walls.length], ['Doors', doors], ['Windows', plan.openings.length - doors], ['Items', plan.items.length]];
+        document.getElementById('info-stats').innerHTML = stats.map(function (s) { return '<div><dt>' + s[0] + '</dt><dd>' + s[1] + '</dd></div>'; }).join('');
+        var list = document.getElementById('info-rooms');
+        list.innerHTML = plan.rooms.length ? plan.rooms.map(function (r) {
+            return '<li><button type="button" data-room="' + FP.esc(r.id) + '"><i style="background:' + FP.esc(r.color || COLORS[0]) + '"></i><span>' + FP.esc(r.name || 'Room') + '</span><small>' + fmtArea(polyArea(r.pts)) + '</small></button></li>';
+        }).join('') : '<li class="ed-empty">No rooms yet. Use the <strong>Room</strong> tool, or close a loop of walls.</li>';
+        highlightRoomList();
+        document.getElementById('status-units').textContent = (settings.units === 'imperial' ? 'Feet & inches' : 'Metres') + '  ·  Snap ' + (settings.snap ? 'on' : 'off') + '  ·  Grid ' + (settings.grid ? 'on' : 'off');
+    }
+    function highlightRoomList() {
+        document.querySelectorAll('#info-rooms [data-room]').forEach(function (b) { b.classList.toggle('is-active', !!sel && sel.type === 'room' && sel.id === b.getAttribute('data-room')); });
+    }
+    document.getElementById('info-rooms').addEventListener('click', function (ev) {
+        var b = ev.target.closest('[data-room]'); if (!b) return;
+        var r = find('room', b.getAttribute('data-room')); if (!r) return;
+        sel = { type: 'room', id: r.id }; setTool('select'); hintEl.hidden = true;
+        var c = centroid(r.pts), sp = toScreen(c.x, c.y);
+        view.x += W / 2 - sp.x; view.y += H / 2 - sp.y;
+        showProps(); render();
+    });
+    function syncSettingsUi() {
+        root.querySelectorAll('[data-setting]').forEach(function (c) { c.checked = !!settings[c.getAttribute('data-setting')]; });
+        document.getElementById('set-units').value = settings.units;
+        document.getElementById('set-wall').value = settings.wallThickness;
+        document.getElementById('quick-unit').textContent = settings.units === 'imperial' ? 'ft' : 'm';
+    }
+    function settingsChanged() { FP.saveSettings(settings); syncSettingsUi(); renderInfo(); render(); if (sel) showProps(); }
+    root.querySelectorAll('[data-setting]').forEach(function (c) { c.addEventListener('change', function () { settings[c.getAttribute('data-setting')] = c.checked; settingsChanged(); }); });
+    document.getElementById('set-units').addEventListener('change', function (ev) { settings.units = ev.target.value === 'imperial' ? 'imperial' : 'metric'; settingsChanged(); });
+    document.getElementById('set-wall').addEventListener('change', function (ev) { var t = parseFloat(ev.target.value); if (t >= 2 && t <= 100) settings.wallThickness = t; settingsChanged(); });
+
+    // ------------------------------------------------------------------ start panel (new plans)
+    var startEl = document.getElementById('start');
+    function showStart(on) { startEl.hidden = !on; if (on) { var f = startEl.querySelector('[data-start]'); if (f) f.focus({ preventScroll: true }); } }
+    startEl.addEventListener('click', function (ev) {
+        var b = ev.target.closest('[data-start]'); if (!b) return;
+        var what = b.getAttribute('data-start');
+        showStart(false);
+        if (what === 'room' || what === 'wall') setTool(what);
+        else flashHint('Pick a tool on the left to start drawing. Your plan saves automatically.');
+    });
+    document.getElementById('quick-room').addEventListener('submit', function (ev) {
+        ev.preventDefault();
+        var f = ev.target, k = settings.units === 'imperial' ? 30.48 : 100;
+        var w = parseFloat(f.w.value) * k, l = parseFloat(f.l.value) * k;
+        if (!(w >= 50 && l >= 50 && w <= 20000 && l <= 20000)) { flashHint('Enter a width and length between 0.5 and 200.'); return; }
+        record();
+        var pts = [{ x: 0, y: 0 }, { x: w, y: 0 }, { x: w, y: l }, { x: 0, y: l }];
+        for (var i = 0; i < 4; i++) addWall(pts[i], pts[(i + 1) % 4]);
+        plan.rooms.push({ id: uid('r'), pts: pts, name: 'Living Room', color: COLORS[1] });
+        showStart(false); fit(); changed(); canvas.focus();
+        flashHint('Room created. Add doors and windows from the toolbar, or drag a wall end to reshape it.');
+    });
+    document.getElementById('start-import').addEventListener('change', function (ev) {
+        var file = ev.target.files[0]; if (!file) return;
+        FPStore.importFile(file, function (saved) { if (saved) location.href = FP.url('/app/editor?plan=' + encodeURIComponent(saved.id)); });
+    });
+    canvas.addEventListener('pointerdown', function () { if (!startEl.hidden) showStart(false); }, true);
 
     // ------------------------------------------------------------------ export
     function renderExport(maxPx, title) {
@@ -851,7 +977,12 @@
         else if (cmd === 'redo') redo();
         else if (cmd === 'fit') fit();
         else if (cmd === 'save') { if (isEmpty() && !savedOnce) flashHint('Draw something first — the plan is empty.'); else saveNow(); }
-        else if (cmd === 'export') { var mnu = document.getElementById('export-menu'); mnu.hidden = !mnu.hidden; }
+        else if (cmd === 'export') {
+            var mnu = document.getElementById('export-menu'), top = root.querySelector('.ed-top').getBoundingClientRect(), br = b.getBoundingClientRect();
+            mnu.style.right = Math.max(8, top.right - br.right) + 'px'; mnu.style.top = (br.bottom - top.top + 8) + 'px';
+            mnu.hidden = !mnu.hidden;
+        }
+        else if (cmd === 'info') { sideForced = !root.classList.contains('show-side'); root.classList.toggle('show-side', sideForced); if (sideForced) document.getElementById('library').hidden = true; }
         else if (cmd === 'view3d') {
             if (!plan.walls.length && !plan.rooms.length) { flashHint('Draw some walls or rooms first, then open the 3D view.'); return; }
             saveNow(); location.href = FP.url('/app/3d?plan=' + encodeURIComponent(plan.id));
@@ -872,14 +1003,17 @@
         var loaded = FPStore.get(planId);
         if (loaded) {
             plan = Object.assign(blankPlan(), loaded); savedOnce = true;
-            saveState.textContent = 'Saved'; document.getElementById('plan-name').value = plan.name || 'Untitled plan';
+            setSaveState('saved', 'Saved in this browser'); document.getElementById('plan-name').value = plan.name || 'Untitled plan';
         } else flashHint('That plan was not found in this browser. Starting a new plan.');
     }
     window.addEventListener('resize', resize);
     resize();
     fit();
     updateButtons();
-    if (!planId) flashHint('Pick the Wall or Room tool on the left to start drawing.');
+    syncSettingsUi();
+    renderInfo();
+    setTool('select'); hintEl.hidden = true;
+    if (isEmpty()) showStart(true);
     // Expose for automated checks.
     window.FPEditor = { plan: function () { return plan; }, setTool: setTool, fit: fit, save: saveNow };
 })();
