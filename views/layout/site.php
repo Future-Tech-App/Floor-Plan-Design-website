@@ -105,6 +105,12 @@ $nav = [
 </main>
 
 <footer class="site-footer">
+    <div class="container footer-highlights" aria-label="Highlights">
+        <div><span class="fh-icon"><?= icon('check') ?></span><span><strong>Free to use</strong><small>No ads, no sign-up</small></span></div>
+        <div><span class="fh-icon"><?= icon('monitor') ?></span><span><strong>Web, Android &amp; iOS</strong><small>Design anywhere</small></span></div>
+        <div><span class="fh-icon"><?= icon('cube') ?></span><span><strong>3D walkthrough</strong><small>See every room</small></span></div>
+        <div><span class="fh-icon"><?= icon('download') ?></span><span><strong>PDF &amp; PNG export</strong><small>Print-ready plans</small></span></div>
+    </div>
     <div class="container footer-grid">
         <div class="footer-about">
             <a class="brand brand-footer" href="<?= e(url('/')) ?>">
@@ -112,22 +118,39 @@ $nav = [
                 <span class="brand-text"><strong><?= e($site['name']) ?></strong><small>Floor plan &amp; home design</small></span>
             </a>
             <p><?= e($site['tagline']) ?> Draw walls, furnish rooms, check everything in 3D and export professional plans.</p>
-            <div class="footer-badges">
-                <a href="<?= e(url('/app/')) ?>"><?= icon('monitor') ?>Web app</a>
-                <?php if ($site['android_url']): ?><a href="<?= e($site['android_url']) ?>" target="_blank" rel="noopener"><?= icon('device') ?>Google Play</a><?php endif; ?>
-                <?php if ($site['ios_url']): ?><a href="<?= e($site['ios_url']) ?>" target="_blank" rel="noopener"><?= icon('device') ?>App Store</a><?php endif; ?>
+            <div class="footer-stores">
+                <a class="footer-store" href="<?= e(url('/app')) ?>"><?= icon('monitor') ?><span><small>Open the</small>Web App</span></a>
+                <?php if ($site['android_url']): ?>
+                    <a class="footer-store" href="<?= e($site['android_url']) ?>" target="_blank" rel="noopener"><?= icon('device') ?><span><small>Get it on</small>Google Play</span></a>
+                <?php endif; ?>
+                <?php if ($site['ios_url']): ?>
+                    <a class="footer-store" href="<?= e($site['ios_url']) ?>" target="_blank" rel="noopener"><?= icon('device') ?><span><small>Download on the</small>App Store</span></a>
+                <?php else: ?>
+                    <span class="footer-store is-soon"><?= icon('device') ?><span><small>Coming soon</small>App Store</span></span>
+                <?php endif; ?>
             </div>
         </div>
-        <div>
+        <nav aria-label="Product">
             <h3 class="footer-title">Product</h3>
             <ul class="footer-links">
-                <li><a href="<?= e(url('/app/')) ?>">Web app</a></li>
+                <li><a href="<?= e(url('/app')) ?>">Web app</a></li>
                 <li><a href="<?= e(url('/features')) ?>">Features</a></li>
                 <li><a href="<?= e(url('/#gallery')) ?>">Plan gallery</a></li>
+                <li><a href="<?= e(url('/app/templates')) ?>">Plan templates</a></li>
                 <li><a href="<?= e(url('/download')) ?>">Download</a></li>
             </ul>
-        </div>
-        <div>
+        </nav>
+        <nav aria-label="Tools">
+            <h3 class="footer-title">Tools</h3>
+            <ul class="footer-links">
+                <li><a href="<?= e(url('/app/editor')) ?>">Floor plan editor</a></li>
+                <li><a href="<?= e(url('/app/ai')) ?>">AI floor plans</a></li>
+                <li><a href="<?= e(url('/app/ai/analyzer')) ?>">AI plan analyzer</a></li>
+                <li><a href="<?= e(url('/app/calculators')) ?>">Construction calculator</a></li>
+                <li><a href="<?= e(url('/app/calculators/area')) ?>">Area calculator</a></li>
+            </ul>
+        </nav>
+        <nav aria-label="Help">
             <h3 class="footer-title">Help</h3>
             <ul class="footer-links">
                 <li><a href="<?= e(url('/support')) ?>">Support &amp; FAQ</a></li>
@@ -135,20 +158,27 @@ $nav = [
                 <li><a href="<?= e(url('/privacy-policy')) ?>">Privacy Policy</a></li>
                 <li><a href="<?= e(url('/terms-of-use')) ?>">Terms of Use</a></li>
             </ul>
-        </div>
-        <div>
+        </nav>
+        <div class="footer-contact-col">
             <h3 class="footer-title">Get in touch</h3>
             <ul class="footer-contact">
                 <li><?= icon('mail') ?><a href="mailto:<?= e($site['support_email']) ?>"><?= e($site['support_email']) ?></a></li>
                 <li><?= icon('globe') ?><span>floorplandesigner.app</span></li>
                 <li><?= icon('clock') ?><span>Replies within 1–2 business days</span></li>
             </ul>
+            <a class="btn btn-light footer-msg" href="<?= e(url('/contact')) ?>">Send us a message <?= icon('arrow') ?></a>
         </div>
     </div>
     <div class="footer-bottom">
         <div class="container footer-bottom-inner">
             <span>&copy; <?= e($site['year']) ?> <?= e($site['company']) ?>. All rights reserved.</span>
-            <span>Version <?= e($site['version']) ?></span>
+            <nav class="footer-legal" aria-label="Legal">
+                <a href="<?= e(url('/privacy-policy')) ?>">Privacy</a>
+                <a href="<?= e(url('/terms-of-use')) ?>">Terms</a>
+                <a href="<?= e(url('/sitemap.xml')) ?>">Sitemap</a>
+                <a href="<?= e(url('/app/about#credits')) ?>">Photo credits</a>
+            </nav>
+            <span>Version <?= e(preg_replace('/\+.*/', '', $site['version'])) ?></span>
         </div>
     </div>
 </footer>
