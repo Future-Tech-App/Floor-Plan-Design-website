@@ -587,3 +587,15 @@ legend { font-weight: 700; color: var(--ink); padding: 0 6px; }
 .announce a { color: #fff; text-decoration: underline; margin-left: 6px; }
 .announce button { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; border: 0; border-radius: 50%; background: rgba(255, 255, 255, .15); color: #fff; font-size: 18px; line-height: 1; cursor: pointer; }
 .announce button:hover { background: rgba(255, 255, 255, .3); }
+
+/* Photos on home page feature and step cards */
+.card-photo { position: relative; margin: -34px -30px 0; height: 170px; overflow: hidden; background: var(--tint); }
+.card-photo img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform .6s ease; }
+.card-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(15, 28, 46, 0) 45%, rgba(15, 28, 46, .35) 100%); }
+.service-card.has-photo:hover .card-photo img, .process-step.has-photo:hover .card-photo img { transform: scale(1.06); }
+.service-card.has-photo .service-icon { position: relative; z-index: 1; margin-top: -32px; background: #fff; box-shadow: 0 8px 20px rgba(15, 28, 46, .12); }
+.service-card.has-photo:hover .service-icon { background: var(--brand); }
+.process-step.has-photo .card-photo { margin: -34px -26px 0; height: 140px; border-radius: var(--radius) var(--radius) 0 0; }
+.process-step.has-photo .process-num { position: relative; z-index: 1; margin-top: -28px; background: #fff; border-style: solid; box-shadow: 0 6px 16px rgba(15, 28, 46, .12); }
+.process-step.has-photo:not(:last-child)::after { top: 168px; }
+@media (prefers-reduced-motion: reduce) { .card-photo img { transition: none; } }

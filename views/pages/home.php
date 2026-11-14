@@ -4,13 +4,13 @@ $highlights = [
     ['cube', 'Live 3D preview', 'Walk around your plan before anything is built.'],
     ['calculator', 'Material estimates', 'Bricks, concrete, paint and tiles, priced locally.'],
 ];
-$services = [
-    ['pencil', 'Floor plan editor', 'Straight, freehand and room tools, six door swings, windows, stairs and columns — with snapping and undo.'],
-    ['chair', 'Furniture library', 'Beds, sofas, kitchens, bathrooms, electrical, HVAC, garden and pool items to furnish every room.'],
-    ['cube', '3D visualization', 'Isometric 3D with textured floors, lighting, wall openings and walk mode.'],
-    ['sparkles', 'AI floor plans', 'Describe a house or office and get a complete layout — or let AI read a photo of an existing plan.'],
-    ['calculator', 'Construction calculator', 'Estimate bricks, blocks, concrete, plaster, paint, steel, tiles and labor costs.'],
-    ['download', '300 DPI export', 'Print-ready PDFs with title block, scale bar, north arrow and room schedule, or high-res images.'],
+$services = [   // icon, title, text, photo (public/assets/img, free Unsplash photos)
+    ['pencil', 'Floor plan editor', 'Straight, freehand and room tools, six door swings, windows, stairs and columns — with snapping and undo.', 'tools/draw.jpg'],
+    ['chair', 'Furniture library', 'Beds, sofas, kitchens, bathrooms, electrical, HVAC, garden and pool items to furnish every room.', 'interior/sofa-green.jpg'],
+    ['cube', '3D visualization', 'Isometric 3D with textured floors, lighting, wall openings and walk mode.', 'tools/3d.jpg'],
+    ['sparkles', 'AI floor plans', 'Describe a house or office and get a complete layout — or let AI read a photo of an existing plan.', 'tools/ai.jpg'],
+    ['calculator', 'Construction calculator', 'Estimate bricks, blocks, concrete, plaster, paint, steel, tiles and labor costs.', 'tools/construction.jpg'],
+    ['download', '300 DPI export', 'Print-ready PDFs with title block, scale bar, north arrow and room schedule, or high-res images.', 'tools/export.jpg'],
 ];
 $gallery = [
     ['1bed', '1bed-1.jpg', 'One-bedroom apartment', '1 Bedroom'],
@@ -21,10 +21,10 @@ $gallery = [
     ['3bed', '3bed-1.jpg', 'Spacious three-bedroom', '3 Bedrooms'],
 ];
 $steps = [
-    ['Start a project', 'Begin from scratch or pick a 1, 2 or 3 bedroom template.'],
-    ['Draw & furnish', 'Sketch walls, snap in doors and windows, drop in furniture.'],
-    ['Check it in 3D', 'Rotate and walk through the model to feel the space.'],
-    ['Export & share', 'Save a 300 DPI PDF or image and send it to anyone.'],
+    ['Start a project', 'Begin from scratch or pick a 1, 2 or 3 bedroom template.', 'tools/plans.jpg'],
+    ['Draw & furnish', 'Sketch walls, snap in doors and windows, drop in furniture.', 'interior/dining-green.jpg'],
+    ['Check it in 3D', 'Rotate and walk through the model to feel the space.', 'interior/kitchen-wood.jpg'],
+    ['Export & share', 'Save a 300 DPI PDF or image and send it to anyone.', 'tools/analyzer.jpg'],
 ];
 $faqs = [
     ['Is Floor Plan Designer free?', 'Yes. The web app is free with no ads. The mobile apps are free too; Pro removes their ads.'],
@@ -103,8 +103,9 @@ $faqs = [
             <p class="muted">From the first wall to a print-ready PDF — one app, every step.</p>
         </div>
         <div class="service-grid">
-            <?php foreach ($services as [$ic, $name, $text]): ?>
-                <article class="service-card reveal">
+            <?php foreach ($services as [$ic, $name, $text, $photo]): ?>
+                <article class="service-card has-photo reveal">
+                    <div class="card-photo"><img src="<?= e(url('/assets/img/' . $photo)) ?>" alt="" loading="lazy" width="760" height="520"></div>
                     <span class="service-icon"><?= icon($ic) ?></span>
                     <h3><?= e($name) ?></h3>
                     <p><?= e($text) ?></p>
@@ -160,8 +161,9 @@ $faqs = [
             <h2>From idea to finished plan in four steps</h2>
         </div>
         <ol class="process">
-            <?php foreach ($steps as $i => [$name, $text]): ?>
-                <li class="process-step reveal">
+            <?php foreach ($steps as $i => [$name, $text, $photo]): ?>
+                <li class="process-step has-photo reveal">
+                    <div class="card-photo"><img src="<?= e(url('/assets/img/' . $photo)) ?>" alt="" loading="lazy" width="760" height="520"></div>
                     <span class="process-num"><?= sprintf('%02d', $i + 1) ?></span>
                     <h3><?= e($name) ?></h3>
                     <p><?= e($text) ?></p>
