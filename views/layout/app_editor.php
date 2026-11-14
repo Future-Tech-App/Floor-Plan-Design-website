@@ -10,12 +10,12 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&family=Tinos&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(url('/assets/app/app.css')) ?>">
-    <link rel="stylesheet" href="<?= e(url('/assets/app/editor.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/app/app.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/app/editor.css')) ?>">
 </head>
 <body class="editor-body">
 <?= $content ?>
-<script src="<?= e(url('/assets/app/app.js')) ?>" defer></script>
-<script src="<?= e(url('/assets/app/editor.js')) ?>" defer></script>
+<script src="<?= e(asset('/assets/app/app.js')) ?>" defer></script>
+<script src="<?= e(asset('/assets/app/editor.js')) ?>" defer></script>
 </body>
 </html>

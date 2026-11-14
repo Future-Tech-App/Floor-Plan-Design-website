@@ -6,7 +6,7 @@
     <meta name="robots" content="noindex, nofollow">
     <title><?= e($title ?? 'Admin') ?></title>
     <link rel="icon" href="<?= e(url('/favicon.ico')) ?>" sizes="any">
-    <link rel="stylesheet" href="<?= e(url('/assets/admin/admin.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/admin/admin.css')) ?>">
 </head>
 <body class="ad-auth">
 <main class="ad-auth-card">

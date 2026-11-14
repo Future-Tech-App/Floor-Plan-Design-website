@@ -121,9 +121,13 @@
         }
         function upload(id, keepalive) {
             delete pending[id]; clearTimeout(timers[id]);
-            var plan = FPStore.get(id); if (!plan) return;
+            var plan = FPStore.get(id); if (!plan) return Promise.resolve(false);
             var stamp = plan.modifiedAt || '';
-            send({ client: clientId(), source: 'web', plan: plan }, keepalive).then(function (ok) { if (ok) mark(id, stamp); });
+            return send({ client: clientId(), source: 'web', plan: plan }, keepalive).then(function (ok) {
+                if (ok) mark(id, stamp);
+                document.dispatchEvent(new CustomEvent('fpd:synced'));
+                return ok;
+            });
         }
         return {
             push: function (plan) {
@@ -136,6 +140,18 @@
                 send({ client: clientId(), delete: id }, true);
             },
             flush: function () { Object.keys(pending).forEach(function (id) { upload(id, true); }); },
+            // How many local plans are backed up with their latest changes.
+            status: function () {
+                var s = synced(), list = FPStore.list();
+                return { total: list.length, synced: list.filter(function (m) { return s[m.id] === m.modifiedAt; }).length };
+            },
+            // Upload every plan now, one after another. Resolves with the number that failed.
+            syncAll: function () {
+                var ids = FPStore.list().map(function (m) { return m.id; }), failed = 0;
+                return ids.reduce(function (p, id) {
+                    return p.then(function () { return upload(id); }).then(function (ok) { if (!ok) failed++; });
+                }, Promise.resolve()).then(function () { return failed; });
+            },
             // Upload plans saved before backups existed, or changed while offline.
             catchUp: function () {
                 var s = synced();
@@ -150,6 +166,28 @@
     window.FPStore = FPStore;
     window.FP = FP;
     window.FPSync = FPSync;
+
+    // Backup status + "Sync now" on the Saved Plans page.
+    var syncBox = document.getElementById('sync-status');
+    if (syncBox) {
+        var label = syncBox.querySelector('[data-sync-label]'), btn = syncBox.querySelector('[data-sync-now]');
+        var show = function () {
+            var st = FPSync.status();
+            syncBox.classList.toggle('is-ok', st.total > 0 && st.synced === st.total);
+            label.textContent = st.total === 0 ? 'No plans to back up yet.'
+                : st.synced === st.total ? 'All ' + st.total + ' plan' + (st.total > 1 ? 's are' : ' is') + ' backed up to the server.'
+                : st.synced + ' of ' + st.total + ' plans backed up.';
+        };
+        document.addEventListener('fpd:synced', show);
+        btn.addEventListener('click', function () {
+            btn.disabled = true; label.textContent = 'Syncing…';
+            FPSync.syncAll().then(function (failed) {
+                btn.disabled = false; show();
+                if (failed) label.textContent += ' ' + failed + ' could not be sent — check your connection and try again.';
+            });
+        });
+        show();
+    }
 
     // ---------------------------------------------------------------- header
     var toggle = document.querySelector('.ah-toggle');

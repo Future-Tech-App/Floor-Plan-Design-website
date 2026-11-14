@@ -198,3 +198,11 @@ function announcement_bar(array $site): string
         . '<button type="button" aria-label="Dismiss" onclick="try{localStorage.setItem(\'fpd_announce\',this.parentNode.dataset.announce)}catch(e){};this.parentNode.remove()">×</button></div>'
         . '<script>try{if(localStorage.getItem("fpd_announce")==="' . e($a['id']) . '")document.currentScript.previousElementSibling.remove()}catch(e){}</script>';
 }
+
+/** URL of a CSS/JS file with a version stamp, so browsers reload it after every change. */
+function asset(string $path): string
+{
+    $file = ROOT_DIR . '/public' . $path;
+    $v = is_file($file) ? filemtime($file) : false;
+    return url($path) . ($v ? '?v=' . $v : '');
+}

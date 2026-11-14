@@ -7,6 +7,10 @@
                 <input type="file" id="plan-import" accept="application/json,.json" class="visually-hidden">
             </label>
         </div>
+        <div class="sync-status" id="sync-status" role="status">
+            <?= icon('upload') ?><span data-sync-label>Checking backups…</span>
+            <button type="button" class="btn btn-outline" data-sync-now>Sync now</button>
+        </div>
         <div class="grid grid-3" data-plans data-actions data-empty="#plans-empty"></div>
         <div class="empty" id="plans-empty" hidden><p>No saved plans yet.</p></div>
         <noscript><p class="empty">Turn on JavaScript to see and edit your saved plans.</p></noscript>

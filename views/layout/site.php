@@ -35,7 +35,7 @@ $nav = [
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(url('/assets/css/style.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/css/style.css')) ?>">
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="page-<?= e($page ?: 'other') ?>">
@@ -181,6 +181,6 @@ $nav = [
 </footer>
 
 <a href="#main" class="to-top" aria-label="Back to top"><?= icon('chevron-up') ?></a>
-<script src="<?= e(url('/assets/js/main.js')) ?>" defer></script>
+<script src="<?= e(asset('/assets/js/main.js')) ?>" defer></script>
 </body>
 </html>

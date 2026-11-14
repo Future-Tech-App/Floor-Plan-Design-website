@@ -22,7 +22,7 @@ $links = [
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&family=Tinos:ital@0;1&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="<?= e(url('/assets/app/app.css')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('/assets/app/app.css')) ?>">
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="app nav-<?= e($nav) ?>">
@@ -125,6 +125,6 @@ $hideCta = in_array($nav, ['ai'], true);
     </div>
 </footer>
 
-<script src="<?= e(url('/assets/app/app.js')) ?>" defer></script>
+<script src="<?= e(asset('/assets/app/app.js')) ?>" defer></script>
 </body>
 </html>

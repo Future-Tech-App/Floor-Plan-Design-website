@@ -52,4 +52,4 @@ $examples = [
         </section>
     </div>
 </div>
-<script src="<?= e(url('/assets/app/ai.js')) ?>" defer></script>
+<script src="<?= e(asset('/assets/app/ai.js')) ?>" defer></script>
