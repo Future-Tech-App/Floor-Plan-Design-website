@@ -16,6 +16,12 @@ $templateCards = [
     ['03.', 'Three Bedroom', 'template-3bed.jpg', '3bed'],
 ];
 $icon = static fn (string $n): string => icon($n === 'note' ? 'note' : $n);
+// Background photo for each tool card (public/assets/img/tools, from Unsplash).
+$toolPhoto = static function (string $key): string {
+    $map = ['view3d' => '3d', 'construction' => 'construction', 'converters' => 'converters'];
+    $file = '/assets/img/tools/' . ($map[$key] ?? $key) . '.jpg';
+    return is_file(ROOT_DIR . '/public' . $file) ? ' style="--tool-bg:url(\'' . e(url($file)) . '\')"' : '';
+};
 ?>
 <section class="hero" aria-roledescription="carousel" aria-label="Highlights">
     <?php foreach ($slides as $i => [$bg, $kicker, $titleHtml, $text]): ?>
@@ -59,7 +65,7 @@ $icon = static fn (string $n): string => icon($n === 'note' ? 'note' : $n);
         <span class="label">Design</span>
         <div class="grid grid-3">
             <?php foreach ($tools['design'] as [$key, $name, $desc, $ic, $href]): ?>
-                <a class="tool-card" href="<?= e(url($href)) ?>">
+                <a class="tool-card tool-card-photo" href="<?= e(url($href)) ?>"<?= $toolPhoto($key) ?>>
                     <span class="ring"><?= $icon($ic) ?></span>
                     <h3><?= e($name) ?></h3>
                     <p><?= e($desc) ?></p>
@@ -71,7 +77,7 @@ $icon = static fn (string $n): string => icon($n === 'note' ? 'note' : $n);
         <span class="label" style="margin-top:46px">Measure &amp; Calculate</span>
         <div class="grid grid-3">
             <?php foreach ($tools['measure'] as [$key, $name, $desc, $ic, $href]): ?>
-                <a class="tool-card" href="<?= e(url($href)) ?>">
+                <a class="tool-card tool-card-photo" href="<?= e(url($href)) ?>"<?= $toolPhoto($key) ?>>
                     <span class="ring"><?= $icon($ic) ?></span>
                     <h3><?= e($name) ?></h3>
                     <p><?= e($desc) ?></p>

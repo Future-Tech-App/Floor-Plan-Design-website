@@ -47,7 +47,7 @@ $highlights = [
         <ul class="credits">
             <?php $utm = '?utm_source=floor_plan_designer&utm_medium=referral';
             foreach (WebApp::photos() as $file => [$name, $user, $id, $desc]): ?>
-                <li><img src="<?= e(url('/assets/img/interior/' . $file)) ?>" alt="<?= e($desc) ?>" loading="lazy">
+                <li><img src="<?= e(url('/assets/img/' . (str_contains($file, '/') ? $file : 'interior/' . $file))) ?>" alt="<?= e($desc) ?>" loading="lazy">
                     <span><a href="<?= e('https://unsplash.com/photos/' . $id . $utm) ?>" target="_blank" rel="noopener"><?= e($desc) ?></a><br>by <a href="<?= e('https://unsplash.com/@' . $user . $utm) ?>" target="_blank" rel="noopener"><?= e($name) ?></a></span></li>
             <?php endforeach; ?>
         </ul>
