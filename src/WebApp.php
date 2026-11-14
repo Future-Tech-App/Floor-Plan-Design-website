@@ -108,6 +108,24 @@ final class WebApp
         ], 'app');
     }
 
+    /**
+     * Interior photos (public/assets/img/interior) from Unsplash, free under the Unsplash License.
+     * file => [photographer, Unsplash username, photo id, description]
+     */
+    public static function photos(): array
+    {
+        return [
+            'hero-living.jpg'    => ['Spacejoy', 'spacejoy', '9M66C_w_ToM', 'Living room with a grey sofa and leather ottomans'],
+            'hero-open-plan.jpg' => ['Clay Banks', 'claybanks', 'Hnec2oEbbxk', 'Open-plan living room and kitchen with wood accents'],
+            'hero-dining.jpg'    => ['Caroline Badran', '___atmos', 'UW1WJJ0bkX0', 'Dining room with a large window'],
+            'banner-lounge.jpg'  => ['Kam Idris', 'ka_idris', 'U39FPHKfDu0', 'Minimal lounge with a sofa and table'],
+            'living-light.jpg'   => ['Minh Pham', 'minhphamdesign', 'OtXADkUh3-I', 'Bright living room with a large window'],
+            'kitchen-wood.jpg'   => ['Kam Idris', 'ka_idris', 'hYb7kbu4x7E', 'Kitchen with wood cabinets and teal stools'],
+            'dining-green.jpg'   => ['Spacejoy', 'spacejoy', 'YI2YkyaREHk', 'Wooden dining table with chairs'],
+            'sofa-green.jpg'     => ['Jason Wang', 'coohom', '8J49mtYWu7E', 'Lounge with a green sofa'],
+        ];
+    }
+
     /** Template images shipped with the app (public/assets/app/templates). */
     public static function templates(): array
     {

@@ -1,8 +1,14 @@
 <?php /** @var array $tools */
 $slides = [
-    ['gallery/3bed-2.jpg', 'Floor Plan Design App', 'Design Your Dream Home<br>Room By Room', 'Draw rooms, add doors, windows and furniture, and export a PDF — all in your browser.'],
-    ['gallery/2bed-2.jpg', 'Measure & Calculate', 'Plan Your Budget<br>With Confidence', 'Estimate bricks, concrete, paint and tiles with the construction calculator.'],
-    ['gallery/1bed-1.jpg', 'Print-Ready Plans', 'Professional Plans<br>In Minutes', 'Export high-resolution PNG and PDF plans with measurements to share with anyone.'],
+    ['interior/hero-living.jpg', 'Floor Plan Design App', 'Design Your Dream Home<br>Room By Room', 'Draw rooms, add doors, windows and furniture, then walk through it in 3D — all in your browser.'],
+    ['interior/hero-open-plan.jpg', 'Measure & Calculate', 'Plan Your Budget<br>With Confidence', 'Estimate bricks, concrete, paint and tiles with the construction calculator.'],
+    ['interior/hero-dining.jpg', 'Print-Ready Plans', 'Professional Plans<br>In Minutes', 'Export high-resolution PNG and PDF plans with measurements to share with anyone.'],
+];
+$ideas = [
+    ['Living Room', 'living-light.jpg', 'Bright living room with a large window, a 3-seat sofa, coffee table and reading corner'],
+    ['Kitchen', 'kitchen-wood.jpg', 'Kitchen with wood cabinets, an island with stools, fridge, stove and double sink'],
+    ['Dining Room', 'dining-green.jpg', 'Dining room for 6 with a wooden table next to the kitchen and a window'],
+    ['Lounge', 'sofa-green.jpg', 'Cosy lounge with a sofa, armchair, TV wall and a small study corner'],
 ];
 $templateCards = [
     ['01.', 'One Bedroom', 'templates/1bed-2.jpg'],
@@ -70,6 +76,22 @@ $icon = static fn (string $n): string => icon($n === 'note' ? 'note' : $n);
                     <h3><?= e($name) ?></h3>
                     <p><?= e($desc) ?></p>
                     <span class="link-arrow">Open →</span>
+                </a>
+            <?php endforeach; ?>
+        </div>
+    </div>
+</section>
+
+<section class="sec sec-soft">
+    <div class="a-container">
+        <h2 class="sec-title">Ideas For Every Room</h2>
+        <span class="rule"></span>
+        <p class="sec-sub">Pick a style to start from — our AI turns it into a floor plan you can edit and view in 3D</p>
+        <div class="grid grid-4">
+            <?php foreach ($ideas as $i => [$name, $img, $prompt]): ?>
+                <a class="img-card img-card-tall" href="<?= e(url('/app/ai') . '?d=' . rawurlencode($prompt)) ?>">
+                    <img src="<?= e(url('/assets/img/interior/' . $img)) ?>" alt="<?= e($name) ?> interior" loading="lazy">
+                    <span class="ic-info"><span class="ic-num"><?= sprintf('%02d.', $i + 1) ?></span><h3><?= e($name) ?></h3><span class="ic-more">Design with AI</span></span>
                 </a>
             <?php endforeach; ?>
         </div>

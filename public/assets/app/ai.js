@@ -89,6 +89,8 @@
         const updateCount = () => { count.textContent = desc.value.length; };
         desc.addEventListener('input', updateCount);
         try { desc.value = sessionStorage.getItem('fpd_ai_desc') || ''; } catch (e) { /* ignore */ }
+        const pre = new URLSearchParams(location.search).get('d');
+        if (pre) desc.value = pre.slice(0, 2000);
         updateCount();
         gen.querySelectorAll('[data-example]').forEach(b => b.addEventListener('click', () => { desc.value = b.dataset.example; updateCount(); desc.focus(); }));
 

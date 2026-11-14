@@ -69,7 +69,7 @@ $links = [
     </div>
     <div class="a-container af-bottom">
         <span><?= icon('shield') ?> Your plans are saved in this browser on this device. Clearing browser data deletes them.</span>
-        <span>Web · v<?= e(preg_replace('/\+.*/', '', $site['version'])) ?></span>
+        <span><a href="<?= e(url('/app/about#credits')) ?>">Photos: Unsplash</a> · Web · v<?= e(preg_replace('/\+.*/', '', $site['version'])) ?></span>
     </div>
 </footer>
 

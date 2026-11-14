@@ -13,7 +13,12 @@ $highlights = [
         <span class="rule"></span>
         <p style="max-width:720px;margin:0 auto">Floor Plan Designer is a home-design app for drawing accurate floor plans, furnishing every room and exporting professional plans — in your browser, on Android and on iOS. This web version is built with PHP and JavaScript.</p>
 
-        <h2 class="sec-title" style="margin-top:60px">Design Made Simple</h2>
+        <div class="about-photos">
+            <img src="<?= e(url('/assets/img/interior/dining-green.jpg')) ?>" alt="Wooden dining table with chairs" loading="lazy">
+            <img src="<?= e(url('/assets/img/interior/kitchen-wood.jpg')) ?>" alt="Kitchen with wood cabinets" loading="lazy">
+        </div>
+
+        <h2 class="sec-title" style="margin-top:50px">Design Made Simple</h2>
         <span class="rule"></span>
         <div class="grid grid-4" style="text-align:center">
             <?php foreach ($highlights as [$ic, $t, $d]): ?>
@@ -34,5 +39,17 @@ $highlights = [
         <p>Questions, ideas or found a bug? We read every message.</p>
         <p><a href="mailto:<?= e($site['support_email']) ?>" style="font:400 1.6rem var(--serif)"><?= e($site['support_email']) ?></a></p>
         <a class="btn btn-dark" href="<?= e(url('/')) ?>">Visit Website</a>
+
+
+        <h2 class="sec-title" style="margin-top:60px" id="credits">Photo Credits</h2>
+        <span class="rule"></span>
+        <p style="max-width:640px;margin:0 auto 22px">Interior photos are from <a href="https://unsplash.com/?utm_source=floor_plan_designer&amp;utm_medium=referral" target="_blank" rel="noopener">Unsplash</a>, used under the Unsplash License. Thank you to these photographers:</p>
+        <ul class="credits">
+            <?php $utm = '?utm_source=floor_plan_designer&utm_medium=referral';
+            foreach (WebApp::photos() as $file => [$name, $user, $id, $desc]): ?>
+                <li><img src="<?= e(url('/assets/img/interior/' . $file)) ?>" alt="<?= e($desc) ?>" loading="lazy">
+                    <span><a href="<?= e('https://unsplash.com/photos/' . $id . $utm) ?>" target="_blank" rel="noopener"><?= e($desc) ?></a><br>by <a href="<?= e('https://unsplash.com/@' . $user . $utm) ?>" target="_blank" rel="noopener"><?= e($name) ?></a></span></li>
+            <?php endforeach; ?>
+        </ul>
     </div>
 </div>
