@@ -218,3 +218,45 @@ button { font: inherit; }
 .tool-stage { display: grid; place-items: center; min-height: 380px; background: var(--soft); border: 1px solid var(--line); position: relative; overflow: hidden; }
 .notice { display: flex; gap: 12px; align-items: flex-start; padding: 14px 16px; background: #e3f2fd; border-left: 3px solid var(--blue); color: var(--navy); margin-top: 18px; }
 .notice .icon { color: var(--blue); margin-top: 3px; }
+
+/* ---------- AI tools ---------- */
+.ai-layout { grid-template-columns: 1.3fr .7fr; }
+@media (max-width: 900px) { .ai-layout { grid-template-columns: 1fr; } }
+.field textarea { resize: vertical; min-height: 140px; line-height: 1.5; }
+.ai-chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.ai-chip { padding: 8px 14px; border: 1px solid var(--line); background: #fff; border-radius: 18px; font: 600 12.5px var(--sans); color: var(--ink); cursor: pointer; text-align: left; }
+.ai-chip:hover { border-color: var(--blue); color: var(--blue-text); background: #f5faff; }
+.ai-tips ul { margin: 0; padding-left: 18px; display: grid; gap: 10px; }
+.ai-status { display: flex; align-items: center; gap: 10px; margin: 18px 0 0; font-weight: 700; color: var(--navy); }
+.ai-status.is-error { color: var(--danger); }
+.ai-status .spin { width: 18px; height: 18px; border: 3px solid #cfe3f8; border-top-color: var(--blue); border-radius: 50%; animation: ai-spin .8s linear infinite; flex: none; }
+@keyframes ai-spin { to { transform: rotate(360deg); } }
+.ai-summary { text-align: center; max-width: 720px; margin: 0 auto; }
+.ai-floor { background: #fff; border: 1px solid var(--line); display: flex; flex-direction: column; }
+.ai-floor canvas { width: 100%; aspect-ratio: 4 / 3; display: block; background: #fff; border-bottom: 1px solid var(--line); }
+.ai-floor-body { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.ai-floor-body h3 { font-size: 1.5rem; margin: 0; }
+.ai-floor-body p { margin: 0; font-size: 13.5px; }
+.ai-floor-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: auto; padding-top: 12px; }
+.ai-floor-actions .btn { padding: 10px 14px; font-size: 11px; }
+/* Analyzer */
+.ai-drop { display: grid; place-items: center; gap: 10px; min-height: 220px; padding: 24px; border: 2px dashed #b9cde2; background: #f7fbff; text-align: center; cursor: pointer; transition: border-color .2s, background .2s; }
+.ai-drop:hover, .ai-drop.is-over { border-color: var(--blue); background: #eef6ff; }
+.ai-drop .icon { width: 36px; height: 36px; color: var(--blue); }
+.ai-drop img { max-width: 100%; max-height: 360px; display: block; }
+.ai-annot { position: relative; display: inline-block; max-width: 100%; line-height: 0; }
+.ai-annot img { max-width: 100%; display: block; }
+.ai-box { position: absolute; border: 2px solid; box-sizing: border-box; }
+.ai-box span { position: absolute; left: -2px; top: -2px; transform: translateY(-100%); padding: 2px 6px; font: 700 11px/1.3 var(--sans); color: #fff; white-space: nowrap; max-width: 220px; overflow: hidden; text-overflow: ellipsis; }
+.ai-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 1px; background: rgba(255, 255, 255, .12); margin-bottom: 18px; }
+.ai-stats div { background: var(--navy); padding: 14px 16px; }
+.ai-stats dt { font: 700 10.5px var(--sans); letter-spacing: 2px; text-transform: uppercase; color: var(--blue-light); margin-bottom: 4px; }
+.ai-stats dd { margin: 0; font: 400 1.6rem/1.15 var(--serif); color: #fff; }
+.ai-table { width: 100%; border-collapse: collapse; background: #fff; font-size: 14px; }
+.ai-table th, .ai-table td { padding: 10px 12px; border-bottom: 1px solid var(--line); text-align: left; }
+.ai-table th { font: 700 10.5px var(--sans); letter-spacing: 2px; text-transform: uppercase; color: var(--ink); background: var(--soft); }
+.ai-table .sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; margin-right: 8px; vertical-align: -1px; }
+.ai-table-wrap { overflow-x: auto; }
+
+/* The hidden attribute always wins inside page content. */
+.page-body [hidden] { display: none !important; }

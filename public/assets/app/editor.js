@@ -248,8 +248,9 @@
             var ce = S(centroid(r.pts).x, centroid(r.pts).y);
             var fs = Math.max(10, Math.min(18, 22 * v.s / 0.5)) * k;
             c.textAlign = 'center'; c.textBaseline = 'middle';
-            c.fillStyle = '#0b1b2b'; c.font = '700 ' + fs + 'px Mulish, sans-serif'; c.fillText(r.name || 'Room', ce.x, ce.y - fs * .6);
-            c.fillStyle = '#5f6368'; c.font = '600 ' + (fs * .78) + 'px Mulish, sans-serif'; c.fillText(fmtArea(polyArea(r.pts)), ce.x, ce.y + fs * .6);
+            var rxs = r.pts.map(function (q) { return q.x; }), maxW = Math.max(20, (Math.max.apply(null, rxs) - Math.min.apply(null, rxs)) * v.s - 10 * k);
+            c.fillStyle = '#0b1b2b'; c.font = '700 ' + fs + 'px Mulish, sans-serif'; c.fillText(r.name || 'Room', ce.x, ce.y - fs * .6, maxW);
+            c.fillStyle = '#5f6368'; c.font = '600 ' + (fs * .78) + 'px Mulish, sans-serif'; c.fillText(fmtArea(polyArea(r.pts)), ce.x, ce.y + fs * .6, maxW);
         });
         // wall lengths
         if (opts.dims) {
@@ -851,6 +852,10 @@
         else if (cmd === 'fit') fit();
         else if (cmd === 'save') { if (isEmpty() && !savedOnce) flashHint('Draw something first — the plan is empty.'); else saveNow(); }
         else if (cmd === 'export') { var mnu = document.getElementById('export-menu'); mnu.hidden = !mnu.hidden; }
+        else if (cmd === 'view3d') {
+            if (!plan.walls.length && !plan.rooms.length) { flashHint('Draw some walls or rooms first, then open the 3D view.'); return; }
+            saveNow(); location.href = FP.url('/app/3d?plan=' + encodeURIComponent(plan.id));
+        }
         else if (cmd === 'export-png') exportPng();
         else if (cmd === 'export-pdf') exportPdf();
         else if (cmd === 'export-json') { if (savedOnce || !isEmpty()) { saveNow(); FPStore.download(plan.id); } }

@@ -1,7 +1,7 @@
 /* Floor plan editor (JavaScript canvas) */
 html, body.editor-body { height: 100%; overflow: hidden; }
 .editor-body .icon { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.ed { position: fixed; inset: 0; display: grid; grid-template-columns: 84px 1fr; grid-template-rows: 60px 1fr; grid-template-areas: "top top" "tools stage"; background: #eef2f6; }
+.ed { position: fixed; inset: 0; display: grid; grid-template-columns: 84px minmax(0, 1fr); grid-template-rows: 60px minmax(0, 1fr); grid-template-areas: "top top" "tools stage"; background: #eef2f6; }
 
 /* Top bar */
 .ed-top { grid-area: top; position: relative; display: flex; align-items: center; gap: 12px; padding: 0 14px 0 6px; background: linear-gradient(90deg, #1565c0, #1e88e5); color: #fff; box-shadow: 0 2px 10px rgba(0, 29, 54, .2); z-index: 20; }
@@ -76,7 +76,7 @@ html, body.editor-body { height: 100%; overflow: hidden; }
 
 /* Phones: tools along the bottom, panels as bottom sheets */
 @media (max-width: 760px) {
-    .ed { grid-template-columns: 1fr; grid-template-rows: 56px 1fr 74px; grid-template-areas: "top" "stage" "tools"; }
+    .ed { grid-template-columns: minmax(0, 1fr); grid-template-rows: 56px 1fr 74px; grid-template-areas: "top" "stage" "tools"; }
     .ed-tools { flex-direction: row; overflow-x: auto; overflow-y: hidden; padding: 6px; border-right: 0; border-top: 1px solid var(--line); }
     .ed-tool { flex: none; width: 64px; }
     .ed-tools-sep { width: 1px; height: 40px; }

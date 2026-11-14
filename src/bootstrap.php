@@ -22,6 +22,9 @@ require_once ROOT_DIR . '/src/VersionGate.php';
 require_once ROOT_DIR . '/src/ContactService.php';
 require_once ROOT_DIR . '/src/Auth.php';
 require_once ROOT_DIR . '/src/Calculators.php';
+require_once ROOT_DIR . '/src/GroqClient.php';
+require_once ROOT_DIR . '/src/AiPlanGenerator.php';
+require_once ROOT_DIR . '/src/PlanAnalyzer.php';
 require_once ROOT_DIR . '/src/WebApp.php';
 
 date_default_timezone_set((string) config('timezone', 'UTC'));

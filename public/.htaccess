@@ -1,5 +1,10 @@
 # Front controller routing for Apache (mod_rewrite must be enabled).
 Options -Indexes -MultiViews
+
+# Never serve PHP configuration files.
+<Files ".user.ini">
+    Require all denied
+</Files>
 DirectoryIndex index.php index.html
 
 <IfModule mod_rewrite.c>

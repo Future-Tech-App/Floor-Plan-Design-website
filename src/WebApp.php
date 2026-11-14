@@ -19,6 +19,7 @@ final class WebApp
                 ['draw', 'Draw', 'Walls, rooms, doors, windows & furniture', 'pencil', '/app/editor'],
                 ['ai', 'AI Floor Plans', 'Generate a layout from a short description', 'sparkles', '/app/ai'],
                 ['analyzer', 'AI Analyzer', 'Detect rooms in a photo of a floor plan', 'image', '/app/ai/analyzer'],
+                ['view3d', '3D View', 'Walk through any saved plan in 3D', 'cube', '/app/plans'],
                 ['templates', 'Templates', 'Ready-made 1, 2 & 3 bedroom layouts', 'home', '/app/templates'],
                 ['plans', 'Saved Plans', 'Open, rename, duplicate or download plans', 'layers', '/app/plans'],
                 ['notes', 'Notes', 'Project notes and annotations', 'note', '/app/notes'],
@@ -48,6 +49,10 @@ final class WebApp
             render('app/editor', $base + ['title' => 'Editor — Floor Plan Designer', 'nav' => 'editor'], 'app_editor');
             return;
         }
+        if ($sub === '/3d') {
+            render('app/viewer3d', $base + ['title' => '3D View — Floor Plan Designer', 'nav' => 'editor'], 'app_3d');
+            return;
+        }
         if ($sub === '/templates') {
             self::page('app/templates', 'Templates', 'templates', $base + ['templates' => self::templates()]);
             return;
@@ -69,7 +74,7 @@ final class WebApp
             return;
         }
         if ($sub === '/ai' || $sub === '/ai/analyzer') {
-            self::page('app/ai', $sub === '/ai' ? 'AI Floor Plans' : 'AI Analyzer', 'ai', $base + ['mode' => $sub === '/ai' ? 'generator' : 'analyzer']);
+            self::page($sub === '/ai' ? 'app/ai_generator' : 'app/ai_analyzer', $sub === '/ai' ? 'AI Floor Plans' : 'AI Analyzer', 'ai', $base);
             return;
         }
         if (preg_match('#^/tools/(measure|level|compass)$#', $sub, $m)) {

@@ -1,0 +1,27 @@
+/* 3D view (three.js) — builds on editor.css */
+.v3d { grid-template-columns: minmax(0, 1fr); grid-template-areas: "top" "stage"; }
+.v3d .ed-title strong { font: 700 17px var(--sans); color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.v3d-stage { background: linear-gradient(#dfe9f3, #f5f7fa); }
+.v3d-stage canvas { position: absolute; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; outline: none; }
+.v3d-stage.walk canvas { cursor: grab; }
+.v3d-seg { display: inline-flex; border: 1px solid rgba(255, 255, 255, .45); }
+.v3d-seg button { height: 38px; padding: 0 14px; border: 0; background: transparent; color: #fff; font: 700 13px var(--sans); cursor: pointer; }
+.v3d-seg button.is-active { background: #fff; color: #1565c0; }
+.v3d .ed-panel { top: 72px; bottom: auto; max-height: calc(100% - 90px); }
+.v3d-toggles { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.v3d-toggles label { display: flex; align-items: center; gap: 8px; margin: 0; font: 600 13px var(--sans); letter-spacing: 0; text-transform: none; cursor: pointer; }
+.v3d-toggles input { width: 18px; height: 18px; accent-color: #1e88e5; }
+.v3d input[type=range] { width: 100%; accent-color: #1e88e5; }
+.v3d-empty { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; gap: 10px; padding: 20px; }
+.v3d-empty[hidden] { display: none; }
+.v3d-empty h2 { font-size: 2rem; }
+.v3d-joy { position: absolute; left: 24px; bottom: 24px; width: 116px; height: 116px; border-radius: 50%; background: rgba(0, 29, 54, .25); border: 2px solid rgba(255, 255, 255, .7); touch-action: none; z-index: 5; }
+.v3d-joy[hidden] { display: none; }
+.v3d-joy span { position: absolute; left: 35px; top: 35px; width: 46px; height: 46px; border-radius: 50%; background: #fff; box-shadow: 0 2px 8px rgba(0, 0, 0, .3); }
+@media (max-width: 760px) {
+    .v3d { grid-template-rows: 56px 1fr; }
+    .v3d-seg button { height: 34px; padding: 0 9px; }
+    .v3d [data-cmd=reset], #plan-sub { display: none; }
+    .v3d .ed-panel { top: auto; bottom: 0; max-height: 60%; }
+    .v3d-joy { left: 16px; bottom: 16px; }
+}

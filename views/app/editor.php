@@ -40,6 +40,7 @@ $tools = [
             <button type="button" class="ed-btn" data-cmd="undo" title="Undo (Ctrl+Z)" aria-label="Undo"><svg viewBox="0 0 24 24" class="icon"><path d="M9 14 4 9l5-5"/><path d="M4 9h11a5 5 0 0 1 0 10h-3"/></svg></button>
             <button type="button" class="ed-btn" data-cmd="redo" title="Redo (Ctrl+Y)" aria-label="Redo"><svg viewBox="0 0 24 24" class="icon"><path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/></svg></button>
             <button type="button" class="ed-btn ed-btn-fit" data-cmd="fit" title="Fit to screen" aria-label="Fit to screen"><svg viewBox="0 0 24 24" class="icon"><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3"/></svg></button>
+            <button type="button" class="ed-btn ed-btn-text" data-cmd="view3d" title="3D view"><svg viewBox="0 0 24 24" class="icon"><path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/></svg><span>3D</span></button>
             <button type="button" class="ed-btn ed-btn-text" data-cmd="export" aria-haspopup="true"><?= icon('download') ?><span>Export</span></button>
             <button type="button" class="ed-btn ed-btn-primary" data-cmd="save" title="Save (Ctrl+S)"><svg viewBox="0 0 24 24" class="icon"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg><span>Save</span></button>
         </div>

@@ -3,15 +3,16 @@
 A plain-PHP (no framework, no Composer) website and backend for the Floor Plan Designer app.
 
 - **Web app (`/app`):** written in PHP, HTML, CSS and JavaScript. PHP renders the pages and runs the construction calculators; a JavaScript canvas editor draws plans in the browser. See [Web app](#web-app-app) below.
-- **Classic web app (`/classic/`):** the Flutter app compiled for browsers. It still hosts the features not yet ported to PHP (3D preview, AI generator and analyzer).
+- **Classic web app (`/classic/`):** the Flutter app compiled for browsers, kept as a fallback. Every feature now also exists in the PHP web app.
 - **Public site:** Home, Features, Download, Support/FAQ (live search), Contact, Privacy Policy, Terms of Use. Its URLs match the current site (`/support`, `/contact`, `/privacy-policy`, `/terms-of-use`).
 - **Backend:** stores contact messages in SQLite, applies rate limiting and a honeypot to block spam, and uses CSRF protection, prepared statements and security headers.
-- **JSON API:** `/api/v1/version.php` (version gate), `/api/v1/contact.php` (contact form) and `/api/v1/ai.php` (the web app's AI proxy).
+- **JSON API:** `/api/v1/version.php` (version gate), `/api/v1/contact.php` (contact form), `/api/v1/generate-plan.php` and `/api/v1/analyze-plan.php` (AI tools), and `/api/v1/ai.php` (AI proxy for the classic app).
 - **Admin panel:** `/admin/` lets you read, mark and delete messages, and manage the latest version and the force/optional update rules.
 
 ## Requirements
 
 - PHP **8.1+** with the `pdo_sqlite`, `mbstring` and `curl` extensions
+- Apache with `mod_rewrite` (or Nginx; see below)
 
 ## Web app (`/app`)
 
@@ -23,6 +24,9 @@ The web app is plain PHP plus vanilla JavaScript; nothing to build.
 | `/app/editor` | 2D editor: walls, rooms, doors, windows, 418 library symbols, labels, measurements, undo/redo, PNG/PDF/JSON export | `views/app/editor.php`, `public/assets/app/editor.js` |
 | `/app/plans` | Saved plans: open, rename, duplicate, download, import, delete | `views/app/plans.php`, `public/assets/app/app.js` |
 | `/app/templates` | Plan templates with a lightbox viewer | `views/app/templates.php` |
+| `/app/3d?plan=<id>` | 3D view (three.js, self-hosted in `public/assets/app/vendor/three/`): orbit and walk modes, wall height and colour, floor finishes, doors open/closed, furniture, PNG snapshot | `views/app/viewer3d.php`, `public/assets/app/viewer3d.js` |
+| `/app/ai` | AI floor plan generator: description → one plan per floor | `src/AiPlanGenerator.php`, `views/app/ai_generator.php`, `public/assets/app/ai.js` |
+| `/app/ai/analyzer` | AI analyzer: photo of a plan → rooms, sizes and an editable plan | `src/PlanAnalyzer.php`, `views/app/ai_analyzer.php`, `public/assets/app/ai.js` |
 | `/app/calculators` | Construction, metal, area and unit calculators, computed by PHP | `src/Calculators.php`, `views/app/calculators/` |
 | `/app/notes` | Notes | `views/app/notes.php` |
 | `/app/tools/measure`, `/level`, `/compass` | On-screen ruler and phone-sensor tools | `views/app/tools/` |
@@ -36,7 +40,7 @@ Editor shortcuts: V select, W wall, R room, D door, N window, F library, T label
 
 ## Classic web app (`/classic/`)
 
-`public/classic/` holds the release web build of the Flutter app. It hosts the 3D preview and the AI tools until they're ported. Don't edit it by hand. Rebuild it from the Flutter project:
+`public/classic/` holds the release web build of the Flutter app, kept as a fallback. Don't edit it by hand. Rebuild it from the Flutter project:
 
 ```bash
 tool/build_web.sh      # run in the Flutter app repo; writes php-website/public/classic/
@@ -55,7 +59,11 @@ How the Flutter web build differs from the mobile apps (all changes are guarded 
 | Bubble level | Works on phones and tablets (iOS asks for motion permission). On computers it explains that no sensor is available. |
 | Compass | Browsers don't provide magnetometer data, so it points users to the mobile app. |
 
-### AI proxy
+### AI endpoints
+
+`POST /api/v1/generate-plan.php` (`{"description": "…"}`) and `POST /api/v1/analyze-plan.php` (`{"image": "data:image/jpeg;base64,…"}`) run the AI tools on the server with `src/GroqClient.php`. Both reject cross-origin requests, count every upstream call against `ai_rate_limit`, and return `{"ok": false, "error": "…"}` on failure. Without a key, the generator falls back to the built-in layout engine; the analyzer returns 503.
+
+### AI proxy (classic app)
 
 `POST /api/v1/ai.php` accepts the same JSON as Groq's chat-completions API, without the `Authorization` header. It:
 
@@ -71,7 +79,6 @@ Set the key either with the `GROQ_API_KEY` GitHub secret, which the deploy workf
 ```
 
 Without a key, the generator falls back to its built-in layouts and the analyzer shows "AI features are not configured on this server yet".
-- Apache with `mod_rewrite` (or Nginx; see below)
 
 ## Quick start (local)
 

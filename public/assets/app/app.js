@@ -144,6 +144,7 @@
             '<div class="pc-meta">Last modified: ' + FP.esc(FP.relTime(p.modifiedAt)) + '</div>' +
             '<div class="pc-open link-arrow">Open plan →</div></div>' +
             (withActions ? '<div class="pc-actions" style="display:flex;flex-direction:column;gap:6px">' +
+                '<button class="icon-btn" type="button" data-act="view3d" title="3D view" aria-label="3D view" style="font:800 11px var(--sans)">3D</button>' +
                 '<button class="icon-btn" type="button" data-act="rename" title="Rename" aria-label="Rename">✎</button>' +
                 '<button class="icon-btn" type="button" data-act="duplicate" title="Duplicate" aria-label="Duplicate">⧉</button>' +
                 '<button class="icon-btn" type="button" data-act="download" title="Download (.json)" aria-label="Download">⤓</button>' +
@@ -170,6 +171,7 @@
             var act = ev.target.closest('[data-act]');
             if (!act) { if (ev.target.closest('[data-open]')) location.href = FP.url('/app/editor?plan=' + encodeURIComponent(id)); return; }
             var a = act.getAttribute('data-act');
+            if (a === 'view3d') { location.href = FP.url('/app/3d?plan=' + encodeURIComponent(id)); return; }
             if (a === 'rename') { var n = prompt('Plan name', (FPStore.get(id) || {}).name || ''); if (n && n.trim()) FPStore.rename(id, n.trim()); }
             if (a === 'duplicate') FPStore.duplicate(id);
             if (a === 'download') FPStore.download(id);
