@@ -26,3 +26,7 @@
     .v3d .ed-panel { top: auto; bottom: 0; left: 0; right: 0; width: auto; max-height: 60%; }
     .v3d-joy { left: 16px; bottom: 16px; }
 }
+
+.v3d-seg-block { display: flex; }
+.v3d-seg-block button { flex: 1; }
+.v3d input[type=range]:disabled { opacity: .4; }

@@ -9,8 +9,8 @@ const stage = document.getElementById('stage');
 const SYMBOL_BASE = root.dataset.symbolsBase;
 const M = 0.01;                          // cm → m
 const BASE_WALL_H = 280;                 // cm, scaled by the wall height setting
-const DOOR_H = 210, SILL_H = 90, WIN_TOP = 210;
-const DEFAULTS = { wallHeight: 1, wallColor: '#ede8e0', floor: 'room', furniture: true, doors: true, doorsOpen: false, windows: true, labels: true, shadows: true };
+const DOOR_H = 210, SILL_H = 90, WIN_TOP = 210, LOW_WALL_H = 110;
+const DEFAULTS = { wallView: 'low', wallHeight: 1, wallColor: '#ede8e0', floor: 'room', furniture: true, doors: true, doorsOpen: false, windows: true, labels: true, shadows: true };
 // Typical heights (cm) for library categories, so furniture reads as 3D blocks.
 const ITEM_H = { furniture: 55, tables: 75, desk: 75, appliance: 90, cooking: 90, dishwashers: 85, sinks: 85, bathtub: 55, toilet: 40, stairs: 120, architecture: 100, garden: 40, pool: 5, posts: 120, electrical: 30, havc: 60, communication: 40, basic: 40, doors: 5, windows: 5, gates: 120, linegates: 120, 'number-gates': 120, rooms: 2, custom: 2 };
 
@@ -137,30 +137,84 @@ function init() {
     const materials = {
         wall: new THREE.MeshStandardMaterial({ color: opts.wallColor, roughness: 0.92 }),
         wallTop: new THREE.MeshStandardMaterial({ color: '#4a5560', roughness: 0.8 }),
+        wallFaded: new THREE.MeshStandardMaterial({ color: opts.wallColor, roughness: 0.92, transparent: true, opacity: 0.12, depthWrite: false }),
         door: new THREE.MeshStandardMaterial({ color: '#8d6e63', roughness: 0.6 }),
         frame: new THREE.MeshStandardMaterial({ color: '#f5f5f5', roughness: 0.5 }),
         glass: new THREE.MeshPhysicalMaterial({ color: '#9fd3f0', transparent: true, opacity: 0.35, roughness: 0.05, metalness: 0, side: THREE.DoubleSide }),
         side: new THREE.MeshStandardMaterial({ color: '#eceff1', roughness: 0.8 })
     };
 
+    // The editor's pastel room colours are too pale in 3D light; use richer versions.
+    const FLOOR_3D = { '#e3f2fd': '#9ccbf2', '#e8f5e9': '#a8d8aa', '#fff3e0': '#f6cf8f', '#fce4ec': '#f1a9c2', '#ede7f6': '#bba7e0', '#e0f7fa': '#8fd9e4', '#f1f8e9': '#c3dea0', '#eceff1': '#b8c4cc' };
+    function floorColor(c) {
+        const key = String(c || '#e3f2fd').toLowerCase();
+        if (FLOOR_3D[key]) return FLOOR_3D[key];
+        const col = new THREE.Color(key); col.offsetHSL(0, 0.15, -0.12); return col;
+    }
     function box(w, h, d, mat, cast = true) {
         const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
         m.castShadow = cast; m.receiveShadow = true; return m;
     }
     // Place a box along a wall: s0..s1 cm from the wall start, between heights h0..h1 cm.
+    // Wall boxes get a dark top face so the layout reads clearly from above.
+    const solidWall = () => [materials.wall, materials.wall, materials.wallTop, materials.wall, materials.wall, materials.wall];
+    let cutGroups = [], curWall = null, builtView = null;
+    // Walk mode is always full height: low or cut-away walls only make sense from above.
+    const wallView = () => (typeof mode !== 'undefined' && mode === 'walk' ? 'full' : opts.wallView);
     function wallPiece(w, ux, uy, ang, s0, s1, h0, h1, depth, mat) {
         const len = s1 - s0; if (len <= 0.5 || h1 - h0 <= 0.5) return null;
         const mid = (s0 + s1) / 2;
-        const m = box(len * M, (h1 - h0) * M, depth * M, mat);
+        const m = box(len * M, (h1 - h0) * M, depth * M, mat === materials.wall ? solidWall() : mat);
         m.position.set((w.x1 + ux * mid) * M, (h0 + h1) / 2 * M, (w.y1 + uy * mid) * M);
         m.rotation.y = -ang;
+        if (curWall) curWall.meshes.push(m);
         group.add(m); return m;
+    }
+    // Outward normal of an outside wall (plan units), or null for inside walls.
+    const roomPolys = (plan.rooms || []).filter(r => r.pts && r.pts.length >= 3).map(r => r.pts);
+    function inPoly(x, y, pts) {
+        let inside = false;
+        for (let i = 0, j = pts.length - 1; i < pts.length; j = i++) {
+            const a = pts[i], c = pts[j];
+            if (((a.y > y) !== (c.y > y)) && (x < (c.x - a.x) * (y - a.y) / (c.y - a.y) + a.x)) inside = !inside;
+        }
+        return inside;
+    }
+    function outwardNormal(w, ux, uy, t) {
+        const mx = (w.x1 + w.x2) / 2, my = (w.y1 + w.y2) / 2, nx = -uy, ny = ux, off = t / 2 + 12;
+        if (roomPolys.length) {
+            const a = roomPolys.some(p => inPoly(mx + nx * off, my + ny * off, p));
+            const c = roomPolys.some(p => inPoly(mx - nx * off, my - ny * off, p));
+            if (a === c) return null;
+            return a ? { x: -nx, y: -ny } : { x: nx, y: ny };
+        }
+        const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2, sgn = (mx - cx) * nx + (my - cy) * ny >= 0 ? 1 : -1;
+        const nearEdge = Math.min(Math.abs(mx - b.x0), Math.abs(mx - b.x1), Math.abs(my - b.y0), Math.abs(my - b.y1)) < t + 20;
+        return nearEdge ? { x: nx * sgn, y: ny * sgn } : null;
+    }
+    // Fade outside walls that face the camera so the rooms behind them stay visible.
+    let lastCut = '';
+    function updateCutaway(force) {
+        const on = mode === 'orbit' && builtView === 'cutaway';
+        const key = on ? cutGroups.map(g => (g.n && (g.n.x * (camera.position.x - g.mx) + g.n.y * (camera.position.z - g.mz)) > 0) ? 1 : 0).join('') : 'off';
+        if (key === lastCut && !force) return;
+        lastCut = key;
+        cutGroups.forEach((g, i) => {
+            const fade = on && key[i] === '1';
+            g.meshes.forEach(m => {
+                if (m.userData.solid === undefined) m.userData.solid = m.material;
+                if (m.userData.part === 'wall') { m.material = fade ? materials.wallFaded : m.userData.solid; m.castShadow = !fade; }
+                else m.visible = !fade;
+            });
+        });
     }
 
     function build() {
         group.clear(); labelGroup.clear();
-        const wallH = BASE_WALL_H * opts.wallHeight;
-        materials.wall.color.set(opts.wallColor);
+        builtView = wallView();
+        const wallH = builtView === 'low' ? LOW_WALL_H : BASE_WALL_H * opts.wallHeight;
+        materials.wall.color.set(opts.wallColor); materials.wallFaded.color.set(opts.wallColor);
+        cutGroups = []; lastCut = '';
 
         // Floors
         (plan.rooms || []).forEach(r => {
@@ -168,7 +222,7 @@ function init() {
             const shape = new THREE.Shape(r.pts.map(p => new THREE.Vector2(p.x * M, -p.y * M)));
             const geo = new THREE.ShapeGeometry(shape); geo.rotateX(-Math.PI / 2);
             let mat;
-            if (opts.floor === 'room') mat = new THREE.MeshStandardMaterial({ color: r.color || '#e3f2fd', roughness: 0.9 });
+            if (opts.floor === 'room') mat = new THREE.MeshStandardMaterial({ color: floorColor(r.color), roughness: 0.9 });
             else {
                 const t = getFloorTex(opts.floor).clone(); t.needsUpdate = true; t.repeat.set(1 / TILE_M[opts.floor], 1 / TILE_M[opts.floor]);
                 mat = new THREE.MeshStandardMaterial({ map: t, roughness: opts.floor === 'marble' ? 0.3 : 0.85 });
@@ -181,28 +235,36 @@ function init() {
         (plan.walls || []).forEach(w => {
             const L = Math.hypot(w.x2 - w.x1, w.y2 - w.y1); if (L < 1) return;
             const ux = (w.x2 - w.x1) / L, uy = (w.y2 - w.y1) / L, ang = Math.atan2(uy, ux), t = w.t || 15;
+            const n = outwardNormal(w, ux, uy, t);
+            curWall = { n: n ? { x: n.x, y: n.y } : null, mx: (w.x1 + w.x2) / 2 * M, mz: (w.y1 + w.y2) / 2 * M, meshes: [] };
+            cutGroups.push(curWall);
+            const tag = (m, part) => { if (m) m.userData.part = part; return m; };
             const ops = (plan.openings || []).filter(o => o.wall === w.id)
                 .map(o => ({ o, s0: Math.max(0, o.t * L - o.w / 2), s1: Math.min(L, o.t * L + o.w / 2) }))
                 .sort((a, c) => a.s0 - c.s0);
             // Extend both ends by half the thickness so corners close.
             let cur = -t / 2;
             ops.forEach(({ o, s0, s1 }) => {
-                wallPiece(w, ux, uy, ang, cur, s0, 0, wallH, t, materials.wall);
+                tag(wallPiece(w, ux, uy, ang, cur, s0, 0, wallH, t, materials.wall), 'wall');
                 const top = Math.min(o.kind === 'door' ? DOOR_H : WIN_TOP, wallH);
-                wallPiece(w, ux, uy, ang, s0, s1, top, wallH, t, materials.wall);                         // lintel
+                tag(wallPiece(w, ux, uy, ang, s0, s1, top, wallH, t, materials.wall), 'wall');            // lintel
                 if (o.kind === 'window') {
                     const sill = Math.min(SILL_H, top);
-                    wallPiece(w, ux, uy, ang, s0, s1, 0, sill, t, materials.wall);                         // sill wall
-                    if (opts.windows) {
+                    tag(wallPiece(w, ux, uy, ang, s0, s1, 0, sill, t, materials.wall), 'wall');            // sill wall
+                    if (opts.windows && top - sill > 8) {
                         wallPiece(w, ux, uy, ang, s0, s1, sill, sill + 3, t + 4, materials.frame);          // sill board
                         const g = wallPiece(w, ux, uy, ang, s0 + 2, s1 - 2, sill + 3, top - 2, 2, materials.glass);
                         if (g) g.castShadow = false;
                         wallPiece(w, ux, uy, ang, (s0 + s1) / 2 - 2, (s0 + s1) / 2 + 2, sill + 3, top, 6, materials.frame); // mullion
                     }
-                } else if (opts.doors) addDoor(w, ux, uy, o, s0, s1, Math.min(DOOR_H, wallH) - 5);
+                } else if (opts.doors && builtView !== 'low') {
+                    const pv = addDoor(w, ux, uy, o, s0, s1, Math.min(DOOR_H, wallH) - 5);
+                    if (pv) curWall.meshes.push(pv);
+                }
                 cur = s1;
             });
-            wallPiece(w, ux, uy, ang, cur, L + t / 2, 0, wallH, t, materials.wall);
+            tag(wallPiece(w, ux, uy, ang, cur, L + t / 2, 0, wallH, t, materials.wall), 'wall');
+            curWall = null;
         });
 
         // Furniture
@@ -221,6 +283,7 @@ function init() {
         const leaf = box((width - 2) * M, h * M, 4 * M, materials.door); leaf.position.set((width / 2) * M, h / 2 * M, 0);
         const knob = box(0.03, 0.03, 0.09, materials.frame, false); knob.position.set((width - 12) * M, 1.0, 0);
         pivot.add(leaf, knob); group.add(pivot);
+        return pivot;
     }
 
     function addItem(it) {
@@ -259,9 +322,9 @@ function init() {
         x.fillStyle = '#fff'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(name, w / 2, c.height / 2 + 2);
         const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
         const s = new THREE.Sprite(new THREE.SpriteMaterial({ map: t, depthTest: false, transparent: true }));
-        const hgt = 0.32; s.scale.set(hgt * w / c.height, hgt, 1);
+        const hgt = 0.28; s.scale.set(hgt * w / c.height, hgt, 1);
         let cx = 0, cy = 0; r.pts.forEach(p => { cx += p.x; cy += p.y; });
-        s.position.set(cx / r.pts.length * M, BASE_WALL_H * opts.wallHeight * M + 0.4, cy / r.pts.length * M);
+        s.position.set(cx / r.pts.length * M, (wallView() === 'low' ? LOW_WALL_H : BASE_WALL_H * opts.wallHeight) * M + 0.4, cy / r.pts.length * M);
         s.renderOrder = 10;
         return s;
     }
@@ -274,8 +337,16 @@ function init() {
         if (mode === 'orbit') {
             camera.fov = 50; camera.updateProjectionMatrix();
             controls.target.copy(center);
-            const k = Math.max(1, 0.85 / camera.aspect); // narrow (portrait) screens need the camera further back
-            camera.position.set(center.x + span * 0.3 * k, span * 1.15 * k, center.z + span * 0.85 * k);
+            // Steep angle so every floor shows; the plan's long side runs across the screen's long side.
+            const pw = (b.x1 - b.x0) * M, pd = (b.y1 - b.y0) * M;
+            const sideways = (pd > pw) === (camera.aspect >= 1);
+            const dir = new THREE.Vector3(sideways ? 0.62 : 0.22, 1.25, sideways ? 0.22 : 0.62).normalize();
+            // Distance that fits the side running across the screen in the horizontal field of view
+            // and the other side in the vertical one.
+            const across = Math.max(2, sideways ? pd : pw), upDown = Math.max(2, sideways ? pw : pd);
+            const vf = THREE.MathUtils.degToRad(camera.fov) / 2, hf = Math.atan(Math.tan(vf) * camera.aspect);
+            const dist = Math.max(across / 2 / Math.tan(hf), upDown / 2 / Math.tan(vf)) * (camera.aspect < 1 ? 1.6 : 1.38) + 1.5;
+            camera.position.copy(center).addScaledVector(dir, dist);
             controls.update();
         } else {
             camera.fov = 70; camera.updateProjectionMatrix();
@@ -297,6 +368,7 @@ function init() {
     }
     function setMode(m) {
         mode = m;
+        if (wallView() !== builtView) build();
         root.querySelectorAll('[data-mode]').forEach(bn => bn.classList.toggle('is-active', bn.dataset.mode === m));
         controls.enabled = m === 'orbit';
         stage.classList.toggle('walk', m === 'walk');
@@ -359,6 +431,8 @@ function init() {
         document.getElementById('wall-height').value = opts.wallHeight;
         document.getElementById('wall-height-label').textContent = '(' + (BASE_WALL_H * opts.wallHeight / 100).toFixed(2) + ' m)';
         document.getElementById('floor-finish').value = opts.floor;
+        root.querySelectorAll('[data-wallview]').forEach(bn => bn.classList.toggle('is-active', bn.dataset.wallview === opts.wallView));
+        document.getElementById('wall-height').disabled = opts.wallView === 'low';
         root.querySelectorAll('#wall-colors [data-color]').forEach(s => s.classList.toggle('is-active', s.dataset.color === opts.wallColor));
         root.querySelectorAll('[data-opt]').forEach(c => { c.checked = !!opts[c.dataset.opt]; });
     }
@@ -370,6 +444,7 @@ function init() {
         labelGroup.visible = mode === 'orbit' && opts.labels;
     }
     document.getElementById('wall-height').addEventListener('input', e => { opts.wallHeight = +e.target.value; changed(); });
+    root.querySelectorAll('[data-wallview]').forEach(bn => bn.addEventListener('click', () => { opts.wallView = bn.dataset.wallview; changed(); }));
     document.getElementById('floor-finish').addEventListener('change', e => { opts.floor = e.target.value; changed(); });
     document.getElementById('wall-colors').addEventListener('click', e => { const s = e.target.closest('[data-color]'); if (!s) return; opts.wallColor = s.dataset.color; materials.wall.color.set(opts.wallColor); changed(false); });
     root.querySelectorAll('[data-opt]').forEach(c => c.addEventListener('change', () => { opts[c.dataset.opt] = c.checked; changed(); }));
@@ -400,6 +475,7 @@ function init() {
     renderer.setAnimationLoop(() => {
         const dt = Math.min(clock.getDelta(), 0.1);
         if (mode === 'orbit') controls.update(); else updateWalk(dt);
+        updateCutaway(false);
         renderer.render(scene, camera);
     });
 
@@ -408,6 +484,6 @@ function init() {
     function flash(text) { const h = document.getElementById('hint'); h.textContent = text; h.hidden = false; clearTimeout(flash.t); flash.t = setTimeout(() => { h.hidden = true; }, 5000); }
 
     syncPanel(); changed(); resize(); setMode('orbit');
-    flash('Switch to Walk to look around inside. Use Settings to change walls, floors and furniture.');
+    flash('Overview with low walls so every room is visible. Use Settings for full or cut-away walls, or Walk to look around inside.');
     window.FP3D = { scene, camera, controls, setMode, opts: () => opts };
 }

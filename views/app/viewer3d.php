@@ -34,6 +34,14 @@ $floors = ['room' => 'Room colours', 'wood' => 'Wood', 'tiles' => 'Tiles', 'marb
         <div class="ed-panel-head"><strong>3D Settings</strong><button type="button" class="ed-x" data-close="settings" aria-label="Close"><?= icon('x') ?></button></div>
         <div class="ed-panel-body">
             <div class="ed-row">
+                <label>Walls</label>
+                <div class="v3d-seg v3d-seg-block" role="group" aria-label="Wall view">
+                    <button type="button" data-wallview="cutaway" title="Outside walls facing you fade away">Cutaway</button>
+                    <button type="button" data-wallview="full" title="All walls at full height">Full</button>
+                    <button type="button" data-wallview="low" title="Low walls, like a dollhouse">Low</button>
+                </div>
+            </div>
+            <div class="ed-row">
                 <label for="wall-height">Wall height <span id="wall-height-label"></span></label>
                 <input type="range" id="wall-height" min="0.5" max="1.6" step="0.05" value="1">
             </div>
