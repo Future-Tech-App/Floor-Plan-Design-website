@@ -57,15 +57,15 @@ $links = [
 $footCols = [
     'Design' => [
         ['/app/editor', 'New Floor Plan'], ['/app/ai', 'AI Floor Plans'], ['/app/ai/analyzer', 'AI Plan Analyzer'],
-        ['/app/templates', 'Plan Templates'], ['/app/plans', 'Saved Plans & 3D'], ['/app/notes', 'Notes'],
+        ['/app/templates', 'Plan Templates'], ['/app/plans', 'Saved Plans & 3D'],
     ],
     'Tools' => [
         ['/app/calculators', 'Construction Calculator'], ['/app/calculators#metal', 'Metal Calculator'], ['/app/calculators/area', 'Area Calculator'],
-        ['/app/calculators#converter', 'Unit Converters'], ['/app/plans', '3D View'], ['/app/settings', 'Settings'],
+        ['/app/calculators#converter', 'Unit Converters'], ['/app/notes', 'Notes'],
     ],
     'Company' => [
         ['/app/about', 'About'], ['/support', 'Help & FAQ', true], ['/contact', 'Contact Us', true],
-        ['/privacy-policy', 'Privacy Policy', true], ['/terms-of-use', 'Terms of Service', true], ['/', 'Main Website', true],
+        ['/privacy-policy', 'Privacy Policy', true], ['/terms-of-use', 'Terms of Service', true],
     ],
 ];
 $hideCta = in_array($nav, ['ai'], true);
@@ -76,7 +76,7 @@ $hideCta = in_array($nav, ['ai'], true);
         <div>
             <span class="kicker kicker-light">Free · No sign-up</span>
             <h2>Ready To Design Your Dream Home?</h2>
-            <p>Draw your plan, furnish every room and walk through it in 3D — right in your browser.</p>
+            <p>Draw, furnish and walk through your plan in 3D — right in your browser.</p>
         </div>
         <div class="af-cta-actions">
             <a class="btn" href="<?= e(url('/app/editor')) ?>"><?= icon('plus') ?> Start a New Plan</a>
@@ -93,7 +93,7 @@ $hideCta = in_array($nav, ['ai'], true);
                 <img src="<?= e(url('/assets/img/logo.jpeg')) ?>" alt="" width="44" height="44" loading="lazy">
                 <span><?= e($site['name']) ?></span>
             </a>
-            <p><?= e($site['tagline']) ?> Draw accurate plans, furnish them, view them in 3D and export print-ready PDFs.</p>
+            <p><?= e($site['tagline']) ?></p>
             <div class="af-stores">
                 <?php if (!empty($site['android_url'])): ?>
                     <a class="af-store" href="<?= e($site['android_url']) ?>" target="_blank" rel="noopener"><?= icon('device') ?><span><small>Get it on</small>Google Play</span></a>

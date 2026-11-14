@@ -117,9 +117,8 @@ $nav = [
                 <img src="<?= e(url('/assets/img/logo.jpeg')) ?>" alt="" width="44" height="44" loading="lazy">
                 <span class="brand-text"><strong><?= e($site['name']) ?></strong><small>Floor plan &amp; home design</small></span>
             </a>
-            <p><?= e($site['tagline']) ?> Draw walls, furnish rooms, check everything in 3D and export professional plans.</p>
+            <p><?= e($site['tagline']) ?></p>
             <div class="footer-stores">
-                <a class="footer-store" href="<?= e(url('/app')) ?>"><?= icon('monitor') ?><span><small>Open the</small>Web App</span></a>
                 <?php if ($site['android_url']): ?>
                     <a class="footer-store" href="<?= e($site['android_url']) ?>" target="_blank" rel="noopener"><?= icon('device') ?><span><small>Get it on</small>Google Play</span></a>
                 <?php endif; ?>
@@ -136,7 +135,6 @@ $nav = [
                 <li><a href="<?= e(url('/app')) ?>">Web app</a></li>
                 <li><a href="<?= e(url('/features')) ?>">Features</a></li>
                 <li><a href="<?= e(url('/#gallery')) ?>">Plan gallery</a></li>
-                <li><a href="<?= e(url('/app/templates')) ?>">Plan templates</a></li>
                 <li><a href="<?= e(url('/download')) ?>">Download</a></li>
             </ul>
         </nav>
@@ -147,7 +145,6 @@ $nav = [
                 <li><a href="<?= e(url('/app/ai')) ?>">AI floor plans</a></li>
                 <li><a href="<?= e(url('/app/ai/analyzer')) ?>">AI plan analyzer</a></li>
                 <li><a href="<?= e(url('/app/calculators')) ?>">Construction calculator</a></li>
-                <li><a href="<?= e(url('/app/calculators/area')) ?>">Area calculator</a></li>
             </ul>
         </nav>
         <nav aria-label="Help">
@@ -163,7 +160,6 @@ $nav = [
             <h3 class="footer-title">Get in touch</h3>
             <ul class="footer-contact">
                 <li><?= icon('mail') ?><a href="mailto:<?= e($site['support_email']) ?>"><?= e($site['support_email']) ?></a></li>
-                <li><?= icon('globe') ?><span>floorplandesigner.app</span></li>
                 <li><?= icon('clock') ?><span>Replies within 1–2 business days</span></li>
             </ul>
             <a class="btn btn-light footer-msg" href="<?= e(url('/contact')) ?>">Send us a message <?= icon('arrow') ?></a>
