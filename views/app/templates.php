@@ -1,4 +1,5 @@
 <?php /** @var array $templates */
+$headClass = 'page-head-plan';
 require ROOT_DIR . '/views/app/_head.php';
 $counts = array_count_values(array_column($templates, 'cat'));
 ?>

@@ -216,5 +216,8 @@
                 items.forEach(function (it) { it.hidden = !(f === 'all' || it.getAttribute('data-cat') === f); });
             });
         });
+        // Open a category from a link such as /app/templates#2bed.
+        var start = location.hash && group.querySelector('[data-filter="' + location.hash.slice(1).replace(/[^\w-]/g, '') + '"]');
+        if (start) start.click();
     });
 })();

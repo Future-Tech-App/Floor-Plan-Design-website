@@ -1,5 +1,5 @@
 <?php /** Page banner for app pages. @var string $pageTitle  @var string|null $headLead */ ?>
-<section class="page-head">
+<section class="page-head<?= !empty($headClass) ? ' ' . e($headClass) : '' ?>">
     <div class="a-container">
         <h1><?= e($pageTitle) ?></h1>
         <p><a href="<?= e(url('/app')) ?>">Dashboard</a> &nbsp;/&nbsp; <?= e($pageTitle) ?></p>

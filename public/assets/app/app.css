@@ -276,3 +276,4 @@ button { font: inherit; }
 .credits img { width: 64px; height: 48px; object-fit: cover; flex: none; }
 .credits a { font-weight: 700; }
 @media (max-width: 600px) { .sec-soft .grid-4 { grid-template-columns: repeat(2, 1fr); gap: 10px; } .img-card-tall .ic-info h3 { font-size: 1.15rem; } .img-card-tall .ic-more { display: none; } }
+.page-head-plan { background-image: url('../img/interior/banner-plan.jpg'); background-position: center 40%; }

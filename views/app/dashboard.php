@@ -11,9 +11,9 @@ $ideas = [
     ['Lounge', 'sofa-green.jpg', 'Cosy lounge with a sofa, armchair, TV wall and a small study corner'],
 ];
 $templateCards = [
-    ['01.', 'One Bedroom', 'templates/1bed-2.jpg'],
-    ['02.', 'Two Bedroom', 'templates/2bed-1.jpg'],
-    ['03.', 'Three Bedroom', 'templates/3bed-1.jpg'],
+    ['01.', 'One Bedroom', 'template-1bed.jpg', '1bed'],
+    ['02.', 'Two Bedroom', 'template-2bed.jpg', '2bed'],
+    ['03.', 'Three Bedroom', 'template-3bed.jpg', '3bed'],
 ];
 $icon = static fn (string $n): string => icon($n === 'note' ? 'note' : $n);
 ?>
@@ -102,9 +102,9 @@ $icon = static fn (string $n): string => icon($n === 'note' ? 'note' : $n);
     <div class="a-container">
         <span class="label">Plan Templates</span>
         <div class="grid grid-3">
-            <?php foreach ($templateCards as [$num, $name, $img]): ?>
-                <a class="img-card" href="<?= e(url('/app/templates')) ?>">
-                    <img src="<?= e(url('/assets/app/' . $img)) ?>" alt="<?= e($name) ?> template" loading="lazy">
+            <?php foreach ($templateCards as [$num, $name, $img, $cat]): ?>
+                <a class="img-card" href="<?= e(url('/app/templates')) ?>#<?= e($cat) ?>">
+                    <img src="<?= e(url('/assets/img/interior/' . $img)) ?>" alt="<?= e($name) ?> home" loading="lazy">
                     <span class="ic-info"><span class="ic-num"><?= e($num) ?></span><h3><?= e($name) ?></h3><span class="ic-more">View Templates</span></span>
                 </a>
             <?php endforeach; ?>

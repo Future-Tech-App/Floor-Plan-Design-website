@@ -123,6 +123,10 @@ final class WebApp
             'kitchen-wood.jpg'   => ['Kam Idris', 'ka_idris', 'hYb7kbu4x7E', 'Kitchen with wood cabinets and teal stools'],
             'dining-green.jpg'   => ['Spacejoy', 'spacejoy', 'YI2YkyaREHk', 'Wooden dining table with chairs'],
             'sofa-green.jpg'     => ['Jason Wang', 'coohom', '8J49mtYWu7E', 'Lounge with a green sofa'],
+            'template-1bed.jpg'  => ['Brian Zajac', 'brianzajac', '15MYwJE3mlA', 'Bright bedroom with a sitting area'],
+            'template-2bed.jpg'  => ['curaits', 'curaits', 'p_xTs-dajHk', 'Sunlit living room with a glass partition'],
+            'template-3bed.jpg'  => ['Brian Zajac', 'brianzajac', 'g6LLnC-rn0E', 'Single-storey house at dusk'],
+            'banner-plan.jpg'    => ['Brian Zajac', 'brianzajac', '9lB0cUTt9IQ', 'Floor plan of a three-bedroom house'],
         ];
     }
 
