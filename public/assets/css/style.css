@@ -599,3 +599,6 @@ legend { font-weight: 700; color: var(--ink); padding: 0 6px; }
 .process-step.has-photo .process-num { position: relative; z-index: 1; margin-top: -28px; background: #fff; border-style: solid; box-shadow: 0 6px 16px rgba(15, 28, 46, .12); }
 .process-step.has-photo:not(:last-child)::after { top: 168px; }
 @media (prefers-reduced-motion: reduce) { .card-photo img { transition: none; } }
+
+/* Regular-weight "Start designing" buttons (header and hero) */
+.nav-cta, .hero .btn { font-weight: 400; }

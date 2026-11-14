@@ -356,3 +356,6 @@ html { scroll-behavior: smooth; }
 .tool-card-photo:hover .ring { background: var(--blue); color: #fff; }
 .tool-card-photo:focus-visible { outline: 3px solid var(--blue-light); outline-offset: 3px; }
 @media (prefers-reduced-motion: reduce) { .tool-card-photo::before { transition: none; } .tool-card-photo:hover::before { transform: none; } }
+
+/* Regular-weight hero buttons ("Start Designing", "Browse Templates") */
+.hero-actions .btn { font-weight: 400; }
