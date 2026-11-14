@@ -150,7 +150,7 @@ $nav = [
                 <li><a href="<?= e(url('/app/calculators')) ?>">Construction calculator</a></li>
             </ul>
         </nav>
-        <nav aria-label="Help">
+        <nav class="footer-help" aria-label="Help">
             <h3 class="footer-title">Help</h3>
             <ul class="footer-links">
                 <li><a href="<?= e(url('/support')) ?>">Support &amp; FAQ</a></li>
@@ -172,6 +172,7 @@ $nav = [
         <div class="container footer-bottom-inner">
             <span>&copy; <?= e($site['year']) ?> <?= e($site['company']) ?>. All rights reserved.</span>
             <nav class="footer-legal" aria-label="Legal">
+                <a class="fl-phone" href="<?= e(url('/support')) ?>">Support</a>
                 <a href="<?= e(url('/privacy-policy')) ?>">Privacy</a>
                 <a href="<?= e(url('/terms-of-use')) ?>">Terms</a>
                 <a href="<?= e(url('/sitemap.xml')) ?>">Sitemap</a>
