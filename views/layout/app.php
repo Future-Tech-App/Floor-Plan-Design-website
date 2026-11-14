@@ -53,23 +53,75 @@ $links = [
     <?= $content ?>
 </main>
 
+<?php
+$footCols = [
+    'Design' => [
+        ['/app/editor', 'New Floor Plan'], ['/app/ai', 'AI Floor Plans'], ['/app/ai/analyzer', 'AI Plan Analyzer'],
+        ['/app/templates', 'Plan Templates'], ['/app/plans', 'Saved Plans & 3D'], ['/app/notes', 'Notes'],
+    ],
+    'Tools' => [
+        ['/app/calculators', 'Construction Calculator'], ['/app/calculators/area', 'Area Calculator'], ['/app/calculators#converter', 'Unit Converters'],
+        ['/app/tools/measure', 'Measure'], ['/app/tools/level', 'Bubble Level'], ['/app/tools/compass', 'Compass'],
+    ],
+    'Company' => [
+        ['/app/about', 'About'], ['/support', 'Help & FAQ', true], ['/contact', 'Contact Us', true],
+        ['/privacy-policy', 'Privacy Policy', true], ['/terms-of-use', 'Terms of Service', true], ['/', 'Main Website', true],
+    ],
+];
+$hideCta = in_array($nav, ['ai'], true);
+?>
+<?php if (!$hideCta): ?>
+<section class="af-cta" aria-label="Start designing">
+    <div class="a-container af-cta-inner">
+        <div>
+            <span class="kicker kicker-light">Free · No sign-up</span>
+            <h2>Ready To Design Your Dream Home?</h2>
+            <p>Draw your plan, furnish every room and walk through it in 3D — right in your browser.</p>
+        </div>
+        <div class="af-cta-actions">
+            <a class="btn" href="<?= e(url('/app/editor')) ?>"><?= icon('plus') ?> Start a New Plan</a>
+            <a class="btn btn-ghost-light" href="<?= e(url('/app/ai')) ?>"><?= icon('sparkles') ?> Generate with AI</a>
+        </div>
+    </div>
+</section>
+<?php endif; ?>
+
 <footer class="af">
-    <div class="a-container af-top">
-        <a class="af-logo" href="<?= e(url('/app')) ?>">
-            <img src="<?= e(url('/assets/img/logo.jpeg')) ?>" alt="" width="40" height="40" loading="lazy">
-            <span><?= e($site['name']) ?></span>
-        </a>
-        <nav class="af-links" aria-label="Footer">
-            <a href="<?= e(url('/app/about')) ?>">About</a>
-            <a href="<?= e(url('/privacy-policy')) ?>" target="_blank" rel="noopener">Privacy Policy</a>
-            <a href="<?= e(url('/terms-of-use')) ?>" target="_blank" rel="noopener">Terms of Service</a>
-            <a href="<?= e(url('/support')) ?>" target="_blank" rel="noopener">Help</a>
-            <a href="<?= e(url('/app/settings')) ?>">Settings</a>
-        </nav>
+    <div class="a-container af-grid">
+        <div class="af-brand">
+            <a class="af-logo" href="<?= e(url('/app')) ?>">
+                <img src="<?= e(url('/assets/img/logo.jpeg')) ?>" alt="" width="44" height="44" loading="lazy">
+                <span><?= e($site['name']) ?></span>
+            </a>
+            <p><?= e($site['tagline']) ?> Draw accurate plans, furnish them, view them in 3D and export print-ready PDFs.</p>
+            <div class="af-stores">
+                <?php if (!empty($site['android_url'])): ?>
+                    <a class="af-store" href="<?= e($site['android_url']) ?>" target="_blank" rel="noopener"><?= icon('device') ?><span><small>Get it on</small>Google Play</span></a>
+                <?php endif; ?>
+                <?php if (!empty($site['ios_url'])): ?>
+                    <a class="af-store" href="<?= e($site['ios_url']) ?>" target="_blank" rel="noopener"><?= icon('device') ?><span><small>Download on the</small>App Store</span></a>
+                <?php else: ?>
+                    <span class="af-store is-soon" title="Coming soon"><?= icon('device') ?><span><small>Coming soon</small>App Store</span></span>
+                <?php endif; ?>
+            </div>
+            <a class="af-mail" href="mailto:<?= e($site['support_email']) ?>"><?= icon('mail') ?><?= e($site['support_email']) ?></a>
+        </div>
+        <?php foreach ($footCols as $heading => $items): ?>
+            <nav class="af-col" aria-label="<?= e($heading) ?>">
+                <h3><?= e($heading) ?></h3>
+                <ul>
+                    <?php foreach ($items as $item): [$href, $label] = $item; $ext = !empty($item[2]); ?>
+                        <li><a href="<?= e(url($href)) ?>"<?= $ext ? ' target="_blank" rel="noopener"' : '' ?>><?= e($label) ?></a></li>
+                    <?php endforeach; ?>
+                </ul>
+            </nav>
+        <?php endforeach; ?>
     </div>
     <div class="a-container af-bottom">
-        <span><?= icon('shield') ?> Your plans are saved in this browser on this device. Clearing browser data deletes them.</span>
-        <span><a href="<?= e(url('/app/about#credits')) ?>">Photos: Unsplash</a> · Web · v<?= e(preg_replace('/\+.*/', '', $site['version'])) ?></span>
+        <span>© <?= date('Y') ?> <?= e($site['name']) ?>. All rights reserved.</span>
+        <span class="af-note"><?= icon('shield') ?> Your plans stay in this browser — no account needed.</span>
+        <span class="af-meta"><a href="<?= e(url('/app/about#credits')) ?>">Photos: Unsplash</a><i aria-hidden="true">·</i>Web v<?= e(preg_replace('/\+.*/', '', $site['version'])) ?></span>
+        <a class="af-up" href="#app-header" aria-label="Back to top" title="Back to top"><?= icon('chevron-up') ?></a>
     </div>
 </footer>
 
