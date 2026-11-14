@@ -9,6 +9,7 @@ $nav = [
     'home'     => ['/', 'Home'],
     'features' => ['/features', 'Features'],
     'download' => ['/download', 'Download'],
+    'premium'  => ['/premium', 'Premium'],
     'support'  => ['/support', 'Support'],
     'contact'  => ['/contact', 'Contact'],
 ];
@@ -137,6 +138,7 @@ $nav = [
                 <li><a href="<?= e(url('/features')) ?>">Features</a></li>
                 <li><a href="<?= e(url('/#gallery')) ?>">Plan gallery</a></li>
                 <li><a href="<?= e(url('/download')) ?>">Download</a></li>
+                <li><a href="<?= e(url('/premium')) ?>">Premium plans</a></li>
             </ul>
         </nav>
         <nav aria-label="Tools">

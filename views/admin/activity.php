@@ -9,6 +9,7 @@ $labels = [
     'ai-settings' => ['Saved AI settings', 'blue'], 'ai-purge' => ['Cleared AI logs', 'red'],
     'plans-delete' => ['Deleted plans', 'red'], 'plan-delete' => ['Deleted a plan', 'red'],
     'notes-delete' => ['Deleted notes', 'red'], 'note-delete' => ['Deleted a note', 'red'],
+    'pricing-save' => ['Saved pricing', 'blue'],
 ];
 ?>
 <section class="ad-card">

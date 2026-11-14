@@ -31,6 +31,7 @@ require_once ROOT_DIR . '/src/AdminRepo.php';
 require_once ROOT_DIR . '/src/AdminApp.php';
 require_once ROOT_DIR . '/src/PlanStore.php';
 require_once ROOT_DIR . '/src/NoteStore.php';
+require_once ROOT_DIR . '/src/Pricing.php';
 
 date_default_timezone_set((string) config('timezone', 'UTC'));
 

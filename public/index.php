@@ -106,6 +106,19 @@ switch ($path) {
         ]);
         break;
 
+    case '/premium':
+        render('pages/premium', [
+            'title'       => 'Premium Plans — ' . config('app_name'),
+            'description' => 'Floor Plan Premium: no ads, unlimited plans, all export formats and full AI tools. Weekly, monthly and yearly plans.',
+            'canonical'   => '/premium',
+            'page'        => 'premium',
+        ]);
+        break;
+
+    case '/pricing':
+        header('Location: ' . url('/premium'), true, 301);
+        exit;
+
     case '/sitemap.xml':
         output_sitemap();
         break;
@@ -126,6 +139,7 @@ function output_sitemap(): void
         '/app/calculators' => ['monthly', '0.7'],
         '/features'       => ['monthly', '0.8'],
         '/download'       => ['monthly', '0.8'],
+        '/premium'        => ['monthly', '0.7'],
         '/support'        => ['monthly', '0.7'],
         '/contact'        => ['yearly', '0.5'],
         '/privacy-policy' => ['yearly', '0.3'],

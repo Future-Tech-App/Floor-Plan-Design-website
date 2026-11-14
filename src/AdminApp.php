@@ -63,6 +63,7 @@ final class AdminApp
             $sub === '/ai'                                => self::ai(),
             $sub === '/templates'                         => self::templates(),
             $sub === '/versions'                          => self::versions(),
+            $sub === '/pricing'                           => self::pricing(),
             $sub === '/settings'                          => self::settings(),
             $sub === '/users'                             => self::users(),
             $sub === '/account'                           => self::account(),
@@ -577,6 +578,46 @@ final class AdminApp
             }
         }
         self::page('versions', 'App Versions', 'versions', ['values' => $values, 'errors' => $errors]);
+    }
+
+    /* ================================================================ pricing */
+
+    private static function pricing(): void
+    {
+        $errors = [];
+        $values = Pricing::settings();
+        if (is_post()) {
+            csrf_verify();
+            $currency = mb_substr(input('price_currency'), 0, 6);
+            if ($currency === '') {
+                $errors['price_currency'] = 'Enter a currency symbol or code, e.g. $ or PKR.';
+            }
+            $save = ['price_currency' => $currency];
+            foreach (array_keys(Pricing::PLANS) as $k) {
+                $price = str_replace(',', '.', input('price_' . $k));
+                if ($price !== '' && (!is_numeric($price) || (float) $price < 0 || (float) $price > 100000)) {
+                    $errors['price_' . $k] = 'Enter a price like 4.99, or leave empty.';
+                }
+                $badge = input('price_' . $k . '_badge');
+                $save['price_' . $k] = $price === '' ? '' : number_format((float) $price, 2, '.', '');
+                $save['price_' . $k . '_on'] = isset($_POST['price_' . $k . '_on']) ? '1' : '0';
+                $save['price_' . $k . '_badge'] = isset(Pricing::BADGES[$badge]) ? $badge : '';
+            }
+            if ($errors === []) {
+                foreach ($save as $key => $v) {
+                    Repository::setSetting($key, $v);
+                }
+                AdminRepo::log('pricing-save', $currency . ' ' . $save['price_weekly'] . '/' . $save['price_monthly'] . '/' . $save['price_yearly']);
+                flash('success', 'Pricing saved. The Premium page shows it now.');
+                redirect('/admin/pricing');
+            }
+            flash('error', 'Not saved. Please fix the highlighted fields.');
+            $values['currency'] = $currency;
+            foreach (array_keys(Pricing::PLANS) as $k) {
+                $values[$k] = ['on' => isset($_POST['price_' . $k . '_on']), 'price' => input('price_' . $k), 'badge' => input('price_' . $k . '_badge')];
+            }
+        }
+        self::page('pricing', 'Premium Pricing', 'pricing', ['values' => $values, 'errors' => $errors]);
     }
 
     /* ================================================================ site settings */

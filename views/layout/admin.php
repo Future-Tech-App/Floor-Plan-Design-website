@@ -13,6 +13,7 @@ $menu = [
     ],
     'Content' => [
         ['templates', '/admin/templates', 'Templates', 'layers'],
+        ['pricing', '/admin/pricing', 'Premium Pricing', 'zap'],
         ['versions', '/admin/versions', 'App Versions', 'device'],
         ['settings', '/admin/settings', 'Site Settings', 'settings'],
     ],
