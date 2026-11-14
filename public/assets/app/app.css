@@ -31,7 +31,7 @@ button { font: inherit; }
 .ah-logo img { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--blue-light); }
 .ah-logo span { font: 400 1.5rem/1 var(--serif); letter-spacing: 1px; white-space: nowrap; }
 .ah-nav { flex: 1; display: flex; justify-content: flex-end; align-items: center; gap: 26px; padding: 0 26px; }
-.ah-nav a { position: relative; color: var(--ink-strong); font: 800 15px var(--sans); letter-spacing: .3px; padding: 6px 0; border-bottom: 1px solid transparent; }
+.ah-nav a { position: relative; color: var(--ink-strong); font: 400 15px var(--sans); letter-spacing: .3px; padding: 6px 0; border-bottom: 1px solid transparent; }
 .ah-nav a:hover, .ah-nav a.active { color: var(--blue-text); border-bottom-color: var(--blue-text); }
 .ah-cta { flex: none; display: flex; flex-direction: column; justify-content: center; width: 220px; padding: 0 24px; background: var(--blue); color: #fff; transition: background .25s; }
 .ah-cta:hover { background: var(--navy2); color: #fff; }
