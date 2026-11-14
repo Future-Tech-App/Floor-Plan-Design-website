@@ -7,7 +7,7 @@ A plain-PHP (no framework, no Composer) website and backend for the Floor Plan D
 - **Public site:** Home, Features, Download, Support/FAQ (live search), Contact, Privacy Policy, Terms of Use. Its URLs match the current site (`/support`, `/contact`, `/privacy-policy`, `/terms-of-use`).
 - **Backend:** stores contact messages in SQLite, applies rate limiting and a honeypot to block spam, and uses CSRF protection, prepared statements and security headers.
 - **JSON API:** `/api/v1/version.php` (version gate), `/api/v1/contact.php` (contact form), `/api/v1/generate-plan.php` and `/api/v1/analyze-plan.php` (AI tools), and `/api/v1/ai.php` (AI proxy for the classic app).
-- **Admin panel:** `/admin/` lets you read, mark and delete messages, and manage the latest version and the force/optional update rules.
+- **Admin panel (`/admin`):** a separate PHP admin area: dashboard, contact messages, page-view analytics, AI usage, plan templates, app version rules, site settings (contact details, store links, announcement banner), admins and an activity log. See [Admin panel](#admin-panel).
 
 ## Requirements
 
@@ -79,6 +79,24 @@ Set the key either with the `GROQ_API_KEY` GitHub secret, which the deploy workf
 
 Without a key, the generator falls back to its built-in layouts and the analyzer shows "AI features are not configured on this server yet".
 
+## Admin panel
+
+A separate admin area at `/admin`, built in plain PHP (`src/AdminApp.php` routes and handles pages, `src/AdminRepo.php` runs queries, views are in `views/admin/`, styles in `public/assets/admin/`). Every page needs a signed-in admin; all forms use CSRF tokens.
+
+| Page | What it does |
+|---|---|
+| Dashboard | Unread messages, page views (7 days, today, change vs. previous week), AI requests and success rate, 14-day charts, top pages, latest messages, system status |
+| Messages | Filter, search, bulk mark read/unread/delete, CSV export, full message view with reply-by-email |
+| Analytics | Page views for 7/30/90 days, website vs. web app, most viewed pages. Only daily counts per page are stored: no cookies, IP addresses or visitor IDs, and bots are ignored |
+| AI Usage | Requests per day, success rate, error types, busiest (masked) IPs; switch the AI tools off and set the hourly per-visitor limit; clear old logs |
+| Templates | Upload (JPG/PNG/WebP, 5 MB) and delete the plan templates shown at `/app/templates`. The `public/assets/app/templates` folder must be writable |
+| App Versions | Latest version and force/optional update rules served by `/api/v1/version.php` |
+| Site Settings | Support email, tagline, Google Play and App Store links (override `config/app.php`), and an announcement banner shown on the website and web app |
+| Admins / My Account | Add or remove admins, change your password |
+| Activity Log | Every sign-in and change, with admin, time and masked IP |
+
+Old admin URLs (`/admin/login.php`, `/admin/index.php`, `/admin/settings.php`, `/admin/setup.php`) redirect to the new pages.
+
 ## Quick start (local)
 
 ```bash
@@ -87,7 +105,7 @@ php bin/create-admin.php admin        # prompts for a password (min 10 chars)
 php -S localhost:8000 -t public public/index.php
 ```
 
-Open http://localhost:8000 for the site and http://localhost:8000/admin/login.php for the admin panel.
+Open http://localhost:8000 for the site and http://localhost:8000/admin for the admin panel.
 
 The SQLite database is created automatically at `data/floorplan.sqlite` the first time a page is loaded.
 
@@ -143,7 +161,7 @@ Before the first automatic deploy, back up `public_html/` and remove the React f
 
 1. Generate a token on your computer with `openssl rand -hex 32`.
 2. Add it as the secret `ADMIN_SETUP_TOKEN`, then deploy.
-3. Open `https://floorplandesigner.app/admin/setup.php?token=<token>` and create your admin.
+3. Open `https://floorplandesigner.app/admin/setup?token=<token>` and create your admin.
 4. Delete the secret. The next deploy then removes the token file from the server.
 
 You can skip this if you already created an admin with the zip's setup link.
@@ -213,7 +231,7 @@ php-website/
 ├── public/                  web root
 │   ├── index.php            front controller for public pages
 │   ├── api/v1/              JSON endpoints
-│   ├── admin/               admin panel
+│   ├── assets/admin/        admin panel styles and script
 │   └── assets/              css, js, images
 ├── src/                     bootstrap, helpers, Database, Repository, Auth, VersionGate, ContactService
 └── views/                   layouts, public pages, admin pages
@@ -222,4 +240,4 @@ php-website/
 ## Notes
 
 - The Privacy Policy and Terms of Use are drafts based on the app's data-safety audit (`PLAY_DATA_SAFETY.txt`). Have them reviewed before you publish.
-- The admin login adds a fixed delay after each failed attempt. For stronger brute-force protection, add IP lockout or restrict `/admin` by IP at the web server.
+- The admin login allows 5 failed attempts per IP address every 15 minutes and adds a delay after each failure. For extra protection, restrict `/admin` by IP at the web server.

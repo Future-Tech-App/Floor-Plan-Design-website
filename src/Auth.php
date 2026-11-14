@@ -43,8 +43,13 @@ final class Auth
     {
         if (!self::check()) {
             flash('error', 'Please sign in to continue.');
-            redirect('/admin/login.php');
+            redirect('/admin/login');
         }
+    }
+
+    public static function id(): int
+    {
+        return (int) ($_SESSION['admin']['id'] ?? 0);
     }
 
     public static function user(): ?string

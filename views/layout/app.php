@@ -26,6 +26,7 @@ $links = [
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="app nav-<?= e($nav) ?>">
+<?= announcement_bar($site) ?>
 <a class="skip-link" href="#main">Skip to content</a>
 
 <header class="ah" id="app-header">

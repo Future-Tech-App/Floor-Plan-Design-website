@@ -39,6 +39,7 @@ $nav = [
     <script>document.documentElement.classList.add('js');</script>
 </head>
 <body class="page-<?= e($page ?: 'other') ?>">
+<?= announcement_bar($site) ?>
 <a class="skip-link" href="#main">Skip to content</a>
 
 <div class="topbar">

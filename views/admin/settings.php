@@ -1,54 +1,26 @@
-<?php /** @var array $values  @var array $errors */
-$err = static fn (string $f): string => isset($errors[$f]) ? '<p class="field-error">' . e($errors[$f]) . '</p>' : '';
-$apiUrl = url('/api/v1/version.php?platform=android&version=' . rawurlencode($values['latest_version'] ?: '1.0.0'));
+<?php /** @var array $values @var array $errors @var array $defaults */
+$err = static fn (string $k) => isset($errors[$k]) ? '<em class="ad-err">' . e($errors[$k]) . '</em>' : '';
 ?>
-<div class="admin-head">
-    <h1>Version &amp; settings</h1>
-    <p class="muted">Controls the public version shown on the site and the decision returned by the version API.</p>
-</div>
-
-<form class="form card" method="post" action="<?= e(url('/admin/settings.php')) ?>">
+<form method="post" action="<?= e(url('/admin/settings')) ?>">
     <?= csrf_field() ?>
-
-    <div class="field">
-        <label for="latest_version">Latest version (shown on the website)</label>
-        <input id="latest_version" name="latest_version" type="text" placeholder="3.0.2" value="<?= e($values['latest_version']) ?>">
-        <?= $err('latest_version') ?>
-    </div>
-
-    <fieldset>
-        <legend>Update gate</legend>
-        <label class="check">
-            <input type="checkbox" name="force_update_enabled" value="1"<?= $values['force_update_enabled'] === '1' ? ' checked' : '' ?>>
-            Enable version gate
-        </label>
-
-        <div class="field">
-            <label for="force_update_min_version">Minimum version (older builds must update)</label>
-            <input id="force_update_min_version" name="force_update_min_version" type="text" placeholder="0.0.0" value="<?= e($values['force_update_min_version']) ?>">
-            <?= $err('force_update_min_version') ?>
+    <section class="ad-card ad-mb">
+        <div class="ad-card-head"><h2>Announcement banner</h2><span class="ad-muted">A slim bar at the top of the website and web app</span></div>
+        <div class="ad-card-body ad-form">
+            <label class="ad-check"><input type="checkbox" name="announce_enabled" value="1" <?= $values['announce_enabled'] === '1' ? 'checked' : '' ?>><span>Show the banner<small>Visitors can close it; it reappears when you change the text.</small></span></label>
+            <div class="ad-form-grid">
+                <label class="ad-field"><span>Text</span><input name="announce_text" maxlength="200" value="<?= e($values['announce_text']) ?>" placeholder="New: walk through your plan in 3D!"><?= $err('announce_text') ?></label>
+                <label class="ad-field"><span>Link (optional)</span><input name="announce_link" value="<?= e($values['announce_link']) ?>" placeholder="/app/ai or https://…"><?= $err('announce_link') ?></label>
+            </div>
         </div>
-
-        <div class="field">
-            <label for="optional_update_version">Optional update version (older builds get a dismissible prompt)</label>
-            <input id="optional_update_version" name="optional_update_version" type="text" placeholder="0.0.0" value="<?= e($values['optional_update_version']) ?>">
-            <?= $err('optional_update_version') ?>
+    </section>
+    <section class="ad-card">
+        <div class="ad-card-head"><h2>Contact &amp; store links</h2><span class="ad-muted">Leave a field empty to use the default</span></div>
+        <div class="ad-card-body ad-form-grid">
+            <label class="ad-field"><span>Support email</span><input type="email" name="site_support_email" value="<?= e($values['site_support_email']) ?>" placeholder="<?= e((string) $defaults['site_support_email']) ?>"><small>Shown in footers, About and Contact.</small><?= $err('site_support_email') ?></label>
+            <label class="ad-field"><span>Tagline</span><input name="site_tagline" maxlength="300" value="<?= e($values['site_tagline']) ?>" placeholder="<?= e((string) $defaults['site_tagline']) ?>"><?= $err('site_tagline') ?></label>
+            <label class="ad-field"><span>Google Play link</span><input type="url" name="site_android_url" value="<?= e($values['site_android_url']) ?>" placeholder="<?= e((string) $defaults['site_android_url']) ?>"><?= $err('site_android_url') ?></label>
+            <label class="ad-field"><span>App Store link</span><input type="url" name="site_ios_url" value="<?= e($values['site_ios_url']) ?>" placeholder="<?= e((string) $defaults['site_ios_url'] ?: 'https://apps.apple.com/…') ?>"><small>Fills the “Coming soon” App Store buttons.</small><?= $err('site_ios_url') ?></label>
         </div>
-
-        <div class="field">
-            <label for="force_update_blocked_versions">Blocked versions (comma-separated, exact match)</label>
-            <input id="force_update_blocked_versions" name="force_update_blocked_versions" type="text" placeholder="3.0.0, 3.0.1+31" value="<?= e($values['force_update_blocked_versions']) ?>">
-            <?= $err('force_update_blocked_versions') ?>
-        </div>
-    </fieldset>
-
-    <button class="btn" type="submit">Save settings</button>
+        <div class="ad-form-foot"><button class="ad-btn ad-btn-primary" type="submit">Save settings</button></div>
+    </section>
 </form>
-
-<div class="card">
-    <h2>Test the API</h2>
-    <p>The app (or any client) can call:</p>
-    <pre><code>GET <?= e($apiUrl) ?></code></pre>
-    <p><a href="<?= e($apiUrl) ?>" target="_blank" rel="noopener">Open in a new tab →</a></p>
-    <p class="muted small">Store links, support email and other site details are set in <code>config/local.php</code>.</p>
-</div>

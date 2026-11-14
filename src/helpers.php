@@ -151,16 +151,22 @@ function site_context(): array
 {
     static $context = null;
     if ($context === null) {
+        // Admin → Site settings override the config defaults.
+        $s = Repository::allSettings();
+        $pick = static fn (string $key, string $default): string => ($s['site_' . $key] ?? '') !== '' ? $s['site_' . $key] : $default;
         $context = [
             'name'          => config('app_name'),
-            'tagline'       => config('tagline'),
+            'tagline'       => $pick('tagline', (string) config('tagline')),
             'company'       => config('company'),
-            'support_email' => config('support_email'),
+            'support_email' => $pick('support_email', (string) config('support_email')),
             'site_url'      => rtrim((string) config('site_url'), '/'),
-            'android_url'   => config('android_url'),
-            'ios_url'       => config('ios_url'),
-            'version'       => Repository::setting('latest_version', (string) config('app_version')),
+            'android_url'   => $pick('android_url', (string) config('android_url')),
+            'ios_url'       => $pick('ios_url', (string) config('ios_url')),
+            'version'       => $s['latest_version'] ?? (string) config('app_version'),
             'year'          => date('Y'),
+            'announcement'  => ($s['announce_enabled'] ?? '0') === '1' && trim($s['announce_text'] ?? '') !== ''
+                ? ['text' => $s['announce_text'], 'link' => $s['announce_link'] ?? '', 'id' => substr(md5($s['announce_text']), 0, 8)]
+                : null,
         ];
     }
     return $context;
@@ -174,4 +180,21 @@ function fmt_date(?string $utc): string
     }
     $ts = strtotime($utc . ' UTC');
     return $ts === false ? $utc : date('M j, Y g:i A', $ts);
+}
+
+/** Small banner set in Admin → Site settings (shown on the website and web app). */
+function announcement_bar(array $site): string
+{
+    $a = $site['announcement'] ?? null;
+    if (!$a) {
+        return '';
+    }
+    $text = e($a['text']);
+    $link = (string) $a['link'];
+    if ($link !== '' && preg_match('#^(https?://|/)#', $link)) {
+        $text .= ' <a href="' . e($link) . '">Learn more →</a>';
+    }
+    return '<div class="announce" data-announce="' . e($a['id']) . '" role="status"><span>' . $text . '</span>'
+        . '<button type="button" aria-label="Dismiss" onclick="try{localStorage.setItem(\'fpd_announce\',this.parentNode.dataset.announce)}catch(e){};this.parentNode.remove()">×</button></div>'
+        . '<script>try{if(localStorage.getItem("fpd_announce")==="' . e($a['id']) . '")document.currentScript.previousElementSibling.remove()}catch(e){}</script>';
 }

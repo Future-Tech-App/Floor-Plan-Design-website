@@ -24,7 +24,21 @@ final class GroqClient
 
     public static function configured(): bool
     {
-        return (string) config('groq_api_key', '') !== '';
+        return (string) config('groq_api_key', '') !== '' && self::enabled();
+    }
+
+    /** Admin → AI usage can switch the AI tools off without removing the key. */
+    public static function enabled(): bool
+    {
+        return Repository::setting('ai_enabled', '1') !== '0';
+    }
+
+    /** Hourly per-IP limit: admin setting, else config('ai_rate_limit'). */
+    public static function hourlyLimit(): int
+    {
+        $limit = (array) config('ai_rate_limit', ['max' => 30, 'window_minutes' => 60]);
+        $override = (int) Repository::setting('ai_rate_max', '0');
+        return $override > 0 ? $override : (int) $limit['max'];
     }
 
     /** Reject cross-origin browser requests (browsers always send Origin on cross-origin POSTs). */
@@ -48,7 +62,7 @@ final class GroqClient
     {
         $limit = (array) config('ai_rate_limit', ['max' => 30, 'window_minutes' => 60]);
         $used = Repository::recentAiRequestCount(client_ip(), (int) $limit['window_minutes']);
-        if ($used + $callsNeeded > (int) $limit['max']) {
+        if ($used + $callsNeeded > self::hourlyLimit()) {
             header('Retry-After: 600');
             throw new GroqException('You have used the AI tools a lot recently. Please try again in a little while.', 429);
         }
@@ -64,6 +78,9 @@ final class GroqClient
         $apiKey = (string) config('groq_api_key', '');
         if ($apiKey === '') {
             throw new GroqException('AI features are not configured on this server yet.', 503);
+        }
+        if (!self::enabled()) {
+            throw new GroqException('AI features are switched off at the moment. Please try again later.', 503);
         }
         self::assertWithinRateLimit();
 

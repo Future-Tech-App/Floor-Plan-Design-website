@@ -62,7 +62,7 @@ jobs:
           sleep 2
           fail=0
           for p in / /features /download /support /contact /privacy-policy /terms-of-use \
-                   /sitemap.xml /app-ads.txt /.well-known/assetlinks.json /admin/login.php \
+                   /sitemap.xml /app-ads.txt /.well-known/assetlinks.json /admin/login \
                    /app /app/editor /app/templates /app/plans /app/notes /app/about \
                    /app/calculators /app/calculators/area "/app/calculators/area?calc=1" \
                    /app/ai /app/ai/analyzer \
@@ -127,7 +127,7 @@ jobs:
           else
             echo "::warning::GROQ_API_KEY secret not set — AI features in the web app will be unavailable."
           fi
-          # Optional: enables /admin/setup.php?token=... until the first admin exists.
+          # Optional: enables /admin/setup?token=... until the first admin exists.
           # Remove the secret afterwards; the next deploy then deletes the file.
           if [ -n "$ADMIN_SETUP_TOKEN" ]; then
             if [ ${#ADMIN_SETUP_TOKEN} -lt 32 ]; then

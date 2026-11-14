@@ -39,7 +39,7 @@ rm -f "$STAGE/config/local.php" "$STAGE/data/"*.sqlite*
 # One-time admin setup token (64 hex chars)
 TOKEN="$(openssl rand -hex 32)"
 printf '%s\n' "$TOKEN" > "$STAGE/config/setup_token.txt"
-printf '%s\n' "$SITE_URL/admin/setup.php?token=$TOKEN" > "$DIST/ADMIN_SETUP_URL.txt"
+printf '%s\n' "$SITE_URL/admin/setup?token=$TOKEN" > "$DIST/ADMIN_SETUP_URL.txt"
 
 # Strip macOS metadata
 find "$STAGE" \( -name '.DS_Store' -o -name '._*' \) -delete

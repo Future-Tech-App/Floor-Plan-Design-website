@@ -125,8 +125,8 @@ final class WebApp
         $dir = ROOT_DIR . '/public/assets/app/templates';
         $names = ['1bed' => '1 Bed Apartment', '2bed' => '2 Bed Apartment', '3bed' => '3 Bed Apartment'];
         $out = [];
-        foreach (glob($dir . '/*.jpg') ?: [] as $file) {
-            if (!preg_match('/^(\dbed)-(\d+)\.jpg$/', basename($file), $m)) {
+        foreach (glob($dir . '/*') ?: [] as $file) { // GLOB_BRACE is missing on some hosts
+            if (!preg_match('/^(\dbed)-(\d+)\.(jpe?g|png|webp)$/', basename($file), $m)) {
                 continue;
             }
             $out[] = ['cat' => $m[1], 'num' => (int) $m[2], 'file' => basename($file), 'name' => $names[$m[1]] . ' - Plan ' . $m[2]];

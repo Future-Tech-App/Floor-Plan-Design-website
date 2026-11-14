@@ -78,5 +78,42 @@ final class Database
                 created_at    TEXT NOT NULL DEFAULT (datetime('now'))
             )
         SQL);
+        $cols = array_column($pdo->query('PRAGMA table_info(admin_users)')->fetchAll(), 'name');
+        if (!in_array('last_login_at', $cols, true)) {
+            $pdo->exec('ALTER TABLE admin_users ADD COLUMN last_login_at TEXT');
+        }
+
+        // Privacy-friendly page view counts: one row per day and path, no visitor data.
+        $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS page_views (
+                day   TEXT NOT NULL,
+                path  TEXT NOT NULL,
+                views INTEGER NOT NULL DEFAULT 0,
+                PRIMARY KEY (day, path)
+            )
+        SQL);
+
+        // What admins did in the panel.
+        $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS admin_log (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                admin      TEXT NOT NULL,
+                action     TEXT NOT NULL,
+                details    TEXT NOT NULL DEFAULT '',
+                ip         TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            )
+        SQL);
+
+        // Failed sign-in attempts, for throttling password guessing.
+        $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS login_attempts (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip         TEXT NOT NULL,
+                username   TEXT NOT NULL DEFAULT '',
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            )
+        SQL);
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_login_ip_created ON login_attempts (ip, created_at)');
     }
 }

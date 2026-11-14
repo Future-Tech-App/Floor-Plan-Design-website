@@ -39,4 +39,4 @@ if (strlen($password) < 10) {
 }
 
 Repository::saveAdmin($username, password_hash($password, PASSWORD_DEFAULT));
-echo "Admin '{$username}' saved. Sign in at /admin/login.php\n";
+echo "Admin '{$username}' saved. Sign in at /admin/login\n";

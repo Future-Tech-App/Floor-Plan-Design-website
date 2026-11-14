@@ -28,6 +28,19 @@ if ($path !== '/') {
     $path = rtrim($path, '/');
 }
 
+// Admin panel.
+if ($path === '/admin' || str_starts_with($path, '/admin/')) {
+    AdminApp::dispatch(substr($path, 6));
+    exit;
+}
+
+// Count successful page views for Admin → Analytics (no visitor data is stored).
+register_shutdown_function(static function () use ($path): void {
+    if (http_response_code() === 200 && $path !== '/sitemap.xml') {
+        Analytics::hit($path);
+    }
+});
+
 // Web app (PHP pages + JavaScript editor) lives under /app.
 if ($path === '/app' || str_starts_with($path, '/app/')) {
     WebApp::dispatch(substr($path, 4));
