@@ -28,7 +28,7 @@ $highlights = [
 
         <h2 class="sec-title" style="margin-top:60px">Your Privacy</h2>
         <span class="rule"></span>
-        <p style="max-width:700px;margin:0 auto 24px">Your plans are saved in this browser and backed up to our server, linked only to a random ID — not to your name or email. Deleting a plan deletes its backup. Notes stay in this browser. AI requests go through our server to the AI provider and are not stored.</p>
+        <p style="max-width:700px;margin:0 auto 24px">Your plans are saved in this browser and backed up to our server, linked only to a random ID — not to your name or email. Notes are backed up the same way. Deleting a plan or note deletes its backup. AI requests go through our server to the AI provider and are not stored.</p>
         <div class="form-actions" style="justify-content:center">
             <a class="btn" href="<?= e(url('/privacy-policy')) ?>" target="_blank" rel="noopener">Privacy Policy</a>
             <a class="btn btn-dark" href="<?= e(url('/terms-of-use')) ?>" target="_blank" rel="noopener">Terms of Service</a>

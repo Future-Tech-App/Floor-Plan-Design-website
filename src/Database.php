@@ -149,5 +149,21 @@ final class Database
             )
         SQL);
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_api_hits ON api_hits (bucket, ip, created_at)');
+
+        // Notes from the web app and the mobile apps. Each device sends its whole notes
+        // list; the server keeps exactly that list (owner = same hash as plans).
+        $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS notes (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                owner      TEXT NOT NULL,
+                source     TEXT NOT NULL DEFAULT 'web',
+                title      TEXT NOT NULL DEFAULT '',
+                content    TEXT NOT NULL DEFAULT '',
+                category   TEXT NOT NULL DEFAULT '',
+                note_time  TEXT NOT NULL DEFAULT '',
+                synced_at  TEXT NOT NULL DEFAULT (datetime('now'))
+            )
+        SQL);
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_notes_owner ON notes (owner)');
     }
 }

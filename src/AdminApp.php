@@ -57,6 +57,8 @@ final class AdminApp
             $sub === '/plans'                             => self::plans(),
             (bool) preg_match('#^/plans/(\d+)$#', $sub, $m)    => self::plan((int) $m[1]),
             (bool) preg_match('#^/plans/(\d+)/download$#', $sub, $m) => self::planDownload((int) $m[1]),
+            $sub === '/notes'                             => self::notes(),
+            (bool) preg_match('#^/notes/(\d+)$#', $sub, $m)    => self::note((int) $m[1]),
             $sub === '/analytics'                         => self::analytics(),
             $sub === '/ai'                                => self::ai(),
             $sub === '/templates'                         => self::templates(),
@@ -154,6 +156,7 @@ final class AdminApp
         self::page('dashboard', 'Dashboard', 'dashboard', [
             'messages'  => AdminRepo::messageCounts(),
             'plans'     => PlanStore::stats(),
+            'notesTotal' => NoteStore::stats()['total'],
             'recentPlans' => PlanStore::search(1, 5, '', '')['items'],
             'latest'    => AdminRepo::latestMessages(6),
             'views7'    => $views7,
@@ -324,6 +327,7 @@ final class AdminApp
         self::page('plan', $row['name'], 'plans', [
             'row' => $row, 'svg' => PlanStore::svg($data, $floor), 'floors' => $floors, 'floor' => $floor,
             'deviceCount' => PlanStore::ownerPlanCount((string) $row['owner']),
+            'deviceNotes' => NoteStore::countForOwner((string) $row['owner']),
         ]);
     }
 
@@ -338,6 +342,63 @@ final class AdminApp
         header('Content-Disposition: attachment; filename="' . $name . '.json"');
         echo json_encode(json_decode((string) $row['data'], true), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         exit;
+    }
+
+    /* ================================================================ user notes */
+
+    private static function notes(): void
+    {
+        $source = input('source', 'get');
+        if (!isset(PlanStore::SOURCES[$source])) {
+            $source = '';
+        }
+        $q = mb_substr(input('q', 'get'), 0, 100);
+        $device = preg_match('/^[a-f0-9]{64}$/', input('device', 'get')) ? input('device', 'get') : '';
+        $query = array_filter(['source' => $source, 'q' => $q, 'device' => $device]);
+        if (is_post()) {
+            csrf_verify();
+            $ids = array_values(array_filter(array_map('intval', (array) ($_POST['ids'] ?? [])), static fn ($i) => $i > 0));
+            if ($ids && input('action') === 'delete') {
+                foreach ($ids as $id) {
+                    NoteStore::delete($id);
+                }
+                AdminRepo::log('notes-delete', count($ids) . ' note(s)');
+                flash('success', count($ids) . ' note' . (count($ids) > 1 ? 's' : '') . ' deleted from the server.');
+            } else {
+                flash('error', 'Select at least one note first.');
+            }
+            redirect('/admin/notes' . ($query ? '?' . http_build_query($query) : ''));
+        }
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $list = NoteStore::search($page, self::PER_PAGE, $source, $q, $device);
+        self::page('notes', 'User Notes', 'notes', [
+            'notes' => $list['items'], 'total' => $list['total'], 'page' => $page,
+            'pages' => max(1, (int) ceil($list['total'] / self::PER_PAGE)),
+            'source' => $source, 'q' => $q, 'device' => $device, 'query' => $query, 'stats' => NoteStore::stats(),
+        ]);
+    }
+
+    private static function note(int $id): void
+    {
+        $row = NoteStore::find($id);
+        if ($row === null) {
+            flash('error', 'That note no longer exists.');
+            redirect('/admin/notes');
+        }
+        if (is_post()) {
+            csrf_verify();
+            if (input('action') === 'delete') {
+                NoteStore::delete($id);
+                AdminRepo::log('note-delete', '#' . $id . ' ' . $row['title']);
+                flash('success', 'Note deleted from the server.');
+                redirect('/admin/notes');
+            }
+            redirect('/admin/notes/' . $id);
+        }
+        self::page('note', $row['title'] !== '' ? $row['title'] : 'Untitled note', 'notes', [
+            'row' => $row, 'devicePlans' => PlanStore::ownerPlanCount((string) $row['owner']),
+            'deviceNotes' => NoteStore::countForOwner((string) $row['owner']),
+        ]);
     }
 
     /* ================================================================ analytics */

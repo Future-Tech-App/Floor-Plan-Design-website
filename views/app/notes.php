@@ -1,4 +1,4 @@
-<?php $headLead = 'Project notes and annotations, saved in this browser.'; require ROOT_DIR . '/views/app/_head.php'; ?>
+<?php $headLead = 'Project notes and annotations, saved in this browser and backed up to our server.'; require ROOT_DIR . '/views/app/_head.php'; ?>
 <div class="page-body">
     <div class="a-container notes-layout">
         <aside>
@@ -22,7 +22,10 @@
 document.addEventListener('DOMContentLoaded', function () {
     var KEY = 'floor_plan_notes';
     var load = function () { try { return JSON.parse(localStorage.getItem(KEY) || '[]'); } catch (e) { return []; } };
-    var store = function (n) { try { localStorage.setItem(KEY, JSON.stringify(n)); } catch (e) { alert('Could not save the note.'); } };
+    var store = function (n) {
+        try { localStorage.setItem(KEY, JSON.stringify(n)); } catch (e) { alert('Could not save the note.'); return; }
+        if (window.FPSync) FPSync.pushNotes();   // back up to the server
+    };
     var notes = load(), editing = null;
     var list = document.getElementById('note-list'), form = document.getElementById('note-form');
     var del = document.getElementById('note-delete'), search = document.getElementById('note-search');

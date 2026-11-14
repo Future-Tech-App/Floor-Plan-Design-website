@@ -13,7 +13,7 @@ $maxTop = max(1, ...array_map(static fn ($r) => (int) $r['views'], $topPages ?: 
     </div>
     <a class="ad-card ad-stat" href="<?= e(url('/admin/plans')) ?>" style="text-decoration:none">
         <span class="ad-stat-ic amber"><?= icon('pencil') ?></span>
-        <span><small>Saved plans</small><strong><?= number_format($plans['total']) ?></strong><em class="ad-muted"><?= $plans['week'] ?> new this week · <?= $plans['devices'] ?> devices</em></span>
+        <span><small>Saved plans</small><strong><?= number_format($plans['total']) ?></strong><em class="ad-muted"><?= $plans['week'] ?> new this week · <?= number_format($notesTotal) ?> notes</em></span>
     </a>
     <a class="ad-card ad-stat" href="<?= e(url('/admin/ai')) ?>" style="text-decoration:none">
         <span class="ad-stat-ic purple"><?= icon('sparkles') ?></span>

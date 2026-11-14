@@ -13,7 +13,7 @@ require ROOT_DIR . '/views/partials/page_banner.php';
         <h2>1. Summary</h2>
         <ul>
             <li>The app has <strong>no accounts or login</strong>. We do not ask for your name, phone number, address or precise location.</li>
-            <li>Your floor plans are saved on your device and <strong>backed up to our server</strong>, linked only to a random ID — not to your name or email. Settings and notes stay on your device.</li>
+            <li>Your floor plans and notes are saved on your device and <strong>backed up to our server</strong>, linked only to a random ID — not to your name or email. Settings stay on your device.</li>
             <li>Some features use third-party services (ads, analytics, crash reporting, optional AI tools) that receive limited data as described below.</li>
             <li>All network traffic is encrypted with HTTPS/TLS.</li>
         </ul>
@@ -21,8 +21,9 @@ require ROOT_DIR . '/views/partials/page_banner.php';
         <h2>2. Data stored on your device</h2>
         <p>Projects, floors, layers, furniture placements, notes, preferences and any API keys you enter are saved locally (API keys in encrypted secure storage). We cannot see this data. Uninstalling the app or clearing its data deletes it.</p>
 
-        <h3>Plan backups</h3>
+        <h3>Plan and note backups</h3>
         <p>When you save a floor plan in the app or the web app, a copy of the plan (its name, walls, rooms, doors, windows and furniture) is sent to our server over HTTPS. The copy is linked to a random ID that your device creates; we store only a scrambled (hashed) version of that ID, and nothing that identifies you, such as your name, email or advertising ID. We keep backups so your plans are safe and to understand how the app is used, and our team can view them. When you delete a plan, its backup is deleted too.</p>
+        <p>Notes you write in the app or the web app are backed up the same way: each time you save or delete a note, your device sends its current list of notes (title, text and category), which replaces the copy on our server.</p>
 
         <h2>3. Data handled by third parties</h2>
         <h3>Advertising (Google AdMob)</h3>
@@ -44,10 +45,10 @@ require ROOT_DIR . '/views/partials/page_banner.php';
         <p>When you use the AI generator or analyzer in the web app, your text or photo is sent to our server, which forwards it to the AI provider. Our server does not store the text or photo; it records your IP address and the time of the request for up to 30 days to prevent abuse (rate limiting).</p>
 
         <h2>5. How long we keep data</h2>
-        <p>Contact messages are kept as long as needed to resolve your request and then deleted. Plan backups are kept until you delete the plan or ask us to delete them. Analytics and crash data are retained according to Google's Firebase retention settings.</p>
+        <p>Contact messages are kept as long as needed to resolve your request and then deleted. Plan and note backups are kept until you delete them on your device or ask us to delete them. Analytics and crash data are retained according to Google's Firebase retention settings.</p>
 
         <h2>6. Your rights and data deletion</h2>
-        <p>You can delete all on-device data by uninstalling the app, and delete a plan's backup by deleting the plan. To request deletion of all your plan backups, access to or deletion of contact messages, or deletion of analytics and crash data associated with your device, email <a href="mailto:<?= e($site['support_email']) ?>"><?= e($site['support_email']) ?></a>.</p>
+        <p>You can delete all on-device data by uninstalling the app, and delete a plan's backup by deleting the plan. To request deletion of all your plan and note backups, access to or deletion of contact messages, or deletion of analytics and crash data associated with your device, email <a href="mailto:<?= e($site['support_email']) ?>"><?= e($site['support_email']) ?></a>.</p>
 
         <h2>7. Children</h2>
         <p>The app is not directed to children under 13 and we do not knowingly collect personal information from them.</p>

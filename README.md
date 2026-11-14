@@ -88,6 +88,7 @@ A separate admin area at `/admin`, built in plain PHP (`src/AdminApp.php` routes
 | Dashboard | Unread messages, page views (7 days, today, change vs. previous week), AI requests and success rate, 14-day charts, top pages, latest messages, system status |
 | Messages | Filter, search, bulk mark read/unread/delete, CSV export, full message view with reply-by-email |
 | Saved Plans | Every plan saved in the web app or the Android/iOS apps: search, filter by source, drawn preview of each floor, JSON download, delete |
+| User Notes | Every note saved in the web app or the mobile apps: search, filter by source or device, full text, delete |
 | Analytics | Page views for 7/30/90 days, website vs. web app, most viewed pages. Only daily counts per page are stored: no cookies, IP addresses or visitor IDs, and bots are ignored |
 | AI Usage | Requests per day, success rate, error types, busiest (masked) IPs; switch the AI tools off and set the hourly per-visitor limit; clear old logs |
 | Templates | Upload (JPG/PNG/WebP, 5 MB) and delete the plan templates shown at `/app/templates`. The `public/assets/app/templates` folder must be writable |
@@ -99,6 +100,8 @@ A separate admin area at `/admin`, built in plain PHP (`src/AdminApp.php` routes
 ### Plan backups
 
 `POST /api/v1/plans.php` stores plans from the web app (`public/assets/app/app.js`, `FPSync`) and the mobile apps (`lib/services/storage/plan_sync_service.dart`). There are no accounts: each browser or phone sends a random private client id, and the server keeps only a SHA-256 hash of it (`plans.owner`), so only that device can update or delete its plans. Saves are sent 1.5 s after a change; deletes remove the server copy; failed uploads are retried. Limits: 2 MB per plan, 300 plans per device, 600 writes per IP per hour (`plans_rate_per_hour`). Both plan formats (web `walls/rooms/openings/items`, app `floors[].elements`) are read by `src/PlanStore.php` for counts and previews.
+
+Notes use `POST /api/v1/notes.php` with the same private client id: each device sends its whole notes list (`{client, source, notes:[...]}`), which replaces its notes on the server (`src/NoteStore.php`), so edits and deletions are mirrored. Limits: 2 MB per request, 500 notes per device, 20,000 characters per note.
 
 Old admin URLs (`/admin/login.php`, `/admin/index.php`, `/admin/settings.php`, `/admin/setup.php`) redirect to the new pages.
 

@@ -36,7 +36,8 @@
                 <dt>Size</dt><dd><?= e(AdminApp::bytes((int) $row['size'])) ?></dd>
                 <dt>First saved</dt><dd><?= e(fmt_date($row['created_at'])) ?></dd>
                 <dt>Last saved</dt><dd><?= e(fmt_date($row['updated_at'])) ?></dd>
-                <dt>Device</dt><dd><code><?= e(substr((string) $row['owner'], 0, 10)) ?>…</code> · <?= $deviceCount ?> plan<?= $deviceCount === 1 ? '' : 's' ?></dd>
+                <dt>Device</dt><dd><code><?= e(substr((string) $row['owner'], 0, 10)) ?>…</code> · <?= $deviceCount ?> plan<?= $deviceCount === 1 ? '' : 's' ?>
+                    <?php if ($deviceNotes > 0): ?> · <a href="<?= e(url('/admin/notes?device=' . $row['owner'])) ?>"><?= $deviceNotes ?> note<?= $deviceNotes === 1 ? '' : 's' ?></a><?php endif; ?></dd>
             </dl>
         </div>
     </section>

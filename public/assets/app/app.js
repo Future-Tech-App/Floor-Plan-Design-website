@@ -114,10 +114,25 @@
         }
         function send(body, keepalive) {
             if (!window.fetch) return Promise.resolve(false);
-            return fetch(FP.url('/api/v1/plans.php'), {
+            return fetch(FP.url(body.notes ? '/api/v1/notes.php' : '/api/v1/plans.php'), {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
                 body: JSON.stringify(body), keepalive: !!keepalive && JSON.stringify(body).length < 60000
             }).then(function (r) { return r.ok; }).catch(function () { return false; });
+        }
+        var NOTES_KEY = 'floor_plan_notes', NOTES_SYNC_KEY = 'fpd_notes_synced', notesTimer = null;
+        function notesHash(list) {
+            var str = JSON.stringify(list || []), h = 0;
+            for (var i = 0; i < str.length; i++) h = (h * 31 + str.charCodeAt(i)) | 0;
+            return str.length + ':' + h;
+        }
+        function uploadNotes(keepalive) {
+            var notes = read(NOTES_KEY, []);
+            if (!Array.isArray(notes)) return Promise.resolve(false);
+            var stamp = notesHash(notes);
+            return send({ client: clientId(), source: 'web', notes: notes }, keepalive).then(function (ok) {
+                if (ok) { try { localStorage.setItem(NOTES_SYNC_KEY, JSON.stringify(stamp)); } catch (e) { /* ignore */ } }
+                return ok;
+            }, function () { return false; });
         }
         function upload(id, keepalive) {
             delete pending[id]; clearTimeout(timers[id]);
@@ -139,7 +154,15 @@
                 delete pending[id]; clearTimeout(timers[id]); mark(id, null);
                 send({ client: clientId(), delete: id }, true);
             },
-            flush: function () { Object.keys(pending).forEach(function (id) { upload(id, true); }); },
+            flush: function () {
+                Object.keys(pending).forEach(function (id) { upload(id, true); });
+                if (notesTimer) { clearTimeout(notesTimer); notesTimer = null; uploadNotes(true); }
+            },
+            // Notes: the whole list is sent and replaces this browser's notes on the server.
+            pushNotes: function () {
+                clearTimeout(notesTimer);
+                notesTimer = setTimeout(function () { notesTimer = null; uploadNotes(false); }, 1000);
+            },
             // How many local plans are backed up with their latest changes.
             status: function () {
                 var s = synced(), list = FPStore.list();
@@ -154,6 +177,7 @@
             },
             // Upload plans saved before backups existed, or changed while offline.
             catchUp: function () {
+                if (notesHash(read(NOTES_KEY, [])) !== read(NOTES_SYNC_KEY, '')) uploadNotes(false);
                 var s = synced();
                 FPStore.list().filter(function (m) { return s[m.id] !== m.modifiedAt; }).slice(0, 30)
                     .forEach(function (m, i) { setTimeout(function () { upload(m.id); }, 800 + i * 400); });
