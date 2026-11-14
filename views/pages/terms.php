@@ -14,7 +14,7 @@ require ROOT_DIR . '/views/partials/page_banner.php';
         <p>We grant you a personal, non-exclusive, non-transferable licence to use the app on devices you own or control, subject to these terms and the rules of the store you downloaded it from.</p>
 
         <h2>2. Your content</h2>
-        <p>Floor plans and notes you create belong to you. They are stored on your device, and you are responsible for keeping backups (for example by exporting PDFs).</p>
+        <p>Floor plans and notes you create belong to you. They are stored on your device and backed up to our server (see the Privacy Policy). Backups are provided as a convenience, so keep your own copies of important plans (for example by exporting PDFs).</p>
 
         <h2>3. Not professional advice</h2>
         <p>Plans, measurements, 3D previews, material estimates and AI-generated layouts are for planning and visualisation only. They are not architectural, engineering or construction advice. Always confirm dimensions, structural requirements and building codes with a qualified professional before building.</p>

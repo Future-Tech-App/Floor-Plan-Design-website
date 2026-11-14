@@ -85,7 +85,7 @@ $faqs = [
             <ul class="check-list">
                 <li><?= icon('check') ?>Accurate measurements in feet, meters, cm, inches or mm</li>
                 <li><?= icon('check') ?>Multi-floor buildings with independent layers</li>
-                <li><?= icon('check') ?>Your plans stay on your device — private by default</li>
+                <li><?= icon('check') ?>Plans backed up automatically — no account needed</li>
             </ul>
             <div class="about-actions">
                 <a class="btn btn-primary" href="<?= e(url('/features')) ?>">See all features</a>

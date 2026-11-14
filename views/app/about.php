@@ -3,7 +3,7 @@ $highlights = [
     ['pencil', 'Draw & design', 'Walls, rooms, doors, windows and furniture.'],
     ['calculator', 'Calculators', 'Bricks, concrete, paint, steel, areas and unit conversions.'],
     ['download', 'PNG & PDF export', 'Print-ready plans with measurements to share with anyone.'],
-    ['shield', 'Private', 'No account. Plans stay in your browser.'],
+    ['shield', 'No account', 'Plans are saved in your browser and backed up automatically.'],
 ]; ?>
 <div class="page-body">
     <div class="a-container" style="text-align:center">
@@ -28,7 +28,7 @@ $highlights = [
 
         <h2 class="sec-title" style="margin-top:60px">Your Privacy</h2>
         <span class="rule"></span>
-        <p style="max-width:700px;margin:0 auto 24px">Your plans and notes are saved in this browser on this device — we never receive them. AI requests go through our server to the AI provider and are not stored.</p>
+        <p style="max-width:700px;margin:0 auto 24px">Your plans are saved in this browser and backed up to our server, linked only to a random ID — not to your name or email. Deleting a plan deletes its backup. Notes stay in this browser. AI requests go through our server to the AI provider and are not stored.</p>
         <div class="form-actions" style="justify-content:center">
             <a class="btn" href="<?= e(url('/privacy-policy')) ?>" target="_blank" rel="noopener">Privacy Policy</a>
             <a class="btn btn-dark" href="<?= e(url('/terms-of-use')) ?>" target="_blank" rel="noopener">Terms of Service</a>

@@ -73,9 +73,14 @@ jobs:
             echo "$code $p"
             [ "$code" = "200" ] || fail=1
           done
+          # Plan backup API: save then delete a throwaway plan
+          C=$(php -r 'echo bin2hex(random_bytes(16));')
+          body=$(curl -s -X POST -H 'Content-Type: application/json' -d "{\"client\":\"$C\",\"plan\":{\"id\":\"ci\",\"name\":\"CI\",\"walls\":[]}}" http://127.0.0.1:8080/api/v1/plans.php)
+          if printf '%s' "$body" | grep -q '"ok": *true'; then echo "200 /api/v1/plans.php"; else echo "FAIL plans: ${body:0:200}"; fail=1; fi
+          curl -s -o /dev/null -X POST -H 'Content-Type: application/json' -d "{\"client\":\"$C\",\"delete\":\"ci\"}" http://127.0.0.1:8080/api/v1/plans.php
           # AI generator works without a key (built-in layout engine)
           body=$(curl -s -X POST -H 'Content-Type: application/json' -d '{"description":"3 bedroom house with car porch"}' http://127.0.0.1:8080/api/v1/generate-plan.php)
-          if printf '%s' "$body" | grep -q '"ok":true'; then echo "200 /api/v1/generate-plan.php"; else echo "FAIL generate-plan: ${body:0:200}"; fail=1; fi
+          if printf '%s' "$body" | grep -q '"ok": *true'; then echo "200 /api/v1/generate-plan.php"; else echo "FAIL generate-plan: ${body:0:200}"; fail=1; fi
           code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/does-not-exist)
           echo "$code /does-not-exist (expect 404)"; [ "$code" = "404" ] || fail=1
           if grep -iE 'warning|fatal|error' "$RUNNER_TEMP/server.log"; then fail=1; fi

@@ -1,4 +1,4 @@
-<?php $headLead = 'Plans are saved in this browser. Download a plan (.json) to keep a copy or move it to another browser.'; require ROOT_DIR . '/views/app/_head.php'; ?>
+<?php $headLead = 'Plans are saved in this browser and backed up to our server. Download a plan (.json) to keep your own copy or move it to another browser.'; require ROOT_DIR . '/views/app/_head.php'; ?>
 <div class="page-body">
     <div class="a-container">
         <div class="form-actions" style="margin:0 0 26px;justify-content:center">

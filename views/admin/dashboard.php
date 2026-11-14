@@ -11,10 +11,10 @@ $maxTop = max(1, ...array_map(static fn ($r) => (int) $r['views'], $topPages ?: 
         <span><small>Page views · 7 days</small><strong><?= number_format($views7) ?></strong>
             <em class="<?= $viewsDiff === null ? 'ad-muted' : ($viewsDiff >= 0 ? 'up' : 'down') ?>"><?= $viewsDiff === null ? 'No earlier data' : ($viewsDiff >= 0 ? '▲ ' : '▼ ') . abs($viewsDiff) . '% vs previous 7 days' ?></em></span>
     </div>
-    <div class="ad-card ad-stat">
-        <span class="ad-stat-ic amber"><?= icon('zap') ?></span>
-        <span><small>Views today</small><strong><?= number_format($today) ?></strong><em class="ad-muted">Website and web app</em></span>
-    </div>
+    <a class="ad-card ad-stat" href="<?= e(url('/admin/plans')) ?>" style="text-decoration:none">
+        <span class="ad-stat-ic amber"><?= icon('pencil') ?></span>
+        <span><small>Saved plans</small><strong><?= number_format($plans['total']) ?></strong><em class="ad-muted"><?= $plans['week'] ?> new this week · <?= $plans['devices'] ?> devices</em></span>
+    </a>
     <a class="ad-card ad-stat" href="<?= e(url('/admin/ai')) ?>" style="text-decoration:none">
         <span class="ad-stat-ic purple"><?= icon('sparkles') ?></span>
         <span><small>AI requests · 7 days</small><strong><?= number_format($ai['total']) ?></strong><em class="<?= $ai['rate'] >= 90 ? 'up' : 'down' ?>"><?= $ai['rate'] ?>% successful</em></span>
@@ -23,7 +23,7 @@ $maxTop = max(1, ...array_map(static fn ($r) => (int) $r['views'], $topPages ?: 
 
 <div class="ad-grid ad-grid-main ad-mb">
     <section class="ad-card">
-        <div class="ad-card-head"><h2>Page views</h2><span class="ad-muted">Last 14 days</span></div>
+        <div class="ad-card-head"><h2>Page views</h2><span class="ad-muted">Last 14 days · <?= number_format($today) ?> today</span></div>
         <div class="ad-card-body"><?= AdminApp::chart([['values' => $viewsDays, 'class' => 'bar']]) ?></div>
     </section>
     <section class="ad-card">
@@ -71,3 +71,20 @@ $maxTop = max(1, ...array_map(static fn ($r) => (int) $r['views'], $topPages ?: 
         </section>
     </div>
 </div>
+
+<section class="ad-card" style="margin-top:18px">
+    <div class="ad-card-head"><h2>Latest saved plans</h2><a href="<?= e(url('/admin/plans')) ?>" class="ad-muted">All plans →</a></div>
+    <?php if ($recentPlans): ?>
+        <div class="ad-table-wrap"><table class="ad-table"><tbody>
+            <?php foreach ($recentPlans as $p): ?>
+                <tr>
+                    <td><a href="<?= e(url('/admin/plans/' . $p['id'])) ?>"><strong><?= e($p['name']) ?></strong></a></td>
+                    <td><span class="ad-pill"><?= e(PlanStore::SOURCES[$p['source']] ?? $p['source']) ?></span></td>
+                    <td class="num"><?= (int) $p['rooms'] ?> rooms</td>
+                    <td class="num"><?= $p['area_m2'] > 0 ? number_format((float) $p['area_m2'], 1) . ' m²' : '—' ?></td>
+                    <td class="num ad-muted"><?= e(fmt_date($p['updated_at'])) ?></td>
+                </tr>
+            <?php endforeach; ?>
+        </tbody></table></div>
+    <?php else: ?><p class="ad-empty">No plans saved yet.</p><?php endif; ?>
+</section>

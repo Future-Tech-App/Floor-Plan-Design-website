@@ -115,5 +115,39 @@ final class Database
             )
         SQL);
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_login_ip_created ON login_attempts (ip, created_at)');
+
+        // Plans saved from the web app and the mobile apps. owner = SHA-256 of the device's
+        // random client id, so the raw id (which lets a device update its plans) is never stored.
+        $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS plans (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                owner      TEXT NOT NULL,
+                plan_id    TEXT NOT NULL,
+                source     TEXT NOT NULL DEFAULT 'web',
+                name       TEXT NOT NULL DEFAULT '',
+                data       TEXT NOT NULL,
+                size       INTEGER NOT NULL DEFAULT 0,
+                floors     INTEGER NOT NULL DEFAULT 1,
+                rooms      INTEGER NOT NULL DEFAULT 0,
+                walls      INTEGER NOT NULL DEFAULT 0,
+                items      INTEGER NOT NULL DEFAULT 0,
+                area_m2    REAL NOT NULL DEFAULT 0,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                updated_at TEXT NOT NULL DEFAULT (datetime('now')),
+                UNIQUE (owner, plan_id)
+            )
+        SQL);
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_plans_updated ON plans (updated_at)');
+
+        // Generic per-IP request counter for public write APIs.
+        $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS api_hits (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                ip         TEXT NOT NULL,
+                bucket     TEXT NOT NULL,
+                created_at TEXT NOT NULL DEFAULT (datetime('now'))
+            )
+        SQL);
+        $pdo->exec('CREATE INDEX IF NOT EXISTS idx_api_hits ON api_hits (bucket, ip, created_at)');
     }
 }

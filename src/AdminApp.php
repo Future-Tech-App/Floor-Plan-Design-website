@@ -54,6 +54,9 @@ final class AdminApp
             $sub === '/messages'                          => self::messages(),
             $sub === '/messages/export'                   => self::exportMessages(),
             (bool) preg_match('#^/messages/(\d+)$#', $sub, $m) => self::message((int) $m[1]),
+            $sub === '/plans'                             => self::plans(),
+            (bool) preg_match('#^/plans/(\d+)$#', $sub, $m)    => self::plan((int) $m[1]),
+            (bool) preg_match('#^/plans/(\d+)/download$#', $sub, $m) => self::planDownload((int) $m[1]),
             $sub === '/analytics'                         => self::analytics(),
             $sub === '/ai'                                => self::ai(),
             $sub === '/templates'                         => self::templates(),
@@ -150,6 +153,8 @@ final class AdminApp
         $viewsPrev = AdminRepo::viewsTotal(13, 7);
         self::page('dashboard', 'Dashboard', 'dashboard', [
             'messages'  => AdminRepo::messageCounts(),
+            'plans'     => PlanStore::stats(),
+            'recentPlans' => PlanStore::search(1, 5, '', '')['items'],
             'latest'    => AdminRepo::latestMessages(6),
             'views7'    => $views7,
             'viewsDiff' => $viewsPrev > 0 ? (int) round(($views7 - $viewsPrev) / $viewsPrev * 100) : null,
@@ -261,6 +266,77 @@ final class AdminApp
             fputcsv($out, $row, ',', '"', '');
         }
         fclose($out);
+        exit;
+    }
+
+    /* ================================================================ plans */
+
+    private static function plans(): void
+    {
+        $source = input('source', 'get');
+        if (!isset(PlanStore::SOURCES[$source])) {
+            $source = '';
+        }
+        $q = mb_substr(input('q', 'get'), 0, 100);
+        if (is_post()) {
+            csrf_verify();
+            $ids = array_values(array_filter(array_map('intval', (array) ($_POST['ids'] ?? [])), static fn ($i) => $i > 0));
+            if ($ids && input('action') === 'delete') {
+                foreach ($ids as $id) {
+                    PlanStore::delete($id);
+                }
+                AdminRepo::log('plans-delete', count($ids) . ' plan(s)');
+                flash('success', count($ids) . ' plan' . (count($ids) > 1 ? 's' : '') . ' deleted.');
+            } else {
+                flash('error', 'Select at least one plan first.');
+            }
+            redirect('/admin/plans?' . http_build_query(array_filter(['source' => $source, 'q' => $q])));
+        }
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $list = PlanStore::search($page, self::PER_PAGE, $source, $q);
+        self::page('plans', 'Saved Plans', 'plans', [
+            'plans' => $list['items'], 'total' => $list['total'], 'page' => $page,
+            'pages' => max(1, (int) ceil($list['total'] / self::PER_PAGE)),
+            'source' => $source, 'q' => $q, 'stats' => PlanStore::stats(),
+        ]);
+    }
+
+    private static function plan(int $id): void
+    {
+        $row = PlanStore::find($id);
+        if ($row === null) {
+            flash('error', 'That plan no longer exists.');
+            redirect('/admin/plans');
+        }
+        if (is_post()) {
+            csrf_verify();
+            if (input('action') === 'delete') {
+                PlanStore::delete($id);
+                AdminRepo::log('plan-delete', '#' . $id . ' ' . $row['name']);
+                flash('success', 'Plan "' . $row['name'] . '" deleted.');
+                redirect('/admin/plans');
+            }
+            redirect('/admin/plans/' . $id);
+        }
+        $data = json_decode((string) $row['data'], true) ?: [];
+        $floors = PlanStore::floorNames($data);
+        $floor = max(0, min(count($floors) - 1, (int) ($_GET['floor'] ?? 0)));
+        self::page('plan', $row['name'], 'plans', [
+            'row' => $row, 'svg' => PlanStore::svg($data, $floor), 'floors' => $floors, 'floor' => $floor,
+            'deviceCount' => PlanStore::ownerPlanCount((string) $row['owner']),
+        ]);
+    }
+
+    private static function planDownload(int $id): void
+    {
+        $row = PlanStore::find($id);
+        if ($row === null) {
+            abort(404, 'That plan no longer exists.');
+        }
+        $name = preg_replace('/[^A-Za-z0-9_\- ]+/', '_', (string) $row['name']) ?: 'plan';
+        header('Content-Type: application/json; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $name . '.json"');
+        echo json_encode(json_decode((string) $row['data'], true), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
         exit;
     }
 

@@ -145,7 +145,7 @@
         if (!saved) { setSaveState('error', 'Could not save'); return; }
         plan = saved; savedOnce = true;
         if (!/[?&]plan=/.test(location.search)) { try { history.replaceState(null, '', location.pathname + '?plan=' + encodeURIComponent(plan.id)); } catch (e) { /* ignore */ } }
-        setSaveState('saved', 'Saved in this browser · ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        setSaveState('saved', 'Saved · ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
     }
     window.addEventListener('beforeunload', function () { if (saveTimer) saveNow(); });
 
@@ -1003,7 +1003,7 @@
         var loaded = FPStore.get(planId);
         if (loaded) {
             plan = Object.assign(blankPlan(), loaded); savedOnce = true;
-            setSaveState('saved', 'Saved in this browser'); document.getElementById('plan-name').value = plan.name || 'Untitled plan';
+            setSaveState('saved', 'Saved'); document.getElementById('plan-name').value = plan.name || 'Untitled plan';
         } else flashHint('That plan was not found in this browser. Starting a new plan.');
     }
     window.addEventListener('resize', resize);

@@ -7,6 +7,7 @@ $labels = [
     'template-upload' => ['Uploaded template', 'blue'], 'template-delete' => ['Deleted template', 'red'],
     'versions-save' => ['Saved app versions', 'blue'], 'site-settings' => ['Saved site settings', 'blue'],
     'ai-settings' => ['Saved AI settings', 'blue'], 'ai-purge' => ['Cleared AI logs', 'red'],
+    'plans-delete' => ['Deleted plans', 'red'], 'plan-delete' => ['Deleted a plan', 'red'],
 ];
 ?>
 <section class="ad-card">

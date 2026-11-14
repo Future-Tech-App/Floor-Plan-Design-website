@@ -6,6 +6,7 @@ $menu = [
     'Overview' => [
         ['dashboard', '/admin', 'Dashboard', 'home'],
         ['messages', '/admin/messages', 'Messages', 'mail'],
+        ['plans', '/admin/plans', 'Saved Plans', 'pencil'],
         ['analytics', '/admin/analytics', 'Analytics', 'globe'],
         ['ai', '/admin/ai', 'AI Usage', 'sparkles'],
     ],

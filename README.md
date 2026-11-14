@@ -6,7 +6,7 @@ A plain-PHP (no framework, no Composer) website and backend for the Floor Plan D
 - **Classic web app (`/classic/`):** the Flutter app compiled for browsers, kept as a fallback. Every feature now also exists in the PHP web app.
 - **Public site:** Home, Features, Download, Support/FAQ (live search), Contact, Privacy Policy, Terms of Use. Its URLs match the current site (`/support`, `/contact`, `/privacy-policy`, `/terms-of-use`).
 - **Backend:** stores contact messages in SQLite, applies rate limiting and a honeypot to block spam, and uses CSRF protection, prepared statements and security headers.
-- **JSON API:** `/api/v1/version.php` (version gate), `/api/v1/contact.php` (contact form), `/api/v1/generate-plan.php` and `/api/v1/analyze-plan.php` (AI tools), and `/api/v1/ai.php` (AI proxy for the classic app).
+- **JSON API:** `/api/v1/version.php` (version gate), `/api/v1/contact.php` (contact form), `/api/v1/plans.php` (plan backups), `/api/v1/generate-plan.php` and `/api/v1/analyze-plan.php` (AI tools), and `/api/v1/ai.php` (AI proxy for the classic app).
 - **Admin panel (`/admin`):** a separate PHP admin area: dashboard, contact messages, page-view analytics, AI usage, plan templates, app version rules, site settings (contact details, store links, announcement banner), admins and an activity log. See [Admin panel](#admin-panel).
 
 ## Requirements
@@ -87,6 +87,7 @@ A separate admin area at `/admin`, built in plain PHP (`src/AdminApp.php` routes
 |---|---|
 | Dashboard | Unread messages, page views (7 days, today, change vs. previous week), AI requests and success rate, 14-day charts, top pages, latest messages, system status |
 | Messages | Filter, search, bulk mark read/unread/delete, CSV export, full message view with reply-by-email |
+| Saved Plans | Every plan saved in the web app or the Android/iOS apps: search, filter by source, drawn preview of each floor, JSON download, delete |
 | Analytics | Page views for 7/30/90 days, website vs. web app, most viewed pages. Only daily counts per page are stored: no cookies, IP addresses or visitor IDs, and bots are ignored |
 | AI Usage | Requests per day, success rate, error types, busiest (masked) IPs; switch the AI tools off and set the hourly per-visitor limit; clear old logs |
 | Templates | Upload (JPG/PNG/WebP, 5 MB) and delete the plan templates shown at `/app/templates`. The `public/assets/app/templates` folder must be writable |
@@ -94,6 +95,10 @@ A separate admin area at `/admin`, built in plain PHP (`src/AdminApp.php` routes
 | Site Settings | Support email, tagline, Google Play and App Store links (override `config/app.php`), and an announcement banner shown on the website and web app |
 | Admins / My Account | Add or remove admins, change your password |
 | Activity Log | Every sign-in and change, with admin, time and masked IP |
+
+### Plan backups
+
+`POST /api/v1/plans.php` stores plans from the web app (`public/assets/app/app.js`, `FPSync`) and the mobile apps (`lib/services/storage/plan_sync_service.dart`). There are no accounts: each browser or phone sends a random private client id, and the server keeps only a SHA-256 hash of it (`plans.owner`), so only that device can update or delete its plans. Saves are sent 1.5 s after a change; deletes remove the server copy; failed uploads are retried. Limits: 2 MB per plan, 300 plans per device, 600 writes per IP per hour (`plans_rate_per_hour`). Both plan formats (web `walls/rooms/openings/items`, app `floors[].elements`) are read by `src/PlanStore.php` for counts and previews.
 
 Old admin URLs (`/admin/login.php`, `/admin/index.php`, `/admin/settings.php`, `/admin/setup.php`) redirect to the new pages.
 

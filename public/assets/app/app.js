@@ -1,6 +1,6 @@
 /* Floor Plan Designer web app — shared browser code.
- * Plans and notes live in this browser's localStorage (no accounts; nothing is
- * sent to the server). */
+ * Plans live in this browser's localStorage and are backed up to the server
+ * (/api/v1/plans.php) under a random, private id for this browser. Notes stay local. */
 (function () {
     'use strict';
 
@@ -30,9 +30,11 @@
             var l = FPStore.list().filter(function (p) { return p.id !== plan.id; });
             l.push({ id: plan.id, name: plan.name, createdAt: plan.createdAt, modifiedAt: plan.modifiedAt });
             write(LIST_KEY, l);
+            FPSync.push(plan);
             return plan;
         },
         remove: function (id) {
+            FPSync.remove(id);
             try { localStorage.removeItem(PLAN_PREFIX + id); } catch (e) { /* ignore */ }
             write(LIST_KEY, FPStore.list().filter(function (p) { return p.id !== id; }));
         },
@@ -90,8 +92,64 @@
         },
         saveSettings: function (s) { write('fpd_settings', s); }
     };
+    // ---------------------------------------------------------------- server backup
+    // Each browser gets a random 128-bit id, kept only in this browser; the server
+    // stores a hash of it, so only this browser can update or delete its plans.
+    var FPSync = (function () {
+        var timers = {}, pending = {}, SYNC_KEY = 'fpd_synced';
+        function clientId() {
+            var id = read('fpd_client', '');
+            if (!/^[a-f0-9]{32}$/.test(id)) {
+                var b = new Uint8Array(16); (window.crypto || window.msCrypto).getRandomValues(b);
+                id = Array.prototype.map.call(b, function (x) { return ('0' + x.toString(16)).slice(-2); }).join('');
+                try { localStorage.setItem('fpd_client', JSON.stringify(id)); } catch (e) { /* ignore */ }
+            }
+            return id;
+        }
+        function synced() { return read(SYNC_KEY, {}); }
+        function mark(id, stamp) {
+            var s = synced();
+            if (stamp) s[id] = stamp; else delete s[id];
+            try { localStorage.setItem(SYNC_KEY, JSON.stringify(s)); } catch (e) { /* ignore */ }
+        }
+        function send(body, keepalive) {
+            if (!window.fetch) return Promise.resolve(false);
+            return fetch(FP.url('/api/v1/plans.php'), {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                body: JSON.stringify(body), keepalive: !!keepalive && JSON.stringify(body).length < 60000
+            }).then(function (r) { return r.ok; }).catch(function () { return false; });
+        }
+        function upload(id, keepalive) {
+            delete pending[id]; clearTimeout(timers[id]);
+            var plan = FPStore.get(id); if (!plan) return;
+            var stamp = plan.modifiedAt || '';
+            send({ client: clientId(), source: 'web', plan: plan }, keepalive).then(function (ok) { if (ok) mark(id, stamp); });
+        }
+        return {
+            push: function (plan) {
+                if (!plan || !plan.id) return;
+                pending[plan.id] = true; clearTimeout(timers[plan.id]);
+                timers[plan.id] = setTimeout(function () { upload(plan.id); }, 1500);
+            },
+            remove: function (id) {
+                delete pending[id]; clearTimeout(timers[id]); mark(id, null);
+                send({ client: clientId(), delete: id }, true);
+            },
+            flush: function () { Object.keys(pending).forEach(function (id) { upload(id, true); }); },
+            // Upload plans saved before backups existed, or changed while offline.
+            catchUp: function () {
+                var s = synced();
+                FPStore.list().filter(function (m) { return s[m.id] !== m.modifiedAt; }).slice(0, 30)
+                    .forEach(function (m, i) { setTimeout(function () { upload(m.id); }, 800 + i * 400); });
+            }
+        };
+    })();
+    window.addEventListener('pagehide', function () { FPSync.flush(); });
+    setTimeout(function () { FPSync.catchUp(); }, 1500);
+
     window.FPStore = FPStore;
     window.FP = FP;
+    window.FPSync = FPSync;
 
     // ---------------------------------------------------------------- header
     var toggle = document.querySelector('.ah-toggle');

@@ -29,6 +29,7 @@ require_once ROOT_DIR . '/src/WebApp.php';
 require_once ROOT_DIR . '/src/Analytics.php';
 require_once ROOT_DIR . '/src/AdminRepo.php';
 require_once ROOT_DIR . '/src/AdminApp.php';
+require_once ROOT_DIR . '/src/PlanStore.php';
 
 date_default_timezone_set((string) config('timezone', 'UTC'));
 

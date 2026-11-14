@@ -119,7 +119,7 @@ $hideCta = in_array($nav, ['ai'], true);
     </div>
     <div class="a-container af-bottom">
         <span>© <?= date('Y') ?> <?= e($site['name']) ?>. All rights reserved.</span>
-        <span class="af-note"><?= icon('shield') ?> Your plans stay in this browser — no account needed.</span>
+        <span class="af-note"><?= icon('shield') ?> Plans are backed up automatically — no account needed.</span>
         <span class="af-meta"><a href="<?= e(url('/app/about#credits')) ?>">Photos: Unsplash</a><i aria-hidden="true">·</i>Web v<?= e(preg_replace('/\+.*/', '', $site['version'])) ?></span>
         <a class="af-up" href="#app-header" aria-label="Back to top" title="Back to top"><?= icon('chevron-up') ?></a>
     </div>

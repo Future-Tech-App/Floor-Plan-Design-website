@@ -34,6 +34,12 @@ final class Auth
             self::logout();
             return false;
         }
+        // End the session if the account was removed (or renamed) since sign-in.
+        $admin = Repository::findAdmin((string) $_SESSION['admin']['username']);
+        if ($admin === null || (int) $admin['id'] !== (int) $_SESSION['admin']['id']) {
+            self::logout();
+            return false;
+        }
         $_SESSION['admin']['last_seen'] = time();
         return true;
     }
