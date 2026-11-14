@@ -29,7 +29,7 @@ The web app is plain PHP plus vanilla JavaScript; nothing to build.
 | `/app/ai/analyzer` | AI analyzer: photo of a plan → rooms, sizes and an editable plan | `src/PlanAnalyzer.php`, `views/app/ai_analyzer.php`, `public/assets/app/ai.js` |
 | `/app/calculators` | Construction, metal, area and unit calculators, computed by PHP | `src/Calculators.php`, `views/app/calculators/` |
 | `/app/notes` | Notes | `views/app/notes.php` |
-| `/app/settings`, `/app/about` | Units, grid, snapping, wall thickness; about | `views/app/` |
+| `/app/about` | About, privacy and photo credits (units, grid, snapping and wall thickness are set in the editor's Display panel) | `views/app/about.php` |
 
 Routing: `public/index.php` sends every `/app…` URL to `WebApp::dispatch()` (`src/WebApp.php`).
 

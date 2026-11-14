@@ -37,7 +37,6 @@ $links = [
         <?php foreach ($links as $key => [$href, $label]): ?>
             <a href="<?= e(url($href)) ?>" class="<?= $nav === $key ? 'active' : '' ?>"<?= $nav === $key ? ' aria-current="page"' : '' ?>><?= e($label) ?></a>
         <?php endforeach; ?>
-        <a href="<?= e(url('/app/settings')) ?>" class="<?= $nav === 'settings' ? 'active' : '' ?>">Settings</a>
     </nav>
     <button class="ah-toggle" type="button" aria-expanded="false" aria-controls="app-nav" aria-label="Open menu"><?= icon('menu') ?></button>
     <a class="ah-cta" href="<?= e(url('/app/editor')) ?>">

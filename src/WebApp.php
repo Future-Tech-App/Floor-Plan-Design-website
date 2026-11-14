@@ -67,10 +67,6 @@ final class WebApp
             self::page('app/about', 'About', 'about', $base);
             return;
         }
-        if ($sub === '/settings') {
-            self::page('app/settings', 'Settings', 'settings', $base);
-            return;
-        }
         if ($sub === '/ai' || $sub === '/ai/analyzer') {
             self::page($sub === '/ai' ? 'app/ai_generator' : 'app/ai_analyzer', $sub === '/ai' ? 'AI Floor Plans' : 'AI Analyzer', 'ai', $base);
             return;
