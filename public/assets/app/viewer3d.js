@@ -3,6 +3,8 @@
  * Plan units are centimetres; the 3D scene uses metres (plan x → x, plan y → z). */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/RoomEnvironment.js';
+import { createFurniture } from './furniture3d.js';
 
 const root = document.getElementById('viewer');
 const stage = document.getElementById('stage');
@@ -10,7 +12,7 @@ const SYMBOL_BASE = root.dataset.symbolsBase;
 const M = 0.01;                          // cm → m
 const BASE_WALL_H = 280;                 // cm, scaled by the wall height setting
 const DOOR_H = 210, SILL_H = 90, WIN_TOP = 210, LOW_WALL_H = 110;
-const DEFAULTS = { wallView: 'low', wallHeight: 1, wallColor: '#ede8e0', floor: 'room', furniture: true, doors: true, doorsOpen: false, windows: true, labels: true, shadows: true };
+const DEFAULTS = { realFurniture: true, wallView: 'low', wallHeight: 1, wallColor: '#ede8e0', floor: 'room', furniture: true, doors: true, doorsOpen: false, windows: true, labels: true, shadows: true };
 // Typical heights (cm) for library categories, so furniture reads as 3D blocks.
 const ITEM_H = { furniture: 55, tables: 75, desk: 75, appliance: 90, cooking: 90, dishwashers: 85, sinks: 85, bathtub: 55, toilet: 40, stairs: 120, architecture: 100, garden: 40, pool: 5, posts: 120, electrical: 30, havc: 60, communication: 40, basic: 40, doors: 5, windows: 5, gates: 120, linegates: 120, 'number-gates': 120, rooms: 2, custom: 2 };
 
@@ -44,6 +46,8 @@ function init() {
     renderer.shadowMap.enabled = true;
     renderer.shadowMap.type = THREE.PCFSoftShadowMap;
     renderer.outputColorSpace = THREE.SRGBColorSpace;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.05;
     renderer.domElement.tabIndex = 0;
     renderer.domElement.setAttribute('aria-label', '3D view of the floor plan');
     stage.prepend(renderer.domElement);
@@ -59,8 +63,12 @@ function init() {
     controls.minDistance = 1;
     controls.maxDistance = 120;
 
-    scene.add(new THREE.HemisphereLight('#ffffff', '#c8ced4', 2.2));
-    const sun = new THREE.DirectionalLight('#fff8ee', 1.6);
+    // Soft studio reflections so steel, ceramic and glass look like real materials.
+    const pmrem = new THREE.PMREMGenerator(renderer);
+    scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+    scene.environmentIntensity = 0.45;
+    scene.add(new THREE.HemisphereLight('#ffffff', '#c8ced4', 0.9));
+    const sun = new THREE.DirectionalLight('#fff8ee', 1.5);
     sun.castShadow = true;
     sun.shadow.mapSize.set(2048, 2048);
     sun.shadow.bias = -0.0005;
@@ -145,11 +153,11 @@ function init() {
     };
 
     // The editor's pastel room colours are too pale in 3D light; use richer versions.
-    const FLOOR_3D = { '#e3f2fd': '#9ccbf2', '#e8f5e9': '#a8d8aa', '#fff3e0': '#f6cf8f', '#fce4ec': '#f1a9c2', '#ede7f6': '#bba7e0', '#e0f7fa': '#8fd9e4', '#f1f8e9': '#c3dea0', '#eceff1': '#b8c4cc' };
+    const FLOOR_3D = { '#e3f2fd': '#78b2e6', '#e8f5e9': '#86c58a', '#fff3e0': '#efb862', '#fce4ec': '#e9889f', '#ede7f6': '#a08ad3', '#e0f7fa': '#67c8d6', '#f1f8e9': '#a7cf7c', '#eceff1': '#9eacb6' };
     function floorColor(c) {
         const key = String(c || '#e3f2fd').toLowerCase();
         if (FLOOR_3D[key]) return FLOOR_3D[key];
-        const col = new THREE.Color(key); col.offsetHSL(0, 0.15, -0.12); return col;
+        const col = new THREE.Color(key); col.offsetHSL(0, 0.22, -0.18); return col;
     }
     function box(w, h, d, mat, cast = true) {
         const m = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), mat);
@@ -287,23 +295,31 @@ function init() {
     }
 
     function addItem(it) {
-        const h = ITEM_H[it.cat] ?? 45;
-        const topMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8 });
+        const rot = -(it.rot || 0) * Math.PI / 180;
+        // Realistic 3D model when the item type is known (beds, sofas, kitchen, bathroom, garden…).
+        const model = opts.realFurniture ? createFurniture(it) : null;
+        if (model) { model.position.set(it.x * M, 0, it.y * M); model.rotation.y = rot; group.add(model); return; }
+        // Otherwise: symbols (arrows, labels, markers) lie flat on the floor; with realistic
+        // furniture off, items are blocks with their symbol on top.
+        const flat = opts.realFurniture;
+        const h = flat ? 1 : (ITEM_H[it.cat] ?? 45);
+        const topMat = new THREE.MeshStandardMaterial({ color: '#ffffff', roughness: 0.8, transparent: flat });
         const key = it.cat + '/' + it.file;
         const img = symbolImages[key] || (symbolImages[key] = loadSymbol(key));
         const apply = () => {
             const c = document.createElement('canvas'), res = 256;
             const ar = it.w / it.h; c.width = ar >= 1 ? res : Math.round(res * ar); c.height = ar >= 1 ? Math.round(res / ar) : res;
-            const x = c.getContext('2d'); x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height);
+            const x = c.getContext('2d'); if (!flat) { x.fillStyle = '#fff'; x.fillRect(0, 0, c.width, c.height); }
             x.drawImage(img, 0, 0, c.width, c.height);
             const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; topMat.map = t; topMat.needsUpdate = true;
         };
         if (img.complete && img.naturalWidth) apply(); else img.addEventListener('load', apply, { once: true });
-        const mats = [materials.side, materials.side, topMat, materials.side, materials.side, materials.side];
+        const side = flat ? new THREE.MeshBasicMaterial({ visible: false }) : materials.side;
+        const mats = [side, side, topMat, side, side, side];
         const m = new THREE.Mesh(new THREE.BoxGeometry(it.w * M, Math.max(h, 1) * M, it.h * M), mats);
         m.castShadow = h > 10; m.receiveShadow = true;
         m.position.set(it.x * M, Math.max(h, 1) / 2 * M, it.y * M);
-        m.rotation.y = -(it.rot || 0) * Math.PI / 180;
+        m.rotation.y = rot;
         group.add(m);
     }
     function loadSymbol(key) {

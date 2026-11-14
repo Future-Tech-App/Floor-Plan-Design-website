@@ -59,6 +59,7 @@ $floors = ['room' => 'Room colours', 'wood' => 'Wood', 'tiles' => 'Tiles', 'marb
             </div>
             <div class="ed-row v3d-toggles">
                 <label><input type="checkbox" data-opt="furniture"> Furniture</label>
+                <label><input type="checkbox" data-opt="realFurniture"> Realistic furniture</label>
                 <label><input type="checkbox" data-opt="doors"> Doors</label>
                 <label><input type="checkbox" data-opt="doorsOpen"> Doors open</label>
                 <label><input type="checkbox" data-opt="windows"> Windows</label>

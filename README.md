@@ -24,7 +24,7 @@ The web app is plain PHP plus vanilla JavaScript; nothing to build.
 | `/app/editor` | 2D editor: walls, rooms, doors, windows, 418 library symbols, labels, measurements, undo/redo, PNG/PDF/JSON export | `views/app/editor.php`, `public/assets/app/editor.js` |
 | `/app/plans` | Saved plans: open, rename, duplicate, download, import, delete | `views/app/plans.php`, `public/assets/app/app.js` |
 | `/app/templates` | Plan templates with a lightbox viewer | `views/app/templates.php` |
-| `/app/3d?plan=<id>` | 3D view (three.js, self-hosted in `public/assets/app/vendor/three/`): orbit and walk modes, wall height and colour, floor finishes, doors open/closed, furniture, PNG snapshot | `views/app/viewer3d.php`, `public/assets/app/viewer3d.js` |
+| `/app/3d?plan=<id>` | 3D view (three.js, self-hosted in `public/assets/app/vendor/three/`): orbit and walk modes, low/cut-away/full walls, wall height and colour, floor finishes, doors open/closed, realistic 3D furniture, PNG snapshot | `views/app/viewer3d.php`, `public/assets/app/viewer3d.js`, `public/assets/app/furniture3d.js` |
 | `/app/ai` | AI floor plan generator: description → one plan per floor | `src/AiPlanGenerator.php`, `views/app/ai_generator.php`, `public/assets/app/ai.js` |
 | `/app/ai/analyzer` | AI analyzer: photo of a plan → rooms, sizes and an editable plan | `src/PlanAnalyzer.php`, `views/app/ai_analyzer.php`, `public/assets/app/ai.js` |
 | `/app/calculators` | Construction, metal, area and unit calculators, computed by PHP | `src/Calculators.php`, `views/app/calculators/` |
