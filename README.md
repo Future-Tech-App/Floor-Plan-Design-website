@@ -42,7 +42,7 @@ Editor shortcuts: V select, W wall, R room, D door, N window, F library, T label
 `public/classic/` holds the release web build of the Flutter app, kept as a fallback. Don't edit it by hand. Rebuild it from the Flutter project:
 
 ```bash
-tool/build_web.sh      # run in the Flutter app repo; writes php-website/public/classic/
+tool/build_web.sh      # run in the Floor-Plan-Flutter repo; writes ../Floor-Plan-Website/public/classic/
 ```
 
 The script runs `flutter build web --base-href /classic/`, refuses to continue if any API key appears in the output, leaves out the local CanvasKit copy (browsers load it from Google's CDN), and writes an `.htaccess` that tells browsers to check for a new version on every load.
@@ -108,7 +108,7 @@ Old admin URLs (`/admin/login.php`, `/admin/index.php`, `/admin/settings.php`, `
 ## Quick start (local)
 
 ```bash
-cd php-website
+cd Floor-Plan-Website
 php bin/create-admin.php admin        # prompts for a password (min 10 chars)
 php -S localhost:8000 -t public public/index.php
 ```
@@ -119,8 +119,8 @@ The SQLite database is created automatically at `data/floorplan.sqlite` the firs
 
 ## Deploying
 
-1. Upload the whole `php-website/` folder.
-2. Point the domain's **document root at `php-website/public`**. `config/`, `src/`, `views/` and `data/` must stay outside the web root.
+1. Upload the whole `Floor-Plan-Website/` folder (you can leave out `react-website/`).
+2. Point the domain's **document root at `Floor-Plan-Website/public`**. `config/`, `src/`, `views/` and `data/` must stay outside the web root.
 3. Give the web server user write access to `data/`.
 4. Copy `config/local.example.php` to `config/local.php` and set your values (iOS App Store link, support email, `base_path` if the site lives in a sub-folder).
 5. Create an admin account: `php bin/create-admin.php <username>`.
@@ -232,7 +232,7 @@ curl -X POST http://localhost:8000/api/v1/contact.php \
 ## Structure
 
 ```
-php-website/
+Floor-Plan-Website/
 ├── bin/create-admin.php     CLI: create or reset an admin user
 ├── config/app.php           defaults (override in config/local.php)
 ├── data/                    SQLite database (git-ignored)
@@ -241,9 +241,14 @@ php-website/
 │   ├── api/v1/              JSON endpoints
 │   ├── assets/admin/        admin panel styles and script
 │   └── assets/              css, js, images
+├── react-website/           the earlier React site (not deployed; see below)
 ├── src/                     bootstrap, helpers, Database, Repository, Auth, VersionGate, ContactService
 └── views/                   layouts, public pages, admin pages
 ```
+
+`react-website/` is the earlier React version of floorplandesigner.app (`npm install`, then `npm start` or `npm run build`), kept for reference. The deploy workflow only uploads `public/`, `src/`, `views/`, `config/` and `bin/`, so it is never deployed.
+
+This project was moved out of the Flutter app repo (`Floor-Plan-Flutter`, where it was `php-website/` and `website/`). Its git history up to the move comes from there.
 
 ## Notes
 
