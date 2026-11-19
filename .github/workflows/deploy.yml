@@ -140,6 +140,7 @@ jobs:
             0)  echo "Target folder confirmed (floorplan-deploy-target.txt found)." ;;
             78) echo "::error::Safety stop: floorplan-deploy-target.txt is not in the FTP target folder. Nothing was uploaded. Create that empty file in floorplandesigner.app's own folder (see README → Deploy with GitHub Actions)."; exit 1 ;;
             67) echo "::error::FTP login failed: check FTP_USERNAME and FTP_PASSWORD."; exit 1 ;;
+            51|60) echo "::error::The FTP server's TLS certificate doesn't match FTP_SERVER. Set FTP_SERVER to the host name on the certificate (for this host: cloud526.thundercloud.uk)."; exit 1 ;;
             *)  echo "::error::Could not reach the FTP server over FTPS (curl exit $code): check FTP_SERVER."; exit 1 ;;
           esac
 

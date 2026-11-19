@@ -190,7 +190,7 @@ SSH is closed on this server, so deploy through cPanel's File Manager with the p
 
 | Secret | Value |
 |---|---|
-| `FTP_SERVER` | `ftp.hhealthcare.net` |
+| `FTP_SERVER` | `cloud526.thundercloud.uk`: the server's TLS certificate is issued to this name, so `ftp.hhealthcare.net` fails the certificate check |
 | `FTP_USERNAME` | `deploy@hhealthcare.net` |
 | `FTP_PASSWORD` | that account's password |
 | `GROQ_API_KEY` | *(optional)* Groq key for the AI tools, written to `config/secrets.php` outside the web root |
