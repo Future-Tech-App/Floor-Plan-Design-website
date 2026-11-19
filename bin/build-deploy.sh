@@ -6,7 +6,7 @@
 # Output: dist/floorplandesigner-deploy.zip, laid out for a cPanel home folder:
 #
 #   public_html/        <- contents of public/ (incl. .htaccess and .well-known/)
-#   src/ views/ config/ bin/ data/   <- private app folders, next to public_html
+#   src/ views/ admin/ config/ bin/ data/   <- private app folders, next to public_html
 #
 # Upload the zip to your HOME folder in cPanel File Manager (the folder that
 # contains public_html, not public_html itself) and choose Extract.
@@ -28,7 +28,7 @@ mkdir -p "$STAGE/public_html" "$STAGE/data"
 cp -R "$ROOT/public/." "$STAGE/public_html/"
 
 # Private folders
-for dir in src views config bin; do
+for dir in src views admin config bin; do
     cp -R "$ROOT/$dir" "$STAGE/$dir"
 done
 touch "$STAGE/data/.gitkeep"

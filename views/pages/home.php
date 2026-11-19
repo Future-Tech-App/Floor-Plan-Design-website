@@ -33,26 +33,43 @@ $faqs = [
 ];
 ?>
 <section class="hero">
-    <div class="hero-bg" aria-hidden="true"></div>
+    <?php $liveImg = ''; $liveCubes = 0; $liveFloor = false; require ROOT_DIR . '/views/partials/live_bg.php'; ?>
     <div class="container hero-grid">
         <div class="hero-copy reveal">
-            <p class="kicker kicker-light">Home design &amp; floor plan app</p>
-            <h1>Plan, design &amp; visualize <span class="accent-text">your dream home</span></h1>
+            <a class="hero-pill" href="<?= e(url('/app/ai')) ?>"><span>New</span>AI floor plan generator<?= icon('arrow') ?></a>
+            <h1>Plan, design &amp; visualize <span class="accent-text hero-underline">your dream home</span></h1>
             <p class="hero-lead">Draw accurate floor plans, furnish every room, walk through it in 3D and export professional plans — in your browser or on your phone.</p>
             <div class="hero-actions">
                 <a class="btn btn-primary btn-lg" href="<?= e(url('/app/')) ?>">Start designing free <?= icon('arrow') ?></a>
                 <a class="btn btn-outline-light btn-lg" href="<?= e(url('/features')) ?>">Explore features</a>
             </div>
-            <ul class="hero-trust">
-                <li><?= icon('check') ?>No sign-up</li>
-                <li><?= icon('check') ?>40+ languages</li>
-                <li><?= icon('check') ?>Works offline on mobile</li>
-            </ul>
+            <div class="hero-meta">
+                <span class="hero-platforms" aria-label="Available on web, Android and iOS">
+                    <span title="Web"><?= icon('monitor') ?></span><span title="Android"><?= icon('device') ?></span><span title="iOS"><svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.3 1.9-3.4 2-3.5-1.1-1.6-2.8-1.8-3.4-1.8-1.4-.2-2.8.8-3.5.8-.7 0-1.8-.8-3-.8-1.5 0-3 .9-3.8 2.3-1.6 2.8-.4 7 1.2 9.3.8 1.1 1.7 2.4 2.9 2.3 1.2 0 1.6-.7 3-.7s1.8.7 3 .7c1.3 0 2.1-1.1 2.8-2.3.9-1.3 1.3-2.6 1.3-2.7 0 0-2.5-1-2.5-3.6ZM14.1 5.8c.6-.8 1.1-1.9 1-3-.9 0-2.1.6-2.7 1.4-.6.7-1.1 1.8-1 2.9 1 .1 2.1-.5 2.7-1.3Z"/></svg></span>
+                </span>
+                <ul class="hero-trust">
+                    <li><?= icon('check') ?>Free to start</li>
+                    <li><?= icon('check') ?>40+ languages</li>
+                    <li><?= icon('check') ?>No install needed</li>
+                </ul>
+            </div>
         </div>
         <div class="hero-visual reveal" aria-hidden="true">
-            <div class="hero-render"><img src="<?= e(url('/assets/img/gallery/3bed-2.jpg')) ?>" alt="" width="1000" height="560"></div>
-            <img class="hero-phone" src="<?= e(url('/assets/img/app-home.png')) ?>" alt="" width="260">
-            <div class="hero-chip"><?= icon('cube') ?><span><strong>3D</strong> live preview</span></div>
+            <div class="hero-window">
+                <div class="hw-bar">
+                    <span class="hw-dots"><i></i><i></i><i></i></span>
+                    <span class="hw-title"><?= icon('home') ?>My dream home</span>
+                    <span class="hw-tabs"><b>2D</b><b class="is-on">3D</b></span>
+                </div>
+                <div class="hw-body">
+                    <div class="hero-render"><img src="<?= e(url('/assets/img/gallery/3bed-2.jpg')) ?>" alt="" width="1000" height="560"></div>
+                    <div class="hero-3d" data-hero-3d data-furniture="<?= e(asset('/assets/app/furniture3d.js')) ?>"></div>
+                    <p class="hero-3d-hint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v5h-5"/></svg>Drag to rotate</p>
+                </div>
+            </div>
+            <div class="hero-float hero-float-area"><span class="hf-ic"><?= icon('ruler') ?></span><span><small>Floor area</small><strong>74.1 m²</strong><em>5 rooms · 1 floor</em></span></div>
+            <div class="hero-float hero-float-saved"><span class="hf-ok"><?= icon('check') ?></span><span><strong>Plan saved</strong><small>to your account</small></span></div>
+            <div class="hero-phone"><?php $phoneClass = 'phone-tilted'; require ROOT_DIR . '/views/partials/phone_mockup.php'; ?></div>
         </div>
     </div>
 </section>
@@ -85,7 +102,7 @@ $faqs = [
             <ul class="check-list">
                 <li><?= icon('check') ?>Accurate measurements in feet, meters, cm, inches or mm</li>
                 <li><?= icon('check') ?>Multi-floor buildings with independent layers</li>
-                <li><?= icon('check') ?>Plans backed up automatically — no account needed</li>
+                <li><?= icon('check') ?>Plans saved to your free account — open them on any computer</li>
             </ul>
             <div class="about-actions">
                 <a class="btn btn-primary" href="<?= e(url('/features')) ?>">See all features</a>
@@ -117,6 +134,7 @@ $faqs = [
 </section>
 
 <section class="stats-band">
+    <?php $liveImg = 'gallery/2bed-2.jpg'; $liveCubes = 2; $liveFloor = false; require ROOT_DIR . '/views/partials/live_bg.php'; ?>
     <div class="container stats-grid">
         <div class="stat"><strong data-count="9" data-suffix="+">9+</strong><span>Design &amp; measuring tools</span></div>
         <div class="stat"><strong data-count="40" data-suffix="+">40+</strong><span>Languages</span></div>
@@ -208,3 +226,7 @@ $faqs = [
         </div>
     </div>
 </section>
+
+<?php /* Live 3D house in the hero (public/assets/js/hero3d.js); three.js is shared with the web app's 3D view. */ ?>
+<script type="importmap"><?= json_encode(['imports' => ['three' => url('/assets/app/vendor/three/three.module.min.js'), 'three/addons/' => url('/assets/app/vendor/three/')]], JSON_UNESCAPED_SLASHES) ?></script>
+<script type="module" src="<?= e(asset('/assets/js/hero3d.js')) ?>"></script>

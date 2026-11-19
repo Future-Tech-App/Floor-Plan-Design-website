@@ -251,20 +251,90 @@ final class AiPlanText
         if (str_contains($d, 'office') && (str_contains($d, 'building') || str_contains($d, 'block'))) {
             return [900.0, 800.0];
         }
-        if (str_contains($d, '2 kanal')) return [1200.0, 2000.0];
-        if (str_contains($d, '1 kanal') || str_contains($d, 'one kanal')) return [1000.0, 1800.0];
-        if (str_contains($d, '10 marla')) return [700.0, 1300.0];
-        if (str_contains($d, '8 marla')) return [660.0, 1200.0];
-        if (str_contains($d, '7 marla')) return [620.0, 1150.0];
-        if (str_contains($d, '6 marla')) return [600.0, 1100.0];
-        if (str_contains($d, '5 marla')) return [500.0, 1000.0];
-        if (str_contains($d, '4 marla')) return [460.0, 920.0];
-        if (str_contains($d, '3 marla')) return [400.0, 800.0];
-        if (preg_match('/(\d+)\s*sqft/', $d, $m)) {
-            $side = sqrt((float) $m[1]) * 20;
-            return [$side * 0.5, $side];
+        $d = str_replace(['×', '’', '′'], ['x', "'", "'"], $d);
+        $num = '(\d+(?:\.\d+)?|' . implode('|', array_keys(self::NUMBER_WORDS)) . ')';
+
+        // "5 Marla", "10-marla", "1.5 kanal", "one kanal" (1 kanal = 20 marla).
+        if (preg_match('/(?<![\w.])' . $num . '\s*-?\s*(marlas?|kanals?)\b/', $d, $m)) {
+            $n = self::NUMBER_WORDS[$m[1]] ?? (float) $m[1];
+            if ($n > 0) {
+                return self::plotForMarla(str_starts_with($m[2], 'kanal') ? $n * 20 : $n);
+            }
+        }
+
+        // "30 x 60 ft", "30x60", "9 x 18 m": the largest pair wins, so room sizes such as
+        // "bedroom 12x14 ft" are not mistaken for the plot. No unit means feet.
+        $unit = "(ft|feet|foot|'|m|mtrs?|meters?|metres?)?";
+        if (preg_match_all('/(?<![\d.])(\d+(?:\.\d+)?)\s*' . $unit . '\s*(?:x|by|\*)\s*(\d+(?:\.\d+)?)\s*' . $unit . '(?![a-z])/', $d, $all, PREG_SET_ORDER)) {
+            $best = null;
+            foreach ($all as $m) {
+                $u = ($m[4] ?? '') !== '' ? $m[4] : ($m[2] ?? '');
+                $toFt = ($u !== '' && $u[0] === 'm') ? 3.28084 : 1.0;
+                [$w, $h] = [(float) $m[1] * $toFt, (float) $m[3] * $toFt];
+                if ($w > 0 && $h > 0 && ($best === null || $w * $h > $best[0] * $best[1])) {
+                    $best = [$w, $h];
+                }
+            }
+            if ($best !== null && $best[0] * $best[1] >= self::MIN_PLOT_SQFT) {
+                // Same covered area as the Marla preset, shaped to the plot's own width : depth.
+                [$pw, $ph] = self::plotForMarla($best[0] * $best[1] / self::SQFT_PER_MARLA);
+                $area = $pw * $ph;
+                $aspect = min($best[0], $best[1]) / max($best[0], $best[1]);
+                $w = sqrt($area * $aspect);
+                return [round($w), round($area / $w)];
+            }
+        }
+
+        // "1200 sqft", "1,200 sq. ft", "1200 square feet", "120 sq m", "120 m2".
+        if (preg_match('/(?<![\d.])(\d[\d,]*(?:\.\d+)?)\s*(sq\.?\s*(?:ft|feet|foot)|sqft|sft|square\s*f(?:ee|oo)t|ft2|ft²|sq\.?\s*m(?:eters?|etres?)?|sqm|square\s*met(?:er|re)s?|m2|m²)(?![a-z])/', $d, $m)) {
+            $area = (float) str_replace(',', '', $m[1]);
+            if (!str_contains($m[2], 'f')) {
+                $area *= 10.7639; // square metres → square feet
+            }
+            if ($area >= self::MIN_PLOT_SQFT) {
+                return self::plotForMarla($area / self::SQFT_PER_MARLA);
+            }
         }
         return [600.0, 1200.0];
+    }
+
+    /** 1 Marla = 225 sq ft (25 x 45 ft = 5 Marla). */
+    private const SQFT_PER_MARLA = 225.0;
+    /** Smaller areas are taken to be rooms, not plots. */
+    private const MIN_PLOT_SQFT = 500.0;
+    private const NUMBER_WORDS = [
+        'half' => 0.5, 'one' => 1, 'two' => 2, 'three' => 3, 'four' => 4, 'five' => 5, 'six' => 6,
+        'seven' => 7, 'eight' => 8, 'nine' => 9, 'ten' => 10, 'twelve' => 12, 'fifteen' => 15, 'twenty' => 20,
+    ];
+    /** Tuned covered size (cm) per plot size in Marla; sizes in between are interpolated. */
+    private const MARLA_PRESETS = [
+        3 => [400.0, 800.0], 4 => [460.0, 920.0], 5 => [500.0, 1000.0], 6 => [600.0, 1100.0],
+        7 => [620.0, 1150.0], 8 => [660.0, 1200.0], 10 => [700.0, 1300.0],
+        20 => [1000.0, 1800.0], 40 => [1200.0, 2000.0],
+    ];
+
+    /** @return array{0: float, 1: float} [plotW, plotH] in cm for a plot of $marla Marla. */
+    private static function plotForMarla(float $marla): array
+    {
+        $keys = array_keys(self::MARLA_PRESETS);
+        [$lo, $hi] = [$keys[0], $keys[count($keys) - 1]];
+        if ($marla <= $lo || $marla >= $hi) {
+            // Outside the table: scale the nearest preset by the change in side length.
+            $k = $marla <= $lo ? $lo : $hi;
+            $s = sqrt($marla / $k);
+            [$w, $h] = self::MARLA_PRESETS[$k];
+            return [round(min(max($w * $s, 300.0), 1500.0)), round(min(max($h * $s, 600.0), 2500.0))];
+        }
+        foreach ($keys as $i => $k) {
+            $next = $keys[$i + 1];
+            if ($marla <= $next) {
+                $t = ($marla - $k) / ($next - $k);
+                [$w1, $h1] = self::MARLA_PRESETS[$k];
+                [$w2, $h2] = self::MARLA_PRESETS[$next];
+                return [round($w1 + ($w2 - $w1) * $t), round($h1 + ($h2 - $h1) * $t)];
+            }
+        }
+        return self::MARLA_PRESETS[$hi];
     }
 
     /** True for residential descriptions; false for explicit non-residential keywords. */

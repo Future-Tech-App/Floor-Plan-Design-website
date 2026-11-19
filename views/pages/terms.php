@@ -1,6 +1,7 @@
 <?php /** @var array $site */ ?>
 <?php
 $bannerTitle  = 'Terms of Use';
+$bannerImage  = 'interior/banner-plan.jpg';
 $bannerKicker = 'Legal';
 $bannerLead   = 'Last updated: November 13, 2026';
 require ROOT_DIR . '/views/partials/page_banner.php';

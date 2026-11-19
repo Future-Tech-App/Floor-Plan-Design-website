@@ -3,7 +3,7 @@ $highlights = [
     ['pencil', 'Draw & design', 'Walls, rooms, doors, windows and furniture.'],
     ['calculator', 'Calculators', 'Bricks, concrete, paint, steel, areas and unit conversions.'],
     ['download', 'PNG & PDF export', 'Print-ready plans with measurements to share with anyone.'],
-    ['shield', 'No account', 'Plans are saved in your browser and backed up automatically.'],
+    ['shield', 'Free account', 'Sign in with Google to save your plans and open them in any browser.'],
 ]; ?>
 <div class="page-body">
     <div class="a-container" style="text-align:center">
@@ -37,7 +37,7 @@ $highlights = [
         <h2 class="sec-title" style="margin-top:60px">Contact Us</h2>
         <span class="rule"></span>
         <p>Questions, ideas or found a bug? We read every message.</p>
-        <p><a href="mailto:<?= e($site['support_email']) ?>" style="font:400 1.6rem var(--serif)"><?= e($site['support_email']) ?></a></p>
+        <p><a href="mailto:<?= e($site['support_email']) ?>" style="font:700 clamp(1.05rem, 4.6vw, 1.45rem) var(--serif); overflow-wrap:anywhere"><?= e($site['support_email']) ?></a></p>
         <a class="btn btn-dark" href="<?= e(url('/')) ?>">Visit Website</a>
 
 

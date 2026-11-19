@@ -1,5 +1,6 @@
 <?php /** @var array $site */
 $bannerTitle  = 'Download';
+$bannerImage  = 'interior/sofa-green.jpg';
 $bannerKicker = 'Latest version ' . $site['version'];
 $bannerLead   = 'Use Floor Plan Designer in your browser, or install it on Android and iOS.';
 require ROOT_DIR . '/views/partials/page_banner.php';
@@ -9,7 +10,7 @@ require ROOT_DIR . '/views/partials/page_banner.php';
         <article class="card store-card is-featured reveal">
             <span class="card-icon"><?= icon('monitor') ?></span>
             <h2>Web browser</h2>
-            <p>Every tool, right now, in Chrome, Edge, Safari or Firefox — on a computer, tablet or phone. Free, no ads, nothing to install. Plans are saved in your browser.</p>
+            <p>Every tool, right now, in Chrome, Edge, Safari or Firefox — on a computer, tablet or phone. Free, no ads, nothing to install. Sign in with Google to save your plans to your account.</p>
             <a class="btn btn-light" href="<?= e(url('/app/')) ?>">Open the web app <?= icon('arrow') ?></a>
         </article>
         <article class="card store-card reveal">
@@ -43,6 +44,6 @@ require ROOT_DIR . '/views/partials/page_banner.php';
             <p class="lead">We occasionally require a minimum app version so everyone gets important fixes. If the app asks you to update, tap <em>Update now</em> or open your store and install the latest version. Your saved plans stay on your device.</p>
             <a class="link-arrow" href="<?= e(url('/support')) ?>">Having trouble? Visit support <?= icon('arrow') ?></a>
         </div>
-        <div class="feature-media reveal"><img src="<?= e(url('/assets/img/app-home.png')) ?>" alt="Floor Plan Designer home screen" loading="lazy" style="max-height:380px;border-radius:24px;box-shadow:var(--shadow)"></div>
+        <div class="feature-media reveal"><?php $phoneClass = 'phone-mockup-lg'; require ROOT_DIR . '/views/partials/phone_mockup.php'; ?></div>
     </div>
 </section>

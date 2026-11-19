@@ -13,6 +13,13 @@ $err = static fn (string $k) => isset($errors[$k]) ? '<em class="ad-err">' . e($
             </div>
         </div>
     </section>
+    <section class="ad-card ad-mb">
+        <div class="ad-card-head"><h2>Web app sign-in (Google)</h2><span class="ad-muted"><?= $googleReady ? 'On — users sign in with Google before saving' : 'Off — nobody can save in the web app until this is set' ?></span></div>
+        <div class="ad-card-body ad-form">
+            <label class="ad-field"><span>Google OAuth client ID</span><input name="google_client_id" value="<?= e($values['google_client_id']) ?>" placeholder="<?= e((string) $defaults['google_client_id'] ?: '1234567890-abc123.apps.googleusercontent.com') ?>" spellcheck="false" autocomplete="off"><?= $err('google_client_id') ?>
+                <small>In Google Cloud Console → APIs &amp; Services → Credentials, create an <strong>OAuth client ID</strong> of type <strong>Web application</strong>. Under <strong>Authorized JavaScript origins</strong> add <code><?= e($siteUrl) ?></code> (and <code>http://localhost:8000</code> for local testing). No client secret is needed.</small></label>
+        </div>
+    </section>
     <section class="ad-card">
         <div class="ad-card-head"><h2>Contact &amp; store links</h2><span class="ad-muted">Leave a field empty to use the default</span></div>
         <div class="ad-card-body ad-form-grid">

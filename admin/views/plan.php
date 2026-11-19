@@ -36,6 +36,7 @@
                 <dt>Size</dt><dd><?= e(AdminApp::bytes((int) $row['size'])) ?></dd>
                 <dt>First saved</dt><dd><?= e(fmt_date($row['created_at'])) ?></dd>
                 <dt>Last saved</dt><dd><?= e(fmt_date($row['updated_at'])) ?></dd>
+                <dt>User</dt><dd><?php if (!empty($row['user_email'])): ?><a href="<?= e(url('/admin/app-users/' . $row['user_id'])) ?>"><?= e($row['user_email']) ?></a><?= $row['user_name'] !== '' ? '<br><span class="ad-muted">' . e($row['user_name']) . '</span>' : '' ?><?php else: ?><span class="ad-muted"><?= $row['source'] === 'web' ? 'No account (saved before sign-in)' : 'Mobile app (no account)' ?></span><?php endif; ?></dd>
                 <dt>Device</dt><dd><code><?= e(substr((string) $row['owner'], 0, 10)) ?>…</code> · <?= $deviceCount ?> plan<?= $deviceCount === 1 ? '' : 's' ?>
                     <?php if ($deviceNotes > 0): ?> · <a href="<?= e(url('/admin/notes?device=' . $row['owner'])) ?>"><?= $deviceNotes ?> note<?= $deviceNotes === 1 ? '' : 's' ?></a><?php endif; ?></dd>
             </dl>

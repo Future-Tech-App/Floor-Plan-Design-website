@@ -48,6 +48,7 @@ $ic = static fn (string $d): string => '<svg viewBox="0 0 24 24" class="icon" ar
             <button type="button" class="ed-icon-btn" data-cmd="redo" title="Redo (Ctrl+Y)" aria-label="Redo"><?= $ic('<path d="m15 14 5-5-5-5"/><path d="M20 9H9a5 5 0 0 0 0 10h3"/>') ?></button>
         </div>
         <div class="ed-actions">
+            <span class="ed-account" data-account></span>
             <button type="button" class="ed-btn ed-btn-info" data-cmd="info" title="Plan overview" aria-label="Plan overview"><?= $ic('<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M15 3v18"/>') ?></button>
             <button type="button" class="ed-btn" data-cmd="view3d" title="3D view"><?= $ic('<path d="M21 16V8a2 2 0 0 0-1-1.7l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.7l7 4a2 2 0 0 0 2 0l7-4a2 2 0 0 0 1-1.7Z"/><path d="M3.3 7 12 12l8.7-5M12 22V12"/>') ?><span>3D View</span></button>
             <button type="button" class="ed-btn" data-cmd="export" aria-haspopup="true" title="Export"><?= icon('download') ?><span>Export</span></button>

@@ -6,6 +6,7 @@ $menu = [
     'Overview' => [
         ['dashboard', '/admin', 'Dashboard', 'home'],
         ['messages', '/admin/messages', 'Messages', 'mail'],
+        ['app-users', '/admin/app-users', 'Web App Users', 'user'],
         ['plans', '/admin/plans', 'Saved Plans', 'pencil'],
         ['notes', '/admin/notes', 'User Notes', 'note'],
         ['analytics', '/admin/analytics', 'Analytics', 'globe'],
@@ -31,7 +32,7 @@ $menu = [
     <meta name="robots" content="noindex, nofollow">
     <title><?= e($title ?? 'Admin') ?></title>
     <link rel="icon" href="<?= e(url('/favicon.ico')) ?>" sizes="any">
-    <link rel="stylesheet" href="<?= e(asset('/assets/admin/admin.css')) ?>">
+    <link rel="stylesheet" href="<?= e(AdminApp::asset('admin.css')) ?>">
 </head>
 <body class="ad">
 <aside class="ad-side" id="ad-side">
@@ -78,6 +79,6 @@ $menu = [
     </main>
     <footer class="ad-foot">© <?= e($site['year']) ?> <?= e($site['name']) ?> · Admin · v<?= e(preg_replace('/\+.*/', '', $site['version'])) ?></footer>
 </div>
-<script src="<?= e(asset('/assets/admin/admin.js')) ?>" defer></script>
+<script src="<?= e(AdminApp::asset('admin.js')) ?>" defer></script>
 </body>
 </html>

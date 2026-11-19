@@ -64,7 +64,7 @@
             let cx = 0, cy = 0; rm.pts.forEach(q => { cx += q.x; cy += q.y; }); cx /= rm.pts.length; cy /= rm.pts.length;
             const xs = rm.pts.map(q => q.x), wpx = (Math.max(...xs) - Math.min(...xs)) * s;
             const fs = Math.max(8, Math.min(12, wpx / 8)); if (wpx < 34) return;
-            c.font = '700 ' + fs + 'px Mulish, sans-serif'; c.fillText(rm.name || '', X(cx), Y(cy), wpx - 6);
+            c.font = '700 ' + fs + 'px Inter, sans-serif'; c.fillText(rm.name || '', X(cx), Y(cy), wpx - 6);
         });
     }
     function savePlan(p, name) {
@@ -138,17 +138,24 @@
             }).join('');
             floorsEl.querySelectorAll('canvas[data-floor]').forEach(cv => drawPreview(cv, d.floors[+cv.dataset.floor].plan));
         }
+        // Saving needs an account: these buttons wait for sign-in, then carry on.
         floorsEl.addEventListener('click', e => {
             const open = e.target.closest('[data-open]'), v3 = e.target.closest('[data-3d]');
             if (!open && !v3) return;
-            const id = saveFloor(+(open || v3).dataset[open ? 'open' : '3d']);
-            if (id) location.href = FP.url((open ? '/app/editor?plan=' : '/app/3d?plan=') + encodeURIComponent(id));
+            const i = +(open || v3).dataset[open ? 'open' : '3d'];
+            FPAuth.require(() => {
+                const id = saveFloor(i);
+                if (id) location.href = FP.url((open ? '/app/editor?plan=' : '/app/3d?plan=') + encodeURIComponent(id));
+            }, 'Sign in to save this plan to your account and open it.');
         });
         document.getElementById('ai-save-all').addEventListener('click', e => {
             if (!last) return;
-            last.data.floors.forEach((f, i) => saveFloor(i));
-            e.target.closest('button').textContent = 'Saved ' + last.data.floors.length + (last.data.floors.length > 1 ? ' plans' : ' plan') + ' ✓';
-            setTimeout(() => { location.href = FP.url('/app/plans'); }, 700);
+            const btn = e.target.closest('button');
+            FPAuth.require(() => {
+                last.data.floors.forEach((f, i) => saveFloor(i));
+                btn.textContent = 'Saved ' + last.data.floors.length + (last.data.floors.length > 1 ? ' plans' : ' plan') + ' ✓';
+                setTimeout(() => { location.href = FP.url('/app/plans'); }, 700);
+            }, 'Sign in to save these plans to your account.');
         });
         window.addEventListener('resize', () => { if (last && !results.hidden) floorsEl.querySelectorAll('canvas[data-floor]').forEach(cv => drawPreview(cv, last.data.floors[+cv.dataset.floor].plan)); });
     }
@@ -247,8 +254,9 @@
             const name = (last.plan && last.plan.name) || ('Analyzed plan ' + new Date().toLocaleDateString());
             const s = savePlan(last.plan, name); savedId = s && s.id; return savedId;
         }
-        document.getElementById('ai-open').addEventListener('click', () => { const id = last && saveResult(); if (id) location.href = FP.url('/app/editor?plan=' + encodeURIComponent(id)); });
-        document.getElementById('ai-3d').addEventListener('click', () => { const id = last && saveResult(); if (id) location.href = FP.url('/app/3d?plan=' + encodeURIComponent(id)); });
+        const openSaved = path => { if (!last) return; FPAuth.require(() => { const id = saveResult(); if (id) location.href = FP.url(path + encodeURIComponent(id)); }, 'Sign in to save this plan to your account and open it.'); };
+        document.getElementById('ai-open').addEventListener('click', () => openSaved('/app/editor?plan='));
+        document.getElementById('ai-3d').addEventListener('click', () => openSaved('/app/3d?plan='));
     }
 
     window.FPAi = { postJson, setStatus, drawPreview, savePlan, shortName, polyArea, fmtArea };

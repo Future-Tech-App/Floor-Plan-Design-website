@@ -29,19 +29,43 @@ final class PlanStore
         return hash('sha256', 'fpd-plan-owner|' . $clientId);
     }
 
+    /** Owner key for a signed-in web app user: their plans follow the account, not the browser. */
+    public static function userOwner(int $userId): string
+    {
+        return self::ownerHash('user:' . $userId);
+    }
+
+    /** The owner's plans (id, name, modifiedAt) for the web app to download. */
+    public static function listForOwner(string $owner): array
+    {
+        return self::q(
+            "SELECT plan_id id, name, COALESCE(json_extract(data, '$.modifiedAt'), updated_at) modifiedAt FROM plans
+             WHERE owner = :o ORDER BY updated_at DESC LIMIT " . self::MAX_PER_OWNER,
+            ['o' => $owner]
+        )->fetchAll();
+    }
+
+    public static function findForOwner(string $owner, string $planId): ?array
+    {
+        $data = self::q('SELECT data FROM plans WHERE owner = :o AND plan_id = :p', ['o' => $owner, 'p' => $planId])->fetchColumn();
+        $plan = is_string($data) ? json_decode($data, true) : null;
+        return is_array($plan) ? $plan : null;
+    }
+
     /** Insert or update one plan. Returns the server row id. */
-    public static function save(string $owner, string $planId, string $source, array $plan, string $json): int
+    public static function save(string $owner, string $planId, string $source, array $plan, string $json, ?int $userId = null): int
     {
         $sum = self::summary($plan);
         $name = mb_substr(trim((string) ($plan['name'] ?? '')) ?: 'Untitled plan', 0, 120);
         self::q(
-            "INSERT INTO plans (owner, plan_id, source, name, data, size, floors, rooms, walls, items, area_m2)
-             VALUES (:o, :p, :s, :n, :d, :z, :f, :r, :w, :i, :a)
+            "INSERT INTO plans (owner, plan_id, source, name, data, size, floors, rooms, walls, items, area_m2, user_id)
+             VALUES (:o, :p, :s, :n, :d, :z, :f, :r, :w, :i, :a, :u)
              ON CONFLICT(owner, plan_id) DO UPDATE SET source = excluded.source, name = excluded.name, data = excluded.data,
+               user_id = COALESCE(excluded.user_id, plans.user_id),
                size = excluded.size, floors = excluded.floors, rooms = excluded.rooms, walls = excluded.walls,
                items = excluded.items, area_m2 = excluded.area_m2, updated_at = datetime('now')",
             ['o' => $owner, 'p' => $planId, 's' => $source, 'n' => $name, 'd' => $json, 'z' => strlen($json),
-             'f' => $sum['floors'], 'r' => $sum['rooms'], 'w' => $sum['walls'], 'i' => $sum['items'], 'a' => $sum['area_m2']]
+             'f' => $sum['floors'], 'r' => $sum['rooms'], 'w' => $sum['walls'], 'i' => $sum['items'], 'a' => $sum['area_m2'], 'u' => $userId]
         );
         return (int) self::q('SELECT id FROM plans WHERE owner = :o AND plan_id = :p', ['o' => $owner, 'p' => $planId])->fetchColumn();
     }
@@ -63,23 +87,28 @@ final class PlanStore
 
     /* ---------- Admin ---------- */
 
-    public static function search(int $page, int $perPage, string $source, string $q): array
+    public static function search(int $page, int $perPage, string $source, string $q, int $userId = 0): array
     {
         $where = [];
         $params = [];
         if (isset(self::SOURCES[$source])) {
-            $where[] = 'source = :src';
+            $where[] = 'p.source = :src';
             $params['src'] = $source;
         }
         if ($q !== '') {
-            $where[] = 'name LIKE :q';
+            $where[] = '(p.name LIKE :q OR u.email LIKE :q OR u.name LIKE :q)';
             $params['q'] = '%' . $q . '%';
         }
-        $w = $where ? ' WHERE ' . implode(' AND ', $where) : '';
-        $total = (int) self::q('SELECT COUNT(*) FROM plans' . $w, $params)->fetchColumn();
+        if ($userId > 0) {
+            $where[] = 'p.user_id = :uid';
+            $params['uid'] = $userId;
+        }
+        $from = ' FROM plans p LEFT JOIN users u ON u.id = p.user_id' . ($where ? ' WHERE ' . implode(' AND ', $where) : '');
+        $total = (int) self::q('SELECT COUNT(*)' . $from, $params)->fetchColumn();
         $items = self::q(
-            'SELECT id, owner, plan_id, source, name, size, floors, rooms, walls, items, area_m2, created_at, updated_at FROM plans'
-            . $w . ' ORDER BY updated_at DESC, id DESC LIMIT ' . $perPage . ' OFFSET ' . (($page - 1) * $perPage),
+            'SELECT p.id, p.owner, p.plan_id, p.source, p.name, p.size, p.floors, p.rooms, p.walls, p.items, p.area_m2, p.created_at, p.updated_at,
+                    p.user_id, u.email user_email, u.name user_name'
+            . $from . ' ORDER BY p.updated_at DESC, p.id DESC LIMIT ' . $perPage . ' OFFSET ' . (($page - 1) * $perPage),
             $params
         )->fetchAll();
         return ['total' => $total, 'items' => $items];
@@ -87,7 +116,7 @@ final class PlanStore
 
     public static function find(int $id): ?array
     {
-        $r = self::q('SELECT * FROM plans WHERE id = :id', ['id' => $id])->fetch();
+        $r = self::q('SELECT p.*, u.email user_email, u.name user_name FROM plans p LEFT JOIN users u ON u.id = p.user_id WHERE p.id = :id', ['id' => $id])->fetch();
         return $r ?: null;
     }
 

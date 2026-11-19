@@ -1,4 +1,4 @@
-<?php $headLead = 'Project notes and annotations, saved in this browser and backed up to our server.'; require ROOT_DIR . '/views/app/_head.php'; ?>
+<?php $headLead = 'Project notes and annotations, saved to your account so they follow you to any computer.'; require ROOT_DIR . '/views/app/_head.php'; ?>
 <div class="page-body">
     <div class="a-container notes-layout">
         <aside>
@@ -51,6 +51,7 @@ document.addEventListener('DOMContentLoaded', function () {
     search.addEventListener('input', render);
     form.addEventListener('submit', function (ev) {
         ev.preventDefault();
+        if (!FPAuth.user()) { FPAuth.require(function () { form.requestSubmit(); }, 'Sign in to save your notes to your account.'); return; }
         var title = form.title.value.trim(), content = form.content.value.trim();
         if (!title && !content) { alert('Add a title or some content first.'); return; }
         var now = new Date().toISOString();
@@ -61,9 +62,12 @@ document.addEventListener('DOMContentLoaded', function () {
         var s = document.getElementById('note-saved'); s.hidden = false; setTimeout(function () { s.hidden = true; }, 1800);
     });
     del.addEventListener('click', function () {
+        if (!FPAuth.user()) { FPAuth.open('Sign in to manage your notes.'); return; }
         if (!editing || !confirm('Delete this note? This cannot be undone.')) return;
         notes = notes.filter(function (n) { return n.id !== editing; }); store(notes); open(null);
     });
+    // Notes downloaded from the account (another browser) after signing in.
+    document.addEventListener('fpd:plans-changed', function () { notes = load(); render(); });
     render();
 });
 </script>

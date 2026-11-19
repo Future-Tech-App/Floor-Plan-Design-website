@@ -6,7 +6,7 @@ A plain-PHP (no framework, no Composer) website and backend for the Floor Plan D
 - **Classic web app (`/classic/`):** the Flutter app compiled for browsers, kept as a fallback. Every feature now also exists in the PHP web app.
 - **Public site:** Home, Features, Download, Support/FAQ (live search), Contact, Privacy Policy, Terms of Use. Its URLs match the current site (`/support`, `/contact`, `/privacy-policy`, `/terms-of-use`).
 - **Backend:** stores contact messages in SQLite, applies rate limiting and a honeypot to block spam, and uses CSRF protection, prepared statements and security headers.
-- **JSON API:** `/api/v1/version.php` (version gate), `/api/v1/contact.php` (contact form), `/api/v1/plans.php` (plan backups), `/api/v1/generate-plan.php` and `/api/v1/analyze-plan.php` (AI tools), and `/api/v1/ai.php` (AI proxy for the classic app).
+- **JSON API:** `/api/v1/version.php` (version gate), `/api/v1/contact.php` (contact form), `/api/v1/auth.php` (web app sign-in), `/api/v1/plans.php` and `/api/v1/notes.php` (saved plans and notes), `/api/v1/generate-plan.php` and `/api/v1/analyze-plan.php` (AI tools), and `/api/v1/ai.php` (AI proxy for the classic app).
 - **Admin panel (`/admin`):** a separate PHP admin area: dashboard, contact messages, page-view analytics, AI usage, plan templates, app version rules, site settings (contact details, store links, announcement banner), admins and an activity log. See [Admin panel](#admin-panel).
 
 ## Requirements
@@ -33,7 +33,7 @@ The web app is plain PHP plus vanilla JavaScript; nothing to build.
 
 Routing: `public/index.php` sends every `/app…` URL to `WebApp::dispatch()` (`src/WebApp.php`).
 
-Plans and notes are saved in the browser's local storage (`fpd_plans`, `fpd_plan_<id>`, `floor_plan_notes`), so clearing browser data deletes them. Users can download a plan as `.json` and import it again.
+**Saving needs an account.** Anyone can draw and use the calculators, but saving a plan or note opens a "Sign in to save" box with **Sign in with Google** (see [Web app sign-in](#web-app-sign-in-google)). Saved plans and notes go to the user's account on the server and are cached in the browser's local storage (`fpd_plans`, `fpd_plan_<id>`, `floor_plan_notes`), so they appear in every browser the user signs in to. While signed out, the editor keeps the drawing as a draft in the tab and saves it as soon as the user signs in. Signing out removes the plans and notes from that browser; they stay in the account. Users can also download a plan as `.json` and import it again.
 
 Editor shortcuts: V select, W wall, R room, D door, N window, F library, T label, M measure, H pan, Shift for straight lines, Del delete, Ctrl+Z / Ctrl+Y undo/redo, Ctrl+S save, `[` `]` rotate an item, Space-drag or right-drag to pan, scroll or pinch to zoom.
 
@@ -81,29 +81,56 @@ Without a key, the generator falls back to its built-in layouts and the analyzer
 
 ## Admin panel
 
-A separate admin area at `/admin`, built in plain PHP (`src/AdminApp.php` routes and handles pages, `src/AdminRepo.php` runs queries, views are in `views/admin/`, styles in `public/assets/admin/`). Every page needs a signed-in admin; all forms use CSRF tokens.
+A separate admin area at `/admin`, built in plain PHP. All of its code is in the `admin/` folder:
+
+| Path | What it is |
+|---|---|
+| `admin/src/AdminApp.php` | Routes and handles every `/admin` page |
+| `admin/src/AdminRepo.php` | Database queries used only by the admin panel |
+| `admin/src/Auth.php` | Admin sign-in and sessions |
+| `admin/views/` | Admin pages; `admin/views/layout/` has the signed-in and sign-in layouts |
+| `admin/assets/` | `admin.css` and `admin.js`, served by PHP at `/admin/assets/…` |
+
+`admin/` sits outside the web root, like `src/` and `views/`. `src/bootstrap.php` loads its classes and `public/index.php` sends every `/admin…` URL to `AdminApp::dispatch()`. Every page needs a signed-in admin; all forms use CSRF tokens.
 
 | Page | What it does |
 |---|---|
 | Dashboard | Unread messages, page views (7 days, today, change vs. previous week), AI requests and success rate, 14-day charts, top pages, latest messages, system status |
 | Messages | Filter, search, bulk mark read/unread/delete, CSV export, full message view with reply-by-email |
-| Saved Plans | Every plan saved in the web app or the Android/iOS apps: search, filter by source, drawn preview of each floor, JSON download, delete |
-| User Notes | Every note saved in the web app or the mobile apps: search, filter by source or device, full text, delete |
+| Web App Users | Everyone who signed in to the web app with Google: plans and notes per user, last sign-in, sign out everywhere, delete the user with all their data |
+| Saved Plans | Every plan saved in the web app or the Android/iOS apps, with the user's email for web app plans: search (name or email), filter by source or user, drawn preview of each floor, JSON download, delete |
+| User Notes | Every note saved in the web app or the mobile apps, with the user's email for web app notes: search, filter by source, user or device, full text, delete |
 | Analytics | Page views for 7/30/90 days, website vs. web app, most viewed pages. Only daily counts per page are stored: no cookies, IP addresses or visitor IDs, and bots are ignored |
 | AI Usage | Requests per day, success rate, error types, busiest (masked) IPs; switch the AI tools off and set the hourly per-visitor limit; clear old logs |
 | Templates | Upload (JPG/PNG/WebP, 5 MB) and delete the plan templates shown at `/app/templates`. The `public/assets/app/templates` folder must be writable |
 | App Versions | Latest version and force/optional update rules served by `/api/v1/version.php` |
-| Site Settings | Support email, tagline, Google Play and App Store links (override `config/app.php`), and an announcement banner shown on the website and web app |
+| Site Settings | Google sign-in client ID for the web app, support email, tagline, Google Play and App Store links (override `config/app.php`), and an announcement banner shown on the website and web app |
 | Admins / My Account | Add or remove admins, change your password |
 | Activity Log | Every sign-in and change, with admin, time and masked IP |
 
 ### Plan backups
 
-`POST /api/v1/plans.php` stores plans from the web app (`public/assets/app/app.js`, `FPSync`) and the mobile apps (`lib/services/storage/plan_sync_service.dart`). There are no accounts: each browser or phone sends a random private client id, and the server keeps only a SHA-256 hash of it (`plans.owner`), so only that device can update or delete its plans. Saves are sent 1.5 s after a change; deletes remove the server copy; failed uploads are retried. Limits: 2 MB per plan, 300 plans per device, 600 writes per IP per hour (`plans_rate_per_hour`). Both plan formats (web `walls/rooms/openings/items`, app `floors[].elements`) are read by `src/PlanStore.php` for counts and previews.
+`POST /api/v1/plans.php` stores plans from the web app (`public/assets/app/app.js`, `FPSync`) and the mobile apps (`lib/services/storage/plan_sync_service.dart`).
 
-Notes use `POST /api/v1/notes.php` with the same private client id: each device sends its whole notes list (`{client, source, notes:[...]}`), which replaces its notes on the server (`src/NoteStore.php`), so edits and deletions are mirrored. Limits: 2 MB per request, 500 notes per device, 20,000 characters per note.
+- **Mobile apps:** no accounts. Each phone sends a random private client id, and the server keeps only a SHA-256 hash of it (`plans.owner`), so only that device can update or delete its plans.
+- **Web app:** saves need a signed-in user (`401` otherwise). Plans are stored under the account (`plans.owner` = hash of `user:<id>`, `plans.user_id` = the user), so every browser the user signs in to sees the same plans. `GET /api/v1/plans.php?list=1` and `?id=<plan id>` return the signed-in user's own plans; `app.js` (`FPSync.pull`) downloads them after sign-in.
+ Saves are sent 1.5 s after a change; deletes remove the server copy; failed uploads are retried. Limits: 2 MB per plan, 300 plans per device, 600 writes per IP per hour (`plans_rate_per_hour`). Both plan formats (web `walls/rooms/openings/items`, app `floors[].elements`) are read by `src/PlanStore.php` for counts and previews.
+
+Notes use `POST /api/v1/notes.php` with the same private client id: each device sends its whole notes list (`{client, source, notes:[...]}`), which replaces its notes on the server (`src/NoteStore.php`), so edits and deletions are mirrored. Web app notes need a signed-in user and are stored under the account, like web app plans; `GET /api/v1/notes.php` returns them. Limits: 2 MB per request, 500 notes per device, 20,000 characters per note.
 
 Old admin URLs (`/admin/login.php`, `/admin/index.php`, `/admin/settings.php`, `/admin/setup.php`) redirect to the new pages.
+
+## Web app sign-in (Google)
+
+Users sign in with Google before saving (`src/GoogleAuth.php`, `src/UserAuth.php`, `public/api/v1/auth.php`, `FPAuth` in `public/assets/app/app.js`). There is no password to manage and no client secret: the browser gets a signed ID token from Google Identity Services, and the server checks its RS256 signature against Google's published keys (cached in `data/google_certs.json`), the audience (your client ID), issuer, expiry and that the email is verified.
+
+Set it up once:
+
+1. In [Google Cloud Console](https://console.cloud.google.com/apis/credentials), create an **OAuth client ID** of type **Web application** (set up the OAuth consent screen first if asked; only the basic profile and email are used).
+2. Under **Authorized JavaScript origins** add `https://floorplandesigner.app` (and `http://localhost:8000` for local testing). No redirect URI is needed.
+3. Paste the client ID (`…apps.googleusercontent.com`) into **Admin → Site Settings → Web app sign-in**, or set `google_client_id` in `config/local.php`.
+
+Until this is done, the web app shows "Google sign-in isn't set up" and nobody can save. Accounts are stored in `users`; "keep me signed in" uses an `fpd_user` cookie (60 days) whose token is stored only as a SHA-256 hash in `user_sessions`. Admins see users in **Admin → Web App Users**.
 
 ## Quick start (local)
 
@@ -120,7 +147,7 @@ The SQLite database is created automatically at `data/floorplan.sqlite` the firs
 ## Deploying
 
 1. Upload the whole `Floor-Plan-Website/` folder (you can leave out `react-website/`).
-2. Point the domain's **document root at `Floor-Plan-Website/public`**. `config/`, `src/`, `views/` and `data/` must stay outside the web root.
+2. Point the domain's **document root at `Floor-Plan-Website/public`**. `config/`, `src/`, `views/`, `admin/` and `data/` must stay outside the web root.
 3. Give the web server user write access to `data/`.
 4. Copy `config/local.example.php` to `config/local.php` and set your values (iOS App Store link, support email, `base_path` if the site lives in a sub-folder).
 5. Create an admin account: `php bin/create-admin.php <username>`.
@@ -134,7 +161,7 @@ SSH is closed on this server, so deploy through cPanel's File Manager with the p
 1. **Build the zip** on your computer: run `bin/build-deploy.sh`. This creates `dist/floorplandesigner-deploy.zip`, plus `dist/ADMIN_SETUP_URL.txt` containing a one-time admin setup link.
 2. **Back up the current site.** In cPanel → File Manager, open `public_html/`, select all (turn on *Show Hidden Files* in Settings), then use *Compress* to make a zip and download it. This backup includes the live `.well-known/assetlinks.json`; the new zip contains a copy too.
 3. **Clear out the React build.** Delete everything inside `public_html/` except `.well-known/`.
-4. **Upload and extract.** Go to your **home folder**, the one that *contains* `public_html`, not `public_html` itself. Upload `floorplandesigner-deploy.zip`, right-click it, choose *Extract*, and confirm overwriting. This fills `public_html/` and creates `src/`, `views/`, `config/`, `bin/` and `data/` next to it. Delete the zip afterwards.
+4. **Upload and extract.** Go to your **home folder**, the one that *contains* `public_html`, not `public_html` itself. Upload `floorplandesigner-deploy.zip`, right-click it, choose *Extract*, and confirm overwriting. This fills `public_html/` and creates `src/`, `views/`, `admin/`, `config/`, `bin/` and `data/` next to it. Delete the zip afterwards.
 5. **Choose the PHP version.** In cPanel → *Select PHP Version* (or *MultiPHP Manager*), choose PHP 8.1 or newer and make sure `pdo_sqlite` and `mbstring` are enabled.
 6. **Create the admin account.** Open the link from `dist/ADMIN_SETUP_URL.txt`. The page only works while no admin exists and the token matches, and it disables itself once the first admin is created.
    - If you have SSH elsewhere, you can instead run `php bin/create-admin.php <username>` from the home folder.
@@ -233,20 +260,23 @@ curl -X POST http://localhost:8000/api/v1/contact.php \
 
 ```
 Floor-Plan-Website/
+├── admin/                   admin panel (/admin)
+│   ├── src/                 AdminApp (routes, pages), AdminRepo (queries), Auth (sign-in)
+│   ├── views/               admin pages and layouts
+│   └── assets/              admin.css and admin.js, served at /admin/assets/
 ├── bin/create-admin.php     CLI: create or reset an admin user
 ├── config/app.php           defaults (override in config/local.php)
 ├── data/                    SQLite database (git-ignored)
 ├── public/                  web root
 │   ├── index.php            front controller for public pages
 │   ├── api/v1/              JSON endpoints
-│   ├── assets/admin/        admin panel styles and script
 │   └── assets/              css, js, images
 ├── react-website/           the earlier React site (not deployed; see below)
-├── src/                     bootstrap, helpers, Database, Repository, Auth, VersionGate, ContactService
-└── views/                   layouts, public pages, admin pages
+├── src/                     bootstrap, helpers, Database, Repository, VersionGate, ContactService, web app
+└── views/                   layouts, public pages, web app pages
 ```
 
-`react-website/` is the earlier React version of floorplandesigner.app (`npm install`, then `npm start` or `npm run build`), kept for reference. The deploy workflow only uploads `public/`, `src/`, `views/`, `config/` and `bin/`, so it is never deployed.
+`react-website/` is the earlier React version of floorplandesigner.app (`npm install`, then `npm start` or `npm run build`), kept for reference. The deploy workflow only uploads `public/`, `src/`, `views/`, `admin/`, `config/` and `bin/`, so it is never deployed.
 
 This project was moved out of the Flutter app repo (`Floor-Plan-Flutter`, where it was `php-website/` and `website/`). Its git history up to the move comes from there.
 

@@ -2,17 +2,25 @@
 declare(strict_types=1);
 
 /**
- * Admin panel (/admin/*): router and page handlers. Views live in views/admin/,
- * the layout in views/layout/admin.php, styles in public/assets/admin/.
+ * Admin panel (/admin/*): router and page handlers. Everything for the admin panel
+ * lives in admin/: classes in admin/src/, views and layouts in admin/views/, and
+ * CSS/JS in admin/assets/ (served at /admin/assets/… by self::serveAsset()).
  */
 final class AdminApp
 {
     private const PER_PAGE = 20;
     private const LOGIN_MAX_FAILS = 5;       // per IP …
     private const LOGIN_WINDOW_MIN = 15;     // … per 15 minutes
+    private const DIR = ROOT_DIR . '/admin';
+    private const ASSET_TYPES = ['css' => 'text/css; charset=utf-8', 'js' => 'text/javascript; charset=utf-8'];
 
     public static function dispatch(string $sub): void
     {
+        // CSS/JS for the admin pages (needed before sign-in, so no auth check).
+        if (str_starts_with($sub, '/assets/')) {
+            self::serveAsset(substr($sub, 8));
+            return;
+        }
         header('X-Robots-Tag: noindex, nofollow');
         header('Cache-Control: no-store, private');
         $sub = '/' . trim($sub, '/');
@@ -58,6 +66,8 @@ final class AdminApp
             (bool) preg_match('#^/plans/(\d+)$#', $sub, $m)    => self::plan((int) $m[1]),
             (bool) preg_match('#^/plans/(\d+)/download$#', $sub, $m) => self::planDownload((int) $m[1]),
             $sub === '/notes'                             => self::notes(),
+            $sub === '/app-users'                         => self::webUsers(),
+            (bool) preg_match('#^/app-users/(\d+)$#', $sub, $m) => self::webUser((int) $m[1]),
             (bool) preg_match('#^/notes/(\d+)$#', $sub, $m)    => self::note((int) $m[1]),
             $sub === '/analytics'                         => self::analytics(),
             $sub === '/ai'                                => self::ai(),
@@ -72,9 +82,55 @@ final class AdminApp
         };
     }
 
+    /** URL of a file in admin/assets/, with its modified time so browsers fetch new versions. */
+    public static function asset(string $file): string
+    {
+        $path = self::DIR . '/assets/' . $file;
+        return url('/admin/assets/' . $file) . (is_file($path) ? '?v=' . filemtime($path) : '');
+    }
+
+    /** Send a CSS/JS file from admin/assets/. Only plain file names with a known type are served. */
+    private static function serveAsset(string $file): void
+    {
+        $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+        $path = self::DIR . '/assets/' . $file;
+        if (!preg_match('/^[a-z0-9_-]+\.[a-z0-9]+$/i', $file) || !isset(self::ASSET_TYPES[$ext]) || !is_file($path)) {
+            http_response_code(404);
+            header('Content-Type: text/plain; charset=utf-8');
+            echo 'Not found';
+            return;
+        }
+        // Behave like a static file: no session cookie or no-cache headers from bootstrap.php.
+        if (session_status() === PHP_SESSION_ACTIVE && !isset($_COOKIE[session_name()])) {
+            session_destroy();
+        }
+        header_remove('Set-Cookie');
+        header_remove('Expires');
+        header_remove('Pragma');
+        $mtime = (int) filemtime($path);
+        $etag = '"' . dechex($mtime) . '-' . dechex((int) filesize($path)) . '"';
+        header('Content-Type: ' . self::ASSET_TYPES[$ext]);
+        header('Cache-Control: public, max-age=' . (isset($_GET['v']) ? '31536000, immutable' : '300'));
+        header('ETag: ' . $etag);
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s', $mtime) . ' GMT');
+        if (trim((string) ($_SERVER['HTTP_IF_NONE_MATCH'] ?? '')) === $etag) {
+            http_response_code(304);
+            return;
+        }
+        header('Content-Length: ' . filesize($path));
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'HEAD') {
+            readfile($path);
+        }
+    }
+
+    private static function render(string $view, array $data, string $layout): void
+    {
+        render($view, $data, $layout, self::DIR . '/views');
+    }
+
     private static function page(string $view, string $title, string $nav, array $data = []): void
     {
-        render('admin/' . $view, $data + ['title' => $title . ' — Admin', 'pageTitle' => $title, 'nav' => $nav], 'admin');
+        self::render($view, $data + ['title' => $title . ' — Admin', 'pageTitle' => $title, 'nav' => $nav], 'admin');
     }
 
     /* ================================================================ sign in */
@@ -105,7 +161,7 @@ final class AdminApp
                 flash('error', 'The username or password is incorrect.');
             }
         }
-        render('admin/login', ['title' => 'Sign in — Admin', 'username' => $username], 'admin_auth');
+        self::render('login', ['title' => 'Sign in — Admin', 'username' => $username], 'admin_auth');
     }
 
     private static function setup(): void
@@ -129,7 +185,7 @@ final class AdminApp
                 redirect('/admin/login');
             }
         }
-        render('admin/setup', ['title' => 'Create admin account', 'token' => $token, 'username' => $username, 'errors' => $errors], 'admin_auth');
+        self::render('setup', ['title' => 'Create admin account', 'token' => $token, 'username' => $username, 'errors' => $errors], 'admin_auth');
     }
 
     private static function validateNewAdmin(string $username, string $password, string $confirm): array
@@ -282,6 +338,7 @@ final class AdminApp
             $source = '';
         }
         $q = mb_substr(input('q', 'get'), 0, 100);
+        $userId = max(0, (int) ($_GET['user'] ?? 0));
         if (is_post()) {
             csrf_verify();
             $ids = array_values(array_filter(array_map('intval', (array) ($_POST['ids'] ?? [])), static fn ($i) => $i > 0));
@@ -294,14 +351,15 @@ final class AdminApp
             } else {
                 flash('error', 'Select at least one plan first.');
             }
-            redirect('/admin/plans?' . http_build_query(array_filter(['source' => $source, 'q' => $q])));
+            redirect('/admin/plans?' . http_build_query(array_filter(['source' => $source, 'q' => $q, 'user' => $userId])));
         }
         $page = max(1, (int) ($_GET['page'] ?? 1));
-        $list = PlanStore::search($page, self::PER_PAGE, $source, $q);
+        $list = PlanStore::search($page, self::PER_PAGE, $source, $q, $userId);
         self::page('plans', 'Saved Plans', 'plans', [
             'plans' => $list['items'], 'total' => $list['total'], 'page' => $page,
             'pages' => max(1, (int) ceil($list['total'] / self::PER_PAGE)),
             'source' => $source, 'q' => $q, 'stats' => PlanStore::stats(),
+            'filterUser' => $userId > 0 ? AdminRepo::webUser($userId) : null,
         ]);
     }
 
@@ -345,6 +403,51 @@ final class AdminApp
         exit;
     }
 
+    /* ================================================================ web app users */
+
+    private static function webUsers(): void
+    {
+        $q = mb_substr(input('q', 'get'), 0, 100);
+        $page = max(1, (int) ($_GET['page'] ?? 1));
+        $list = AdminRepo::webUsers($page, self::PER_PAGE, $q);
+        self::page('app_users', 'Web App Users', 'app-users', [
+            'users' => $list['items'], 'total' => $list['total'], 'page' => $page, 'q' => $q,
+            'pages' => max(1, (int) ceil($list['total'] / self::PER_PAGE)), 'stats' => AdminRepo::webUserStats(),
+            'googleReady' => GoogleAuth::configured(),
+        ]);
+    }
+
+    private static function webUser(int $id): void
+    {
+        $user = AdminRepo::webUser($id);
+        if ($user === null) {
+            flash('error', 'That user no longer exists.');
+            redirect('/admin/app-users');
+        }
+        if (is_post()) {
+            csrf_verify();
+            $action = input('action');
+            if ($action === 'signout') {
+                AdminRepo::endWebUserSessions($id);
+                AdminRepo::log('app-user-signout', '#' . $id . ' ' . $user['email']);
+                flash('success', $user['email'] . ' will need to sign in again on their other devices.');
+                redirect('/admin/app-users/' . $id);
+            }
+            if ($action === 'delete') {
+                $n = AdminRepo::deleteWebUser($id);
+                AdminRepo::log('app-user-delete', '#' . $id . ' ' . $user['email'] . ', ' . $n['plans'] . ' plans, ' . $n['notes'] . ' notes');
+                flash('success', 'Deleted ' . $user['email'] . ' with ' . $n['plans'] . ' plan(s) and ' . $n['notes'] . ' note(s).');
+                redirect('/admin/app-users');
+            }
+            redirect('/admin/app-users/' . $id);
+        }
+        self::page('app_user', $user['name'] ?: $user['email'], 'app-users', [
+            'user' => $user,
+            'plans' => PlanStore::search(1, 50, '', '', $id)['items'],
+            'notes' => NoteStore::search(1, 50, '', '', '', $id)['items'],
+        ]);
+    }
+
     /* ================================================================ user notes */
 
     private static function notes(): void
@@ -355,7 +458,8 @@ final class AdminApp
         }
         $q = mb_substr(input('q', 'get'), 0, 100);
         $device = preg_match('/^[a-f0-9]{64}$/', input('device', 'get')) ? input('device', 'get') : '';
-        $query = array_filter(['source' => $source, 'q' => $q, 'device' => $device]);
+        $userId = max(0, (int) ($_GET['user'] ?? 0));
+        $query = array_filter(['source' => $source, 'q' => $q, 'device' => $device, 'user' => $userId]);
         if (is_post()) {
             csrf_verify();
             $ids = array_values(array_filter(array_map('intval', (array) ($_POST['ids'] ?? [])), static fn ($i) => $i > 0));
@@ -371,11 +475,12 @@ final class AdminApp
             redirect('/admin/notes' . ($query ? '?' . http_build_query($query) : ''));
         }
         $page = max(1, (int) ($_GET['page'] ?? 1));
-        $list = NoteStore::search($page, self::PER_PAGE, $source, $q, $device);
+        $list = NoteStore::search($page, self::PER_PAGE, $source, $q, $device, $userId);
         self::page('notes', 'User Notes', 'notes', [
             'notes' => $list['items'], 'total' => $list['total'], 'page' => $page,
             'pages' => max(1, (int) ceil($list['total'] / self::PER_PAGE)),
             'source' => $source, 'q' => $q, 'device' => $device, 'query' => $query, 'stats' => NoteStore::stats(),
+            'filterUser' => $userId > 0 ? AdminRepo::webUser($userId) : null,
         ]);
     }
 
@@ -634,6 +739,7 @@ final class AdminApp
             'announce_enabled'   => $s['announce_enabled'] ?? '0',
             'announce_text'      => $s['announce_text'] ?? '',
             'announce_link'      => $s['announce_link'] ?? '',
+            'google_client_id'   => $s['google_client_id'] ?? '',
         ];
         if (is_post()) {
             csrf_verify();
@@ -651,6 +757,10 @@ final class AdminApp
             if ($values['announce_link'] !== '' && !preg_match('#^(https://|/)#', $values['announce_link'])) {
                 $errors['announce_link'] = 'Use a full https:// link or a site path such as /app/ai.';
             }
+            $values['google_client_id'] = trim($values['google_client_id']);
+            if ($values['google_client_id'] !== '' && !preg_match('/^[0-9]+-[a-z0-9]+\.apps\.googleusercontent\.com$/', $values['google_client_id'])) {
+                $errors['google_client_id'] = 'Paste the OAuth client ID from Google Cloud Console (it ends in .apps.googleusercontent.com).';
+            }
             if ($values['announce_enabled'] === '1' && $values['announce_text'] === '') {
                 $errors['announce_text'] = 'Write the announcement text, or switch the banner off.';
             }
@@ -667,7 +777,8 @@ final class AdminApp
         self::page('settings', 'Site Settings', 'settings', ['values' => $values, 'errors' => $errors, 'defaults' => [
             'site_support_email' => config('support_email'), 'site_android_url' => config('android_url'),
             'site_ios_url' => config('ios_url'), 'site_tagline' => config('tagline'),
-        ]]);
+            'google_client_id' => config('google_client_id'),
+        ], 'siteUrl' => rtrim((string) config('site_url'), '/'), 'googleReady' => GoogleAuth::configured()]);
     }
 
     /* ================================================================ admins */

@@ -129,21 +129,23 @@ function flash_pull(): array
 /**
  * Render a view inside a layout.
  *
- * @param string $view   Path under views/ without extension, e.g. "pages/home".
- * @param array  $data   Variables made available to the view.
- * @param string $layout "site" (public pages) or "admin".
+ * @param string      $view   Path under the views folder without extension, e.g. "pages/home".
+ * @param array       $data   Variables made available to the view.
+ * @param string      $layout Layout under <views folder>/layout/, e.g. "site" or "app".
+ * @param string|null $dir    Views folder; defaults to views/ (the admin panel passes admin/views).
  */
-function render(string $view, array $data = [], string $layout = 'site'): void
+function render(string $view, array $data = [], string $layout = 'site', ?string $dir = null): void
 {
+    $dir ??= ROOT_DIR . '/views';
     $data['site'] = site_context();
     $data['flashes'] = flash_pull();
     extract($data, EXTR_SKIP);
 
     ob_start();
-    require ROOT_DIR . '/views/' . $view . '.php';
+    require $dir . '/' . $view . '.php';
     $content = ob_get_clean();
 
-    require ROOT_DIR . '/views/layout/' . $layout . '.php';
+    require $dir . '/layout/' . $layout . '.php';
 }
 
 /** Values every page can use (name, store links, latest version...). */
@@ -205,4 +207,12 @@ function asset(string $path): string
     $file = ROOT_DIR . '/public' . $path;
     $v = is_file($file) ? filemtime($file) : false;
     return url($path) . ($v ? '?v=' . $v : '');
+}
+
+/** Attributes for the web app's <html> tag: the signed-in user and the Google sign-in client id (app.js reads them). */
+function app_auth_attrs(): string
+{
+    $user = UserAuth::publicUser(UserAuth::current());
+    return ' data-user="' . e((string) json_encode($user, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES)) . '"'
+        . ' data-google-client="' . e(GoogleAuth::configured() ? GoogleAuth::clientId() : '') . '"';
 }

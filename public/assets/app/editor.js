@@ -133,21 +133,34 @@
     function isEmpty() { return !(plan.walls.length || plan.rooms.length || plan.items.length || plan.labels.length || plan.dims.length); }
     var saveState = document.getElementById('save-state');
     function setSaveState(state, text) { saveState.textContent = text; saveState.parentNode.setAttribute('data-state', state); }
+    // Saving needs an account. While signed out, the drawing is kept as a draft in this tab
+    // (sessionStorage) and saved to the account as soon as the user signs in.
+    var DRAFT_KEY = 'fpd_draft';
+    function keepDraft() { try { sessionStorage.setItem(DRAFT_KEY, JSON.stringify(plan)); } catch (e) { /* ignore */ } }
     function scheduleSave() {
         if (isEmpty() && !savedOnce) { setSaveState('new', 'Not saved yet'); return; }
+        if (!FPAuth.user()) { keepDraft(); setSaveState('signin', 'Sign in to save'); return; }
         setSaveState('saving', 'Saving…');
         clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 700);
     }
     function saveNow() {
         clearTimeout(saveTimer);
+        if (!FPAuth.user()) { keepDraft(); FPAuth.require(saveNow, 'Sign in to save this plan to your account. Your drawing stays here while you sign in.'); return false; }
         plan.name = (document.getElementById('plan-name').value || '').trim() || 'Untitled plan';
         var saved = FPStore.save(plan);
-        if (!saved) { setSaveState('error', 'Could not save'); return; }
+        if (!saved) { setSaveState('error', 'Could not save'); return false; }
+        try { sessionStorage.removeItem(DRAFT_KEY); } catch (e) { /* ignore */ }
         plan = saved; savedOnce = true;
         if (!/[?&]plan=/.test(location.search)) { try { history.replaceState(null, '', location.pathname + '?plan=' + encodeURIComponent(plan.id)); } catch (e) { /* ignore */ } }
         setSaveState('saved', 'Saved · ' + new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
+        return true;
     }
-    window.addEventListener('beforeunload', function () { if (saveTimer) saveNow(); });
+    window.addEventListener('beforeunload', function (ev) {
+        if (saveTimer) saveNow();
+        // Signed out with an unsaved drawing: ask before leaving the page.
+        if (!FPAuth.user() && !isEmpty() && !savedOnce) { ev.preventDefault(); ev.returnValue = ''; }
+    });
+    document.addEventListener('fpd:auth', function () { if (!isEmpty() || savedOnce) saveNow(); });
 
     // ------------------------------------------------------------------ symbols
     function symbolImg(cat, file) {
@@ -250,12 +263,12 @@
             var fs = Math.max(10, Math.min(18, 22 * v.s / 0.5)) * k;
             c.textAlign = 'center'; c.textBaseline = 'middle';
             var rxs = r.pts.map(function (q) { return q.x; }), maxW = Math.max(20, (Math.max.apply(null, rxs) - Math.min.apply(null, rxs)) * v.s - 10 * k);
-            c.fillStyle = '#0b1b2b'; c.font = '700 ' + fs + 'px Mulish, sans-serif'; c.fillText(r.name || 'Room', ce.x, ce.y - fs * .6, maxW);
-            c.fillStyle = '#5f6368'; c.font = '600 ' + (fs * .78) + 'px Mulish, sans-serif'; c.fillText(fmtArea(polyArea(r.pts)), ce.x, ce.y + fs * .6, maxW);
+            c.fillStyle = '#0b1b2b'; c.font = '700 ' + fs + 'px Inter, sans-serif'; c.fillText(r.name || 'Room', ce.x, ce.y - fs * .6, maxW);
+            c.fillStyle = '#5f6368'; c.font = '600 ' + (fs * .78) + 'px Inter, sans-serif'; c.fillText(fmtArea(polyArea(r.pts)), ce.x, ce.y + fs * .6, maxW);
         });
         // wall lengths
         if (opts.dims) {
-            c.font = '600 ' + (11 * k) + 'px Mulish, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+            c.font = '600 ' + (11 * k) + 'px Inter, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
             plan.walls.forEach(function (w) {
                 var L = wallLen(w); if (L * v.s < 40 * k) return;
                 var ux = (w.x2 - w.x1) / L, uy = (w.y2 - w.y1) / L, nx = -uy, ny = ux;
@@ -277,7 +290,7 @@
         // labels
         plan.labels.forEach(function (l) {
             var p = S(l.x, l.y), fs = Math.max(8, l.size * v.s);
-            c.font = '700 ' + fs + 'px Mulish, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
+            c.font = '700 ' + fs + 'px Inter, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'middle';
             c.fillStyle = l.color || '#0b1b2b'; c.fillText(l.text, p.x, p.y);
             if (opts.selection && sel && sel.type === 'label' && sel.id === l.id) {
                 var tw = c.measureText(l.text).width; c.strokeStyle = '#1e88e5'; c.setLineDash([4, 3]); c.strokeRect(p.x - tw / 2 - 4, p.y - fs / 2 - 3, tw + 8, fs + 6); c.setLineDash([]);
@@ -302,7 +315,7 @@
         var ang = Math.atan2(b.y - a.y, b.x - a.x), nx = -Math.sin(ang) * 7 * k, ny = Math.cos(ang) * 7 * k;
         [a, b].forEach(function (q) { c.beginPath(); c.moveTo(q.x - nx, q.y - ny); c.lineTo(q.x + nx, q.y + ny); c.stroke(); });
         var m = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 }, ta = ang; if (ta > Math.PI / 2 || ta < -Math.PI / 2) ta += Math.PI;
-        c.save(); c.translate(m.x, m.y); c.rotate(ta); c.font = '700 ' + (12 * k) + 'px Mulish, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'bottom';
+        c.save(); c.translate(m.x, m.y); c.rotate(ta); c.font = '700 ' + (12 * k) + 'px Inter, sans-serif'; c.textAlign = 'center'; c.textBaseline = 'bottom';
         var tw = c.measureText(txt).width + 8 * k; c.fillStyle = 'rgba(255,255,255,.9)'; c.fillRect(-tw / 2, -18 * k, tw, 16 * k); c.fillStyle = color; c.fillText(txt, 0, -3 * k); c.restore();
     }
 
@@ -333,7 +346,7 @@
         c.fillStyle = 'rgba(247,249,252,.96)'; c.fillRect(0, 0, W, RS); c.fillRect(0, 0, RS, H);
         c.strokeStyle = '#d5dce4'; c.lineWidth = 1;
         c.beginPath(); c.moveTo(0, RS + .5); c.lineTo(W, RS + .5); c.moveTo(RS + .5, 0); c.lineTo(RS + .5, H); c.stroke();
-        c.fillStyle = '#6b7684'; c.font = '600 10px Mulish, sans-serif'; c.textBaseline = 'middle';
+        c.fillStyle = '#6b7684'; c.font = '600 10px Inter, sans-serif'; c.textBaseline = 'middle';
         c.strokeStyle = '#a7b2be';
         var w0 = toWorld(RS, RS), w1 = toWorld(W, H);
         c.beginPath();
@@ -381,7 +394,7 @@
                 c.fillRect(Math.min(a1.x, b1.x), Math.min(a1.y, b1.y), Math.abs(b1.x - a1.x), Math.abs(b1.y - a1.y));
                 c.strokeRect(Math.min(a1.x, b1.x), Math.min(a1.y, b1.y), Math.abs(b1.x - a1.x), Math.abs(b1.y - a1.y));
                 var wcm = Math.abs(draft.b.x - draft.a.x), hcm = Math.abs(draft.b.y - draft.a.y);
-                c.font = '700 13px Mulish, sans-serif'; c.fillStyle = '#1565c0'; c.textAlign = 'center'; c.textBaseline = 'middle';
+                c.font = '700 13px Inter, sans-serif'; c.fillStyle = '#1565c0'; c.textAlign = 'center'; c.textBaseline = 'middle';
                 c.fillText(fmtLen(wcm) + ' × ' + fmtLen(hcm), (a1.x + b1.x) / 2, (a1.y + b1.y) / 2);
             } else drawDimLine(c, a1, b1, fmtLen(dist(draft.a, draft.b)), '#d32f2f');
         }
@@ -425,7 +438,7 @@
     function hitTest(p) {
         var tol = 8 / view.s, i;
         for (i = plan.labels.length - 1; i >= 0; i--) {
-            var l = plan.labels[i]; ctx.font = '700 ' + (l.size * view.s) + 'px Mulish, sans-serif';
+            var l = plan.labels[i]; ctx.font = '700 ' + (l.size * view.s) + 'px Inter, sans-serif';
             var tw = ctx.measureText(l.text).width / view.s;
             if (Math.abs(p.x - l.x) <= tw / 2 + tol && Math.abs(p.y - l.y) <= l.size / 2 + tol) return { type: 'label', id: l.id };
         }
@@ -918,13 +931,13 @@
         var v = { s: s, x: (margin - b.x0) * s, y: (margin - b.y0) * s + titleH };
         drawPlan(x, v, { grid: false, selection: false, dims: true, w: c.width, h: c.height, k: k });
         if (title) {
-            x.fillStyle = '#001d36'; x.font = '400 ' + Math.round(titleH * .42) + 'px Tinos, serif'; x.textBaseline = 'middle'; x.textAlign = 'left';
+            x.fillStyle = '#001d36'; x.font = '400 ' + Math.round(titleH * .42) + 'px "Inter Tight", Inter, sans-serif'; x.textBaseline = 'middle'; x.textAlign = 'left';
             x.fillText(plan.name || 'Floor plan', 30 * k, titleH * .42);
-            x.fillStyle = '#5f6368'; x.font = '600 ' + Math.round(titleH * .2) + 'px Mulish, sans-serif';
+            x.fillStyle = '#5f6368'; x.font = '600 ' + Math.round(titleH * .2) + 'px Inter, sans-serif';
             x.fillText('Floor Plan Designer · ' + new Date().toLocaleDateString(), 30 * k, titleH * .78);
             // scale bar (1 m or 3 ft)
             var unitCm = settings.units === 'imperial' ? 91.44 : 100, len = unitCm * s, bx = c.width - 30 * k - len, by = titleH * .55;
-            x.fillStyle = '#001d36'; x.fillRect(bx, by, len, 6 * k); x.textAlign = 'center'; x.font = '600 ' + Math.round(titleH * .18) + 'px Mulish, sans-serif';
+            x.fillStyle = '#001d36'; x.fillRect(bx, by, len, 6 * k); x.textAlign = 'center'; x.font = '600 ' + Math.round(titleH * .18) + 'px Inter, sans-serif';
             x.fillText(settings.units === 'imperial' ? "3'" : '1 m', bx + len / 2, by - 14 * k);
             x.fillStyle = '#d9dce0'; x.fillRect(0, titleH - 2 * k, c.width, 2 * k);
         }
@@ -985,11 +998,12 @@
         else if (cmd === 'info') { sideForced = !root.classList.contains('show-side'); root.classList.toggle('show-side', sideForced); if (sideForced) document.getElementById('library').hidden = true; }
         else if (cmd === 'view3d') {
             if (!plan.walls.length && !plan.rooms.length) { flashHint('Draw some walls or rooms first, then open the 3D view.'); return; }
-            saveNow(); location.href = FP.url('/app/3d?plan=' + encodeURIComponent(plan.id));
+            if (saveNow() === false) return;
+            location.href = FP.url('/app/3d?plan=' + encodeURIComponent(plan.id));
         }
         else if (cmd === 'export-png') exportPng();
         else if (cmd === 'export-pdf') exportPdf();
-        else if (cmd === 'export-json') { if (savedOnce || !isEmpty()) { saveNow(); FPStore.download(plan.id); } }
+        else if (cmd === 'export-json') { if (savedOnce || !isEmpty()) { if (saveNow() !== false) FPStore.download(plan.id); } }
         else if (cmd === 'delete') { if (sel) deleteSelection(); else flashHint('Select something to delete.'); }
         else if (cmd === 'zoom-in') zoomAt({ x: W / 2, y: H / 2 }, 1.25);
         else if (cmd === 'zoom-out') zoomAt({ x: W / 2, y: H / 2 }, 1 / 1.25);
@@ -1005,6 +1019,13 @@
             plan = Object.assign(blankPlan(), loaded); savedOnce = true;
             setSaveState('saved', 'Saved'); document.getElementById('plan-name').value = plan.name || 'Untitled plan';
         } else flashHint('That plan was not found in this browser. Starting a new plan.');
+    } else {
+        // A drawing made while signed out (kept for this tab only).
+        var draft = null; try { draft = JSON.parse(sessionStorage.getItem(DRAFT_KEY) || 'null'); } catch (e) { draft = null; }
+        if (draft && Array.isArray(draft.walls)) {
+            plan = Object.assign(blankPlan(), draft);
+            if (FPAuth.user()) saveNow(); else setSaveState('signin', 'Sign in to save');
+        }
     }
     window.addEventListener('resize', resize);
     resize();

@@ -4,9 +4,11 @@
  * @var string $bannerTitle
  * @var string $bannerLead   optional
  * @var string $bannerKicker optional small label above the title
+ * @var string $bannerImage  optional background photo under public/assets/img/
  */
 ?>
 <section class="page-banner">
+    <?php $liveImg = $bannerImage ?? 'gallery/3bed-1.jpg'; $liveCubes = 3; $liveFloor = true; require ROOT_DIR . '/views/partials/live_bg.php'; ?>
     <div class="container page-banner-inner">
         <?php if (!empty($bannerKicker)): ?><p class="kicker kicker-light"><?= e($bannerKicker) ?></p><?php endif; ?>
         <h1><?= e($bannerTitle) ?></h1>

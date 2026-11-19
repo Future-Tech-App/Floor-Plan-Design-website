@@ -20,6 +20,7 @@
                 <dt>Last edited</dt><dd><?= e($row['note_time'] !== '' ? fmt_date($row['note_time']) : '—') ?></dd>
                 <dt>Backed up</dt><dd><?= e(fmt_date($row['synced_at'])) ?></dd>
                 <dt>Length</dt><dd><?= number_format(mb_strlen((string) $row['content'])) ?> characters</dd>
+                <dt>User</dt><dd><?php if (!empty($row['user_email'])): ?><a href="<?= e(url('/admin/app-users/' . $row['user_id'])) ?>"><?= e($row['user_email']) ?></a><?php else: ?><span class="ad-muted">No account</span><?php endif; ?></dd>
                 <dt>Device</dt><dd><code><?= e(substr((string) $row['owner'], 0, 10)) ?>…</code><br>
                     <a href="<?= e(url('/admin/notes?device=' . $row['owner'])) ?>"><?= $deviceNotes ?> note<?= $deviceNotes === 1 ? '' : 's' ?></a>
                     <?php if ($devicePlans > 0): ?> · <?= $devicePlans ?> saved plan<?= $devicePlans === 1 ? '' : 's' ?><?php endif; ?></dd>

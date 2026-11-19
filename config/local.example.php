@@ -9,4 +9,5 @@ return [
     // 'site_url'      => 'https://example.com',
     // 'ios_url'       => 'https://apps.apple.com/app/idXXXXXXXXX',
     // 'timezone'      => 'Asia/Karachi',
+    // 'google_client_id' => '1234567890-abc123.apps.googleusercontent.com',
 ];

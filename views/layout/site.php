@@ -35,7 +35,7 @@ $nav = [
     <link rel="manifest" href="<?= e(url('/manifest.json')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Poppins:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(asset('/assets/css/style.css')) ?>">
     <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -91,6 +91,7 @@ $nav = [
 
     <?php if ($showCta): ?>
     <section class="cta-band">
+        <?php $liveImg = 'interior/hero-living.jpg'; $liveCubes = 2; $liveFloor = false; require ROOT_DIR . '/views/partials/live_bg.php'; ?>
         <div class="container cta-band-inner">
             <div>
                 <p class="kicker kicker-light">Free · No ads · Nothing to install</p>
@@ -108,7 +109,7 @@ $nav = [
 
 <footer class="site-footer">
     <div class="container footer-highlights" aria-label="Highlights">
-        <div><span class="fh-icon"><?= icon('check') ?></span><span><strong>Free to use</strong><small>No ads, no sign-up</small></span></div>
+        <div><span class="fh-icon"><?= icon('check') ?></span><span><strong>Free to use</strong><small>No ads, free account</small></span></div>
         <div><span class="fh-icon"><?= icon('monitor') ?></span><span><strong>Web, Android &amp; iOS</strong><small>Design anywhere</small></span></div>
         <div><span class="fh-icon"><?= icon('cube') ?></span><span><strong>3D walkthrough</strong><small>See every room</small></span></div>
         <div><span class="fh-icon"><?= icon('download') ?></span><span><strong>PDF &amp; PNG export</strong><small>Print-ready plans</small></span></div>
