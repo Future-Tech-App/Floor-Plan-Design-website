@@ -73,11 +73,16 @@ jobs:
             echo "$code $p"
             [ "$code" = "200" ] || fail=1
           done
-          # Plan backup API: save then delete a throwaway plan
+          # Plan backup API, mobile path (no sign-in): save then delete a throwaway plan
           C=$(php -r 'echo bin2hex(random_bytes(16));')
-          body=$(curl -s -X POST -H 'Content-Type: application/json' -d "{\"client\":\"$C\",\"plan\":{\"id\":\"ci\",\"name\":\"CI\",\"walls\":[]}}" http://127.0.0.1:8080/api/v1/plans.php)
-          if printf '%s' "$body" | grep -q '"ok": *true'; then echo "200 /api/v1/plans.php"; else echo "FAIL plans: ${body:0:200}"; fail=1; fi
+          body=$(curl -s -X POST -H 'Content-Type: application/json' -d "{\"client\":\"$C\",\"source\":\"android\",\"plan\":{\"id\":\"ci\",\"name\":\"CI\",\"walls\":[]}}" http://127.0.0.1:8080/api/v1/plans.php)
+          if printf '%s' "$body" | grep -q '"ok": *true'; then echo "200 /api/v1/plans.php (android)"; else echo "FAIL plans: ${body:0:200}"; fail=1; fi
           curl -s -o /dev/null -X POST -H 'Content-Type: application/json' -d "{\"client\":\"$C\",\"delete\":\"ci\"}" http://127.0.0.1:8080/api/v1/plans.php
+          # Web app saves need a signed-in user (Sign in with Google): expect 401
+          code=$(curl -s -o /dev/null -w '%{http_code}' -X POST -H 'Content-Type: application/json' -d "{\"client\":\"$C\",\"source\":\"web\",\"plan\":{\"id\":\"ci\",\"name\":\"CI\",\"walls\":[]}}" http://127.0.0.1:8080/api/v1/plans.php)
+          echo "$code /api/v1/plans.php (web, signed out; expect 401)"; [ "$code" = "401" ] || fail=1
+          code=$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/api/v1/auth.php)
+          echo "$code /api/v1/auth.php"; [ "$code" = "200" ] || fail=1
           # AI generator works without a key (built-in layout engine)
           body=$(curl -s -X POST -H 'Content-Type: application/json' -d '{"description":"3 bedroom house with car porch"}' http://127.0.0.1:8080/api/v1/generate-plan.php)
           if printf '%s' "$body" | grep -q '"ok": *true'; then echo "200 /api/v1/generate-plan.php"; else echo "FAIL generate-plan: ${body:0:200}"; fail=1; fi
