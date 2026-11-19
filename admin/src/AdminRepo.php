@@ -270,4 +270,68 @@ final class AdminRepo
         $path = (string) config('db_path');
         return is_file($path) ? (int) filesize($path) : 0;
     }
+
+    /* ---------- Web app users (Sign in with Google) ---------- */
+
+    public static function webUsers(int $page, int $perPage, string $q): array
+    {
+        $w = $q !== '' ? ' WHERE u.email LIKE :q OR u.name LIKE :q' : '';
+        $params = $q !== '' ? ['q' => '%' . $q . '%'] : [];
+        return [
+            'total' => (int) self::q('SELECT COUNT(*) FROM users u' . $w, $params)->fetchColumn(),
+            'items' => self::q(
+                'SELECT u.*, (SELECT COUNT(*) FROM plans p WHERE p.user_id = u.id) plans,
+                        (SELECT COUNT(*) FROM notes n WHERE n.user_id = u.id) notes,
+                        (SELECT MAX(p.updated_at) FROM plans p WHERE p.user_id = u.id) last_save
+                 FROM users u' . $w . ' ORDER BY COALESCE(u.last_login_at, u.created_at) DESC, u.id DESC
+                 LIMIT ' . $perPage . ' OFFSET ' . (($page - 1) * $perPage),
+                $params
+            )->fetchAll(),
+        ];
+    }
+
+    public static function webUser(int $id): ?array
+    {
+        $r = self::q(
+            'SELECT u.*, (SELECT COUNT(*) FROM plans p WHERE p.user_id = u.id) plans,
+                    (SELECT COUNT(*) FROM notes n WHERE n.user_id = u.id) notes,
+                    (SELECT COUNT(*) FROM user_sessions s WHERE s.user_id = u.id AND s.expires_at > datetime(\'now\')) sessions
+             FROM users u WHERE u.id = :id',
+            ['id' => $id]
+        )->fetch();
+        return $r ?: null;
+    }
+
+    public static function webUserStats(): array
+    {
+        return [
+            'total' => (int) self::q('SELECT COUNT(*) FROM users')->fetchColumn(),
+            'week'  => (int) self::q("SELECT COUNT(*) FROM users WHERE created_at >= datetime('now', '-7 days')")->fetchColumn(),
+            'active' => (int) self::q("SELECT COUNT(*) FROM users WHERE last_login_at >= datetime('now', '-30 days')")->fetchColumn(),
+        ];
+    }
+
+    /** Sign the user out everywhere. */
+    public static function endWebUserSessions(int $id): void
+    {
+        self::q('DELETE FROM user_sessions WHERE user_id = :id', ['id' => $id]);
+    }
+
+    /** Delete the account and everything saved under it (plans, notes, sign-ins). */
+    public static function deleteWebUser(int $id): array
+    {
+        $pdo = Database::pdo();
+        $pdo->beginTransaction();
+        try {
+            $plans = self::q('DELETE FROM plans WHERE user_id = :id', ['id' => $id])->rowCount();
+            $notes = self::q('DELETE FROM notes WHERE user_id = :id', ['id' => $id])->rowCount();
+            self::q('DELETE FROM user_sessions WHERE user_id = :id', ['id' => $id]);
+            self::q('DELETE FROM users WHERE id = :id', ['id' => $id]);
+            $pdo->commit();
+            return ['plans' => $plans, 'notes' => $notes];
+        } catch (Throwable $e) {
+            $pdo->rollBack();
+            throw $e;
+        }
+    }
 }

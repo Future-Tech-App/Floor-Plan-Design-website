@@ -1,5 +1,6 @@
 <?php
 $bannerTitle  = 'Features';
+$bannerImage  = 'interior/living-light.jpg';
 $bannerKicker = 'Everything in one app';
 $bannerLead   = 'A complete floor-planning toolkit — design, visualize, measure, calculate and share.';
 require ROOT_DIR . '/views/partials/page_banner.php';

@@ -22,13 +22,13 @@ final class NoteStore
      * Replace a device's notes. Accepts web notes {title, content, updatedAt}
      * and app notes {title, content, category, timestamp}. Returns the count stored.
      */
-    public static function replaceForOwner(string $owner, string $source, array $notes): int
+    public static function replaceForOwner(string $owner, string $source, array $notes, ?int $userId = null): int
     {
         $pdo = Database::pdo();
         $pdo->beginTransaction();
         try {
             self::q('DELETE FROM notes WHERE owner = :o', ['o' => $owner]);
-            $ins = $pdo->prepare('INSERT INTO notes (owner, source, title, content, category, note_time) VALUES (:o, :s, :t, :c, :cat, :nt)');
+            $ins = $pdo->prepare('INSERT INTO notes (owner, source, title, content, category, note_time, user_id) VALUES (:o, :s, :t, :c, :cat, :nt, :u)');
             $n = 0;
             foreach (array_slice($notes, 0, self::MAX_NOTES) as $note) {
                 if (!is_array($note)) {
@@ -41,7 +41,7 @@ final class NoteStore
                 }
                 $time = (string) ($note['updatedAt'] ?? $note['timestamp'] ?? $note['createdAt'] ?? '');
                 $ins->execute([
-                    'o' => $owner, 's' => $source, 't' => $title, 'c' => $content,
+                    'o' => $owner, 's' => $source, 't' => $title, 'c' => $content, 'u' => $userId,
                     'cat' => mb_substr((string) ($note['category'] ?? ''), 0, 60),
                     'nt' => preg_match('/^\d{4}-\d\d-\d\d[T ]\d\d:\d\d/', $time) ? substr(str_replace('T', ' ', $time), 0, 19) : '',
                 ]);
@@ -55,28 +55,42 @@ final class NoteStore
         }
     }
 
-    public static function search(int $page, int $perPage, string $source, string $q, string $owner = ''): array
+    /** The owner's notes for the web app to download. */
+    public static function listForOwner(string $owner): array
+    {
+        return self::q(
+            "SELECT title, content, note_time updatedAt FROM notes WHERE owner = :o ORDER BY id LIMIT " . self::MAX_NOTES,
+            ['o' => $owner]
+        )->fetchAll();
+    }
+
+    public static function search(int $page, int $perPage, string $source, string $q, string $owner = '', int $userId = 0): array
     {
         $where = [];
         $params = [];
         if ($owner !== '') {
-            $where[] = 'owner = :own';
+            $where[] = 'n.owner = :own';
             $params['own'] = $owner;
         }
+        if ($userId > 0) {
+            $where[] = 'n.user_id = :uid';
+            $params['uid'] = $userId;
+        }
         if (isset(PlanStore::SOURCES[$source])) {
-            $where[] = 'source = :src';
+            $where[] = 'n.source = :src';
             $params['src'] = $source;
         }
         if ($q !== '') {
-            $where[] = '(title LIKE :q OR content LIKE :q OR category LIKE :q)';
+            $where[] = '(n.title LIKE :q OR n.content LIKE :q OR n.category LIKE :q OR u.email LIKE :q)';
             $params['q'] = '%' . $q . '%';
         }
-        $w = $where ? ' WHERE ' . implode(' AND ', $where) : '';
+        $from = ' FROM notes n LEFT JOIN users u ON u.id = n.user_id' . ($where ? ' WHERE ' . implode(' AND ', $where) : '');
         return [
-            'total' => (int) self::q('SELECT COUNT(*) FROM notes' . $w, $params)->fetchColumn(),
+            'total' => (int) self::q('SELECT COUNT(*)' . $from, $params)->fetchColumn(),
             'items' => self::q(
-                "SELECT id, owner, source, title, substr(content, 1, 240) excerpt, length(content) chars, category, note_time, synced_at FROM notes"
-                . $w . " ORDER BY COALESCE(NULLIF(note_time, ''), synced_at) DESC, id DESC LIMIT " . $perPage . ' OFFSET ' . (($page - 1) * $perPage),
+                "SELECT n.id, n.owner, n.source, n.title, substr(n.content, 1, 240) excerpt, length(n.content) chars, n.category, n.note_time, n.synced_at,
+                        n.user_id, u.email user_email"
+                . $from . " ORDER BY COALESCE(NULLIF(n.note_time, ''), n.synced_at) DESC, n.id DESC LIMIT " . $perPage . ' OFFSET ' . (($page - 1) * $perPage),
                 $params
             )->fetchAll(),
         ];
@@ -84,7 +98,7 @@ final class NoteStore
 
     public static function find(int $id): ?array
     {
-        $r = self::q('SELECT * FROM notes WHERE id = :id', ['id' => $id])->fetch();
+        $r = self::q('SELECT n.*, u.email user_email, u.name user_name FROM notes n LEFT JOIN users u ON u.id = n.user_id WHERE n.id = :id', ['id' => $id])->fetch();
         return $r ?: null;
     }
 

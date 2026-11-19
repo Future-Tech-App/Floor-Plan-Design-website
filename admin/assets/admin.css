@@ -210,3 +210,8 @@ body.ad-auth { min-height: 100vh; display: grid; place-content: center; padding:
 /* Plan preview */
 .ad-plan-preview { background: #fff; }
 .plan-svg { display: block; width: 100%; height: auto; max-height: 640px; background: repeating-linear-gradient(0deg, transparent 0 39px, #f1f4f8 39px 40px), repeating-linear-gradient(90deg, transparent 0 39px, #f1f4f8 39px 40px); border-radius: 10px; }
+
+/* Web app users */
+.ad-person { display: inline-flex; align-items: center; gap: 10px; color: inherit; }
+.ad-pic { width: 34px; height: 34px; flex: none; border-radius: 50%; object-fit: cover; display: inline-grid; place-items: center; background: #1e88e5; color: #fff; font-weight: 700; font-size: 14px; }
+.ad-pic-lg { width: 52px; height: 52px; font-size: 20px; }

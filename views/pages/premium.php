@@ -1,5 +1,6 @@
 <?php /** Premium plans. Prices come from Admin → Premium Pricing. @var array $site */
 $bannerTitle  = 'Floor Plan Premium';
+$bannerImage  = 'interior/banner-lounge.jpg';
 $bannerKicker = 'Premium';
 $bannerLead   = 'Everything you need to design like a pro — no ads, unlimited plans, every export format and full AI tools.';
 require ROOT_DIR . '/views/partials/page_banner.php';

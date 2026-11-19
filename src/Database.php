@@ -165,5 +165,36 @@ final class Database
             )
         SQL);
         $pdo->exec('CREATE INDEX IF NOT EXISTS idx_notes_owner ON notes (owner)');
+
+        // Web app accounts (Sign in with Google). google_sub is Google's stable account id.
+        $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS users (
+                id            INTEGER PRIMARY KEY AUTOINCREMENT,
+                google_sub    TEXT NOT NULL UNIQUE,
+                email         TEXT NOT NULL,
+                name          TEXT NOT NULL DEFAULT '',
+                picture       TEXT NOT NULL DEFAULT '',
+                created_at    TEXT NOT NULL DEFAULT (datetime('now')),
+                last_login_at TEXT
+            )
+        SQL);
+        // "Keep me signed in" tokens; only a SHA-256 hash of each token is stored.
+        $pdo->exec(<<<SQL
+            CREATE TABLE IF NOT EXISTS user_sessions (
+                id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                user_id    INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+                token_hash TEXT NOT NULL UNIQUE,
+                created_at TEXT NOT NULL DEFAULT (datetime('now')),
+                expires_at TEXT NOT NULL
+            )
+        SQL);
+        // Plans and notes saved from the web app belong to the signed-in user.
+        foreach (['plans', 'notes'] as $table) {
+            $cols = array_column($pdo->query("PRAGMA table_info($table)")->fetchAll(), 'name');
+            if (!in_array('user_id', $cols, true)) {
+                $pdo->exec("ALTER TABLE $table ADD COLUMN user_id INTEGER");
+            }
+            $pdo->exec("CREATE INDEX IF NOT EXISTS idx_{$table}_user ON $table (user_id)");
+        }
     }
 }

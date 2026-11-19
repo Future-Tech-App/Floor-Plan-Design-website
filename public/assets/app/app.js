@@ -1,6 +1,9 @@
 /* Floor Plan Designer web app — shared browser code.
- * Plans live in this browser's localStorage and are backed up to the server
- * (/api/v1/plans.php) under a random, private id for this browser. Notes stay local. */
+ * Saving needs an account (Sign in with Google, FPAuth below). Plans and notes are kept in this
+ * browser's localStorage and saved to the user's account on the server (/api/v1/plans.php,
+ * /api/v1/notes.php), so they appear in every browser the user signs in to, and in
+ * Admin → Saved Plans / User Notes with the user's email. Signing out removes them from the
+ * browser; they stay in the account. */
 (function () {
     'use strict';
 
@@ -22,6 +25,7 @@
         },
         get: function (id) { return read(PLAN_PREFIX + id, null); },
         save: function (plan) {
+            if (!FPAuth.user()) { FPAuth.open('Sign in to save your plans to your account.'); return null; }
             var now = new Date().toISOString();
             plan.id = plan.id || ('plan_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7));
             plan.createdAt = plan.createdAt || now;
@@ -37,6 +41,18 @@
             FPSync.remove(id);
             try { localStorage.removeItem(PLAN_PREFIX + id); } catch (e) { /* ignore */ }
             write(LIST_KEY, FPStore.list().filter(function (p) { return p.id !== id; }));
+        },
+        // Store a plan downloaded from the account (keeps its own dates; no upload).
+        putLocal: function (plan) {
+            if (!plan || !plan.id || !write(PLAN_PREFIX + plan.id, plan)) return;
+            var l = FPStore.list().filter(function (p) { return p.id !== plan.id; });
+            l.push({ id: plan.id, name: plan.name, createdAt: plan.createdAt, modifiedAt: plan.modifiedAt });
+            write(LIST_KEY, l);
+        },
+        // Remove every plan and note from this browser (after signing out; the account keeps them).
+        clearLocal: function () {
+            FPStore.list().forEach(function (p) { try { localStorage.removeItem(PLAN_PREFIX + p.id); } catch (e) { /* ignore */ } });
+            ['fpd_plans', 'fpd_synced', 'floor_plan_notes', 'fpd_notes_synced', 'fpd_draft'].forEach(function (k) { try { localStorage.removeItem(k); sessionStorage.removeItem(k); } catch (e) { /* ignore */ } });
         },
         rename: function (id, name) {
             var p = FPStore.get(id); if (!p) return;
@@ -93,8 +109,8 @@
         saveSettings: function (s) { write('fpd_settings', s); }
     };
     // ---------------------------------------------------------------- server backup
-    // Each browser gets a random 128-bit id, kept only in this browser; the server
-    // stores a hash of it, so only this browser can update or delete its plans.
+    // Plans and notes go to the signed-in user's account. Each browser also sends a random
+    // 128-bit id (kept only in this browser), which the server uses for rate limits.
     var FPSync = (function () {
         var timers = {}, pending = {}, SYNC_KEY = 'fpd_synced';
         function clientId() {
@@ -113,7 +129,7 @@
             try { localStorage.setItem(SYNC_KEY, JSON.stringify(s)); } catch (e) { /* ignore */ }
         }
         function send(body, keepalive) {
-            if (!window.fetch) return Promise.resolve(false);
+            if (!window.fetch || !FPAuth.user()) return Promise.resolve(false);
             return fetch(FP.url(body.notes ? '/api/v1/notes.php' : '/api/v1/plans.php'), {
                 method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
                 body: JSON.stringify(body), keepalive: !!keepalive && JSON.stringify(body).length < 60000
@@ -152,7 +168,7 @@
             },
             remove: function (id) {
                 delete pending[id]; clearTimeout(timers[id]); mark(id, null);
-                send({ client: clientId(), delete: id }, true);
+                send({ client: clientId(), source: 'web', delete: id }, true);
             },
             flush: function () {
                 Object.keys(pending).forEach(function (id) { upload(id, true); });
@@ -175,8 +191,43 @@
                     return p.then(function () { return upload(id); }).then(function (ok) { if (!ok) failed++; });
                 }, Promise.resolve()).then(function () { return failed; });
             },
+            // After signing in (and on each visit): download the account's plans and notes that this
+            // browser doesn't have (or has older copies of), then upload anything newer here.
+            pull: function () {
+                if (!FPAuth.user() || !window.fetch) return Promise.resolve(false);
+                var get = function (q) { return fetch(FP.url(q), { credentials: 'same-origin', cache: 'no-store' }).then(function (r) { return r.ok ? r.json() : null; }).catch(function () { return null; }); };
+                var local = {}; FPStore.list().forEach(function (m) { local[m.id] = m.modifiedAt || ''; });
+                var plans = get('/api/v1/plans.php?list=1').then(function (d) {
+                    var want = ((d && d.plans) || []).filter(function (m) { return !(m.id in local) || (m.modifiedAt || '') > local[m.id]; });
+                    return want.reduce(function (p, m) {
+                        return p.then(function () { return get('/api/v1/plans.php?id=' + encodeURIComponent(m.id)); }).then(function (r) {
+                            if (r && r.plan) { FPStore.putLocal(r.plan); mark(r.plan.id, r.plan.modifiedAt); }
+                        });
+                    }, Promise.resolve());
+                });
+                var notes = get('/api/v1/notes.php').then(function (d) {
+                    var mine = read(NOTES_KEY, []), seen = {};
+                    if (!Array.isArray(mine)) mine = [];
+                    mine.forEach(function (n) { seen[(n.title || '') + '\u0000' + (n.content || '')] = 1; });
+                    var added = 0;
+                    ((d && d.notes) || []).forEach(function (n, i) {
+                        var k = (n.title || '') + '\u0000' + (n.content || '');
+                        if (seen[k]) return;
+                        var t = n.updatedAt ? String(n.updatedAt).replace(' ', 'T') + 'Z' : new Date().toISOString();
+                        mine.push({ id: 'note_' + Date.now() + '_' + i, title: n.title || 'Untitled', content: n.content || '', createdAt: t, updatedAt: t });
+                        seen[k] = 1; added++;
+                    });
+                    if (added) { try { localStorage.setItem(NOTES_KEY, JSON.stringify(mine)); } catch (e) { /* ignore */ } }
+                });
+                return Promise.all([plans, notes]).then(function () {
+                    document.dispatchEvent(new CustomEvent('fpd:plans-changed'));
+                    FPSync.catchUp();
+                    return true;
+                });
+            },
             // Upload plans saved before backups existed, or changed while offline.
             catchUp: function () {
+                if (!FPAuth.user()) return;
                 if (notesHash(read(NOTES_KEY, [])) !== read(NOTES_SYNC_KEY, '')) uploadNotes(false);
                 var s = synced();
                 FPStore.list().filter(function (m) { return s[m.id] !== m.modifiedAt; }).slice(0, 30)
@@ -185,11 +236,140 @@
         };
     })();
     window.addEventListener('pagehide', function () { FPSync.flush(); });
-    setTimeout(function () { FPSync.catchUp(); }, 1500);
+
+    // ---------------------------------------------------------------- accounts (Sign in with Google)
+    var FPAuth = (function () {
+        var root = document.documentElement, user = null, waiting = [], modal = null, gis = null;
+        try { user = JSON.parse(root.getAttribute('data-user') || 'null'); } catch (e) { user = null; }
+        var clientId = root.getAttribute('data-google-client') || '';
+
+        function initials(u) { return ((u.name || u.email || '?').trim()[0] || '?').toUpperCase(); }
+        function avatar(u) {
+            return u.picture ? '<img src="' + FP.esc(u.picture) + '" alt="" referrerpolicy="no-referrer">' : '<span>' + FP.esc(initials(u)) + '</span>';
+        }
+        function renderSlots() {
+            document.querySelectorAll('[data-account]').forEach(function (el) {
+                if (!user) {
+                    el.innerHTML = '<button type="button" class="acct-signin" data-auth-open>Sign in</button>';
+                    return;
+                }
+                el.innerHTML = '<button type="button" class="acct-btn" aria-haspopup="true" aria-expanded="false" title="' + FP.esc(user.email) + '">' + avatar(user) +
+                    '<b>' + FP.esc((user.name || user.email).split(' ')[0]) + '</b></button>' +
+                    '<div class="acct-menu" hidden><div class="acct-who">' + avatar(user) + '<span><strong>' + FP.esc(user.name || 'Your account') + '</strong>' + FP.esc(user.email) + '</span></div>' +
+                    '<p class="acct-note">Your plans and notes are saved to this account.</p>' +
+                    '<button type="button" class="acct-out" data-auth-signout>Sign out</button></div>';
+            });
+        }
+        document.addEventListener('click', function (ev) {
+            if (ev.target.closest('[data-auth-open]')) { open(''); return; }
+            if (ev.target.closest('[data-auth-signout]')) { signOut(); return; }
+            var btn = ev.target.closest('.acct-btn');
+            document.querySelectorAll('.acct-menu').forEach(function (m) {
+                var mine = btn && m.previousElementSibling === btn;
+                m.hidden = mine ? !m.hidden : true;
+                if (m.previousElementSibling) m.previousElementSibling.setAttribute('aria-expanded', m.hidden ? 'false' : 'true');
+            });
+        });
+
+        function loadGis() {
+            return gis || (gis = new Promise(function (resolve, reject) {
+                var sc = document.createElement('script');
+                sc.src = 'https://accounts.google.com/gsi/client'; sc.async = true;
+                sc.onload = resolve; sc.onerror = function () { gis = null; reject(); };
+                document.head.appendChild(sc);
+            }));
+        }
+        function setError(msg) { if (modal) { var e = modal.querySelector('[data-auth-error]'); e.textContent = msg || ''; e.hidden = !msg; } }
+        function close() {
+            if (!modal) return;
+            modal.remove(); modal = null; waiting = [];
+            document.removeEventListener('keydown', onKey);
+        }
+        function onKey(ev) { if (ev.key === 'Escape') close(); }
+        function open(reason) {
+            if (user) return;
+            if (modal) { if (reason) modal.querySelector('[data-auth-reason]').textContent = reason; return; }
+            modal = document.createElement('div');
+            modal.className = 'auth-modal';
+            modal.innerHTML = '<div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="auth-title">' +
+                '<button type="button" class="auth-x" aria-label="Close">&times;</button>' +
+                '<div class="auth-logo"><img src="' + FP.url('/apple-touch-icon.png') + '" alt=""></div>' +
+                '<h2 id="auth-title">Sign in to save</h2>' +
+                '<p data-auth-reason>' + FP.esc(reason || 'Save your floor plans and notes to your free account and open them on any computer.') + '</p>' +
+                '<div class="auth-google" data-auth-google><span class="auth-loading">Loading Google sign-in…</span></div>' +
+                '<p class="auth-error" data-auth-error role="alert" hidden></p>' +
+                '<p class="auth-small">We only use your name, email and profile photo from Google. <a href="' + FP.url('/privacy-policy') + '" target="_blank" rel="noopener">Privacy policy</a></p>' +
+                '</div>';
+            document.body.appendChild(modal);
+            modal.addEventListener('click', function (ev) { if (ev.target === modal || ev.target.closest('.auth-x')) close(); });
+            document.addEventListener('keydown', onKey);
+            var slot = modal.querySelector('[data-auth-google]');
+            if (!clientId) {
+                slot.innerHTML = '';
+                setError('Google sign-in isn\'t set up on this site yet. An admin can add the Google client ID in Admin → Site Settings.');
+                return;
+            }
+            loadGis().then(function () {
+                if (!modal) return;
+                google.accounts.id.initialize({ client_id: clientId, callback: onCredential, ux_mode: 'popup', auto_select: false, cancel_on_tap_outside: true });
+                slot.innerHTML = '';
+                google.accounts.id.renderButton(slot, { theme: 'filled_blue', size: 'large', shape: 'pill', text: 'continue_with', width: 280 });
+            }).catch(function () { slot.innerHTML = ''; setError('Could not load Google sign-in. Check your internet connection and try again.'); });
+        }
+        function onCredential(resp) {
+            setError('');
+            fetch(FP.url('/api/v1/auth.php'), {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                body: JSON.stringify({ action: 'google', credential: resp && resp.credential })
+            }).then(function (r) { return r.json(); }).then(function (d) {
+                if (!d || !d.ok || !d.user) throw new Error((d && d.error) || 'Sign-in failed.');
+                signedIn(d.user);
+            }).catch(function (e) { setError(e.message || 'Sign-in failed. Please try again.'); });
+        }
+        function signedIn(u) {
+            user = u;
+            root.setAttribute('data-user', JSON.stringify(u));
+            var run = waiting; waiting = [];
+            close(); renderSlots();
+            document.dispatchEvent(new CustomEvent('fpd:auth', { detail: { user: u } }));
+            FPSync.pull();
+            run.forEach(function (cb) { try { cb(); } catch (e) { /* ignore */ } });
+        }
+        function signOut() {
+            var st = FPSync.status();
+            if (st.synced < st.total && !confirm('Some changes have not reached your account yet. Sign out anyway? Unsaved changes on this computer will be lost.')) return;
+            FPSync.flush();
+            fetch(FP.url('/api/v1/auth.php'), {
+                method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ action: 'signout' })
+            }).catch(function () { /* ignore */ }).then(function () {
+                if (window.google && google.accounts && google.accounts.id) google.accounts.id.disableAutoSelect();
+                FPStore.clearLocal();
+                location.href = FP.url('/app');
+            });
+        }
+        return {
+            user: function () { return user; },
+            open: open,
+            // Run cb now if signed in, otherwise after the user signs in.
+            require: function (cb, reason) { if (user) { cb(); return true; } waiting.push(cb); open(reason); return false; },
+            render: renderSlots
+        };
+    })();
+    FPAuth.render();
+    document.addEventListener('fpd:plans-changed', function () { document.querySelectorAll('[data-plans]').forEach(function (el) { if (typeof renderPlans === 'function') renderPlans(el); }); });
+    // Bring in plans and notes saved in other browsers (at most every 2 minutes).
+    setTimeout(function () {
+        if (!FPAuth.user()) return;
+        var last = 0; try { last = +sessionStorage.getItem('fpd_pulled') || 0; } catch (e) { /* ignore */ }
+        if (Date.now() - last < 120000) { FPSync.catchUp(); return; }
+        try { sessionStorage.setItem('fpd_pulled', String(Date.now())); } catch (e) { /* ignore */ }
+        FPSync.pull();
+    }, 800);
 
     window.FPStore = FPStore;
     window.FP = FP;
     window.FPSync = FPSync;
+    window.FPAuth = FPAuth;
 
     // Backup status + "Sync now" on the Saved Plans page.
     var syncBox = document.getElementById('sync-status');
@@ -199,8 +379,8 @@
             var st = FPSync.status();
             syncBox.classList.toggle('is-ok', st.total > 0 && st.synced === st.total);
             label.textContent = st.total === 0 ? 'No plans to back up yet.'
-                : st.synced === st.total ? 'All ' + st.total + ' plan' + (st.total > 1 ? 's are' : ' is') + ' backed up to the server.'
-                : st.synced + ' of ' + st.total + ' plans backed up.';
+                : st.synced === st.total ? 'All ' + st.total + ' plan' + (st.total > 1 ? 's are' : ' is') + ' saved to your account.'
+                : st.synced + ' of ' + st.total + ' plans saved to your account.';
         };
         document.addEventListener('fpd:synced', show);
         btn.addEventListener('click', function () {

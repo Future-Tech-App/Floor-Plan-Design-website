@@ -20,18 +20,22 @@ require_once ROOT_DIR . '/src/Database.php';
 require_once ROOT_DIR . '/src/Repository.php';
 require_once ROOT_DIR . '/src/VersionGate.php';
 require_once ROOT_DIR . '/src/ContactService.php';
-require_once ROOT_DIR . '/src/Auth.php';
 require_once ROOT_DIR . '/src/Calculators.php';
 require_once ROOT_DIR . '/src/GroqClient.php';
 require_once ROOT_DIR . '/src/AiPlanGenerator.php';
 require_once ROOT_DIR . '/src/PlanAnalyzer.php';
 require_once ROOT_DIR . '/src/WebApp.php';
 require_once ROOT_DIR . '/src/Analytics.php';
-require_once ROOT_DIR . '/src/AdminRepo.php';
-require_once ROOT_DIR . '/src/AdminApp.php';
 require_once ROOT_DIR . '/src/PlanStore.php';
 require_once ROOT_DIR . '/src/NoteStore.php';
 require_once ROOT_DIR . '/src/Pricing.php';
+require_once ROOT_DIR . '/src/GoogleAuth.php';
+require_once ROOT_DIR . '/src/UserAuth.php';
+
+// Admin panel: everything lives in admin/ (code, views, CSS/JS).
+require_once ROOT_DIR . '/admin/src/Auth.php';
+require_once ROOT_DIR . '/admin/src/AdminRepo.php';
+require_once ROOT_DIR . '/admin/src/AdminApp.php';
 
 date_default_timezone_set((string) config('timezone', 'UTC'));
 

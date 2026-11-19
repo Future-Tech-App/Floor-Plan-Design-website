@@ -1,5 +1,6 @@
 <?php /** @var int $status  @var string $message */ ?>
 <section class="page-banner">
+    <?php $liveImg = 'gallery/3bed-1.jpg'; $liveCubes = 3; $liveFloor = true; require ROOT_DIR . '/views/partials/live_bg.php'; ?>
     <div class="container page-banner-inner center">
         <p class="kicker kicker-light" style="justify-content:center">Error <?= (int) $status ?></p>
         <h1 style="font-size:clamp(4rem,12vw,7rem);margin-bottom:.1em"><?= (int) $status ?></h1>

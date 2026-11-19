@@ -43,6 +43,10 @@ return [
     'ai_max_body_mb' => 8,          // analyzer sends a base64 photo
     'ai_rate_limit'  => ['max' => 30, 'window_minutes' => 60],
 
+    // Web app sign-in: OAuth client id from Google Cloud Console ("Web application").
+    // It can also be set in Admin → Site Settings, which overrides this value.
+    'google_client_id' => '',
+
     // Admin area
     'admin_session_minutes' => 120,
 

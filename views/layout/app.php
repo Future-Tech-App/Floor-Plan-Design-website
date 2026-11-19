@@ -9,7 +9,7 @@ $links = [
     'about'       => ['/app/about', 'About'],
 ];
 ?><!doctype html>
-<html lang="en" data-base="<?= e(rtrim((string) config('base_path', ''), '/')) ?>">
+<html lang="en" data-base="<?= e(rtrim((string) config('base_path', ''), '/')) ?>"<?= app_auth_attrs() ?>>
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -21,7 +21,7 @@ $links = [
     <link rel="manifest" href="<?= e(url('/manifest.json')) ?>">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Mulish:wght@400;600;700;800&family=Tinos:ital@0;1&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Inter+Tight:wght@500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="<?= e(asset('/assets/app/app.css')) ?>">
     <script>document.documentElement.classList.add('js');</script>
 </head>
@@ -39,6 +39,7 @@ $links = [
             <a href="<?= e(url($href)) ?>" class="<?= $nav === $key ? 'active' : '' ?>"<?= $nav === $key ? ' aria-current="page"' : '' ?>><?= e($label) ?></a>
         <?php endforeach; ?>
     </nav>
+    <div class="ah-account" data-account></div>
     <button class="ah-toggle" type="button" aria-expanded="false" aria-controls="app-nav" aria-label="Open menu"><?= icon('menu') ?></button>
     <a class="ah-cta" href="<?= e(url('/app/editor')) ?>">
         <small>Start Designing Today!</small>
@@ -74,7 +75,7 @@ $hideCta = in_array($nav, ['ai'], true);
 <section class="af-cta" aria-label="Start designing">
     <div class="a-container af-cta-inner">
         <div>
-            <span class="kicker kicker-light">Free · No sign-up</span>
+            <span class="kicker kicker-light">Free · Sign in with Google</span>
             <h2>Ready To Design Your Dream Home?</h2>
             <p>Draw, furnish and walk through your plan in 3D — right in your browser.</p>
         </div>
@@ -119,7 +120,7 @@ $hideCta = in_array($nav, ['ai'], true);
     </div>
     <div class="a-container af-bottom">
         <span>© <?= date('Y') ?> <?= e($site['name']) ?>. All rights reserved.</span>
-        <span class="af-note"><?= icon('shield') ?> Plans are backed up automatically — no account needed.</span>
+        <span class="af-note"><?= icon('shield') ?> Plans are saved to your free account — sign in with Google.</span>
         <span class="af-meta"><a href="<?= e(url('/app/about#credits')) ?>">Photos: Unsplash</a><i aria-hidden="true">·</i>Web v<?= e(preg_replace('/\+.*/', '', $site['version'])) ?></span>
         <a class="af-up" href="#app-header" aria-label="Back to top" title="Back to top"><?= icon('chevron-up') ?></a>
     </div>

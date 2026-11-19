@@ -2,10 +2,10 @@
 $faqs = [
     'Getting started' => [
         ['Is Floor Plan Designer free?', 'Yes. All design tools are free to use. Non-Pro users see ads; buying Pro inside the app removes them.'],
-        ['Do I need an account?', 'No. The app has no sign-up or login. Your plans are saved on your device.'],
+        ['Do I need an account?', 'In the web app, you can draw and use every calculator without one. To save plans and notes, sign in with your Google account — it is free and takes one click. The Android and iOS apps have no sign-in: plans are saved on your device.'],
         ['Does it work offline?', 'Yes. The editor, 3D preview, calculators and export all work without internet. Only the optional AI features and ads need a connection.'],
-        ['Can I use it on a computer?', 'Yes. Open floorplandesigner.app/app in any modern browser for the same tools — free and without ads. Plans are saved in that browser, and exports are downloaded to your Downloads folder.'],
-        ['Will my web plans appear on my phone?', 'Not automatically: web plans are stored in your browser and mobile plans on your device. Use Share on a saved plan to download its file.'],
+        ['Can I use it on a computer?', 'Yes. Open floorplandesigner.app/app in any modern browser for the same tools — free and without ads. Sign in with Google to save your plans to your account, so they open in any browser you sign in to. Exports are downloaded to your Downloads folder.'],
+        ['Will my web plans appear on my phone?', 'Not automatically: web plans are saved to your account and appear in any browser you sign in to, while mobile app plans stay on your device. Use Share on a saved plan to download its file.'],
         ['Can I start from a template?', 'Yes. Pick a one, two or three bedroom apartment template from the home screen and edit it like any other plan.'],
     ],
     'Editor' => [
@@ -28,6 +28,7 @@ $faqs = [
 $total = array_sum(array_map('count', $faqs));
 ?>
 <section class="page-banner">
+    <?php $liveImg = 'interior/kitchen-wood.jpg'; $liveCubes = 3; $liveFloor = true; require ROOT_DIR . '/views/partials/live_bg.php'; ?>
     <div class="container page-banner-inner">
         <p class="kicker kicker-light">Help center</p>
         <h1>Support &amp; FAQ</h1>

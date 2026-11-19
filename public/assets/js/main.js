@@ -55,11 +55,20 @@
     var counters = document.querySelectorAll('[data-count]');
     if ('IntersectionObserver' in window && !reduceMotion) {
         var io = new IntersectionObserver(function (entries) {
+            var n = 0;
             entries.forEach(function (entry) {
                 if (!entry.isIntersecting) return;
                 var el = entry.target;
                 if (el.hasAttribute('data-count')) countUp(el);
-                else el.classList.add('is-in');
+                else {
+                    // Blocks that appear together swing up one after another.
+                    var delay = Math.min(n++, 5) * 90;
+                    if (delay) {
+                        el.style.transitionDelay = delay + 'ms';
+                        setTimeout(function () { el.style.transitionDelay = ''; }, delay + 1100);
+                    }
+                    el.classList.add('is-in');
+                }
                 io.unobserve(el);
             });
         }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
@@ -67,6 +76,118 @@
         counters.forEach(function (el) { io.observe(el); });
     } else {
         revealEls.forEach(function (el) { el.classList.add('is-in'); });
+    }
+
+    // ---- 3D tilt: cards lean toward the pointer, with a light sheen (mouse/trackpad only) ----
+    var finePointer = window.matchMedia && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+    if (finePointer && !reduceMotion) {
+        var TILT = '.service-card, .process-step, .price-card, .card-grid .card, .gallery-item, .platform-card, .about-media, .feature-media';
+        var MAX = 9; // degrees
+        document.querySelectorAll(TILT).forEach(function (card) {
+            card.classList.add('tilt');
+            var shine = document.createElement('span');
+            shine.className = 'tilt-shine';
+            shine.setAttribute('aria-hidden', 'true');
+            card.appendChild(shine);
+            var frame = 0, px = 0.5, py = 0.5, settle = 0;
+            function apply() {
+                frame = 0;
+                var big = card.offsetWidth > 420 ? 0.55 : 1; // large blocks tilt less
+                card.style.transform = 'perspective(900px) rotateX(' + ((0.5 - py) * MAX * 2 * big).toFixed(2) + 'deg) rotateY(' +
+                    ((px - 0.5) * MAX * 2 * big).toFixed(2) + 'deg) translate3d(0, -6px, 0)';
+                card.style.setProperty('--mx', (px * 100).toFixed(1) + '%');
+                card.style.setProperty('--my', (py * 100).toFixed(1) + '%');
+            }
+            card.addEventListener('pointermove', function (ev) {
+                if (ev.pointerType !== 'mouse' && ev.pointerType !== 'pen') return;
+                // Wait until a scroll-reveal has finished, so the two motions don't fight.
+                if (card.classList.contains('reveal') && !card.classList.contains('is-in')) return;
+                var b = card.getBoundingClientRect();
+                px = (ev.clientX - b.left) / b.width;
+                py = (ev.clientY - b.top) / b.height;
+                clearTimeout(settle);
+                card.classList.remove('is-settling');
+                card.classList.add('is-tilting');
+                if (!frame) frame = window.requestAnimationFrame(apply);
+            });
+            card.addEventListener('pointerleave', function () {
+                if (frame) { window.cancelAnimationFrame(frame); frame = 0; }
+                card.classList.remove('is-tilting');
+                card.classList.add('is-settling');
+                card.style.transform = '';
+                settle = setTimeout(function () { card.classList.remove('is-settling'); }, 650);
+            });
+        });
+
+        // Hero layers (phone, "3D live preview" chip) drift with the pointer at different depths.
+        var heroVisual = document.querySelector('.hero-visual');
+        var heroSection = heroVisual && heroVisual.closest('.hero');
+        if (heroSection) {
+            var hFrame = 0, hx = 0, hy = 0;
+            var setHero = function () {
+                hFrame = 0;
+                heroVisual.style.setProperty('--px', hx.toFixed(3));
+                heroVisual.style.setProperty('--py', hy.toFixed(3));
+            };
+            heroSection.addEventListener('pointermove', function (ev) {
+                var b = heroSection.getBoundingClientRect();
+                hx = ((ev.clientX - b.left) / b.width - 0.5) * 2;
+                hy = ((ev.clientY - b.top) / b.height - 0.5) * 2;
+                if (!hFrame) hFrame = window.requestAnimationFrame(setHero);
+            });
+            heroSection.addEventListener('pointerleave', function () { hx = 0; hy = 0; setHero(); });
+        }
+    }
+
+    // ---- Live backgrounds: pause off screen, scroll parallax, pointer depth ----
+    var liveBgs = Array.prototype.slice.call(document.querySelectorAll('.live-bg'));
+    if (liveBgs.length && !reduceMotion) {
+        var shown = [];
+        if ('IntersectionObserver' in window) {
+            var bgIo = new IntersectionObserver(function (entries) {
+                entries.forEach(function (en) {
+                    en.target.classList.toggle('is-paused', !en.isIntersecting);
+                    var i = shown.indexOf(en.target);
+                    if (en.isIntersecting && i < 0) shown.push(en.target);
+                    if (!en.isIntersecting && i >= 0) shown.splice(i, 1);
+                });
+                queueParallax();
+            });
+            liveBgs.forEach(function (bg) { bgIo.observe(bg); });
+        } else {
+            shown = liveBgs.slice();
+        }
+        // The photo moves slower than the page, so it seems further away.
+        var pFrame = 0;
+        var parallax = function () {
+            pFrame = 0;
+            var vh = window.innerHeight;
+            shown.forEach(function (bg) {
+                var b = bg.getBoundingClientRect();
+                // -1 when the section enters at the bottom, +1 when it leaves at the top. The photo
+                // layer overhangs by 16% of the section's height, so it moves at most 9% of it.
+                var ratio = Math.max(-1, Math.min(1, (b.top + b.height / 2 - vh / 2) / (vh / 2 + b.height / 2)));
+                bg.style.setProperty('--sy', (ratio * -0.09 * b.height).toFixed(1) + 'px');
+            });
+        };
+        var queueParallax = function () { if (!pFrame) pFrame = window.requestAnimationFrame(parallax); };
+        window.addEventListener('scroll', queueParallax, { passive: true });
+        window.addEventListener('resize', queueParallax);
+        queueParallax();
+
+        if (finePointer) {
+            liveBgs.forEach(function (bg) {
+                var section = bg.parentElement, lf = 0, lx = 0, ly = 0;
+                var set = function () { lf = 0; bg.style.setProperty('--px', lx.toFixed(3)); bg.style.setProperty('--py', ly.toFixed(3)); };
+                section.addEventListener('pointermove', function (ev) {
+                    var b = section.getBoundingClientRect();
+                    lx = ((ev.clientX - b.left) / b.width - 0.5) * 2;
+                    ly = ((ev.clientY - b.top) / b.height - 0.5) * 2;
+                    if (!lf) lf = window.requestAnimationFrame(set);
+                });
+                section.addEventListener('pointerleave', function () { lx = 0; ly = 0; set(); });
+            });
+        }
     }
 
     // ---- Gallery filters ----

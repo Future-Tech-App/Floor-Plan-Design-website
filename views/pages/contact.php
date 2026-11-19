@@ -6,6 +6,7 @@ $aria = static fn (string $f): string => isset($errors[$f])
     ? ' aria-invalid="true" aria-describedby="err-' . e($f) . '"' : '';
 
 $bannerTitle  = 'Contact us';
+$bannerImage  = 'interior/hero-dining.jpg';
 $bannerKicker = 'Get in touch';
 $bannerLead   = 'Questions, ideas or a bug? We read every message.';
 require ROOT_DIR . '/views/partials/page_banner.php';
@@ -76,7 +77,7 @@ require ROOT_DIR . '/views/partials/page_banner.php';
                 <span class="card-icon"><?= icon('monitor') ?></span>
                 <div>
                     <h3>Try it now</h3>
-                    <p>The <a href="<?= e(url('/app/')) ?>">web app</a> is free and needs no sign-up.</p>
+                    <p>The <a href="<?= e(url('/app/')) ?>">web app</a> is free — sign in with Google to save your plans.</p>
                 </div>
             </div>
         </aside>

@@ -1,4 +1,4 @@
-<?php /** @var array $notes @var int $total @var int $page @var int $pages @var string $source @var string $q @var string $device @var array $query @var array $stats */
+<?php /** @var array $notes @var int $total @var int $page @var int $pages @var string $source @var string $q @var string $device @var array $query @var array $stats @var ?array $filterUser */
 $link = static fn (array $extra) => url('/admin/notes') . (($qq = array_filter($extra + $query)) ? '?' . http_build_query($qq) : '');
 $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
 ?>
@@ -8,6 +8,9 @@ $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
     <div class="ad-card ad-stat"><span class="ad-stat-ic green"><?= icon('monitor') ?></span><span><small>From web app</small><strong><?= number_format($stats['source']['web'] ?? 0) ?></strong><em class="ad-muted">floorplandesigner.app/app</em></span></div>
     <div class="ad-card ad-stat"><span class="ad-stat-ic amber"><?= icon('device') ?></span><span><small>From mobile apps</small><strong><?= number_format(($stats['source']['android'] ?? 0) + ($stats['source']['ios'] ?? 0)) ?></strong><em class="ad-muted"><?= (int) ($stats['source']['android'] ?? 0) ?> Android · <?= (int) ($stats['source']['ios'] ?? 0) ?> iOS</em></span></div>
 </div>
+<?php if (!empty($filterUser)): ?>
+    <div class="ad-note ad-mb"><?= icon('user') ?><span>Showing notes of <a href="<?= e(url('/admin/app-users/' . $filterUser['id'])) ?>"><strong><?= e($filterUser['email']) ?></strong></a>. <a href="<?= e(url('/admin/notes')) ?>">Show all notes</a></span></div>
+<?php endif; ?>
 <?php if ($device !== ''): ?>
     <div class="ad-note ad-mb"><?= icon('device') ?><span>Showing notes from one device (<code><?= e(substr($device, 0, 10)) ?>…</code>). <a href="<?= e($link(['device' => null])) ?>">Show all notes</a></span></div>
 <?php endif; ?>
@@ -20,8 +23,8 @@ $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
             <?php endforeach; ?>
         </nav>
         <form class="ad-search" method="get" action="<?= e(url('/admin/notes')) ?>" role="search">
-            <?php foreach (['source' => $source, 'device' => $device] as $k => $v): if ($v !== ''): ?><input type="hidden" name="<?= $k ?>" value="<?= e($v) ?>"><?php endif; endforeach; ?>
-            <input type="search" name="q" value="<?= e($q) ?>" placeholder="Search titles and text…" aria-label="Search notes">
+            <?php foreach (['source' => $source, 'device' => $device, 'user' => (string) ($query['user'] ?? '')] as $k => $v): if ($v !== ''): ?><input type="hidden" name="<?= $k ?>" value="<?= e($v) ?>"><?php endif; endforeach; ?>
+            <input type="search" name="q" value="<?= e($q) ?>" placeholder="Search notes or user email…" aria-label="Search notes">
             <button class="ad-btn" type="submit"><?= icon('search') ?></button>
         </form>
     </div>
@@ -34,7 +37,7 @@ $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
         </div>
         <?php if ($notes): ?>
             <div class="ad-table-wrap"><table class="ad-table">
-                <thead><tr><th class="w-check"><input type="checkbox" data-check-all aria-label="Select all"></th><th>Note</th><th>Category</th><th>Source</th><th>Device</th><th class="num">Last edited</th></tr></thead>
+                <thead><tr><th class="w-check"><input type="checkbox" data-check-all aria-label="Select all"></th><th>Note</th><th>Category</th><th>Source</th><th>User / device</th><th class="num">Last edited</th></tr></thead>
                 <tbody>
                 <?php foreach ($notes as $n): ?>
                     <tr>
@@ -43,7 +46,7 @@ $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
                             <span class="ad-muted ad-trunc" style="font-size:12.5px"><?= e(mb_strimwidth(preg_replace('/\s+/', ' ', (string) $n['excerpt']), 0, 120, '…')) ?></span></td>
                         <td><?= $n['category'] !== '' ? '<span class="ad-pill">' . e($n['category']) . '</span>' : '<span class="ad-muted">—</span>' ?></td>
                         <td><span class="ad-pill <?= $srcPill[$n['source']] ?? '' ?>"><?= e(PlanStore::SOURCES[$n['source']] ?? $n['source']) ?></span></td>
-                        <td><a href="<?= e($link(['device' => $n['owner'], 'page' => null])) ?>" title="Show this device's notes"><code><?= e(substr((string) $n['owner'], 0, 8)) ?>…</code></a></td>
+                        <td><?php if (!empty($n['user_email'])): ?><a href="<?= e(url('/admin/app-users/' . $n['user_id'])) ?>"><?= e($n['user_email']) ?></a><?php else: ?><a href="<?= e($link(['device' => $n['owner'], 'page' => null])) ?>" title="Show this device's notes"><code><?= e(substr((string) $n['owner'], 0, 8)) ?>…</code></a><?php endif; ?></td>
                         <td class="num ad-muted" style="white-space:nowrap"><?= e(fmt_date($n['note_time'] !== '' ? $n['note_time'] : $n['synced_at'])) ?></td>
                     </tr>
                 <?php endforeach; ?>

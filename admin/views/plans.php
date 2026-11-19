@@ -1,5 +1,6 @@
-<?php /** @var array $plans @var int $total @var int $page @var int $pages @var string $source @var string $q @var array $stats */
-$link = static fn (array $extra) => url('/admin/plans') . '?' . http_build_query(array_filter($extra + ['source' => $source ?: null, 'q' => $q ?: null]));
+<?php /** @var array $plans @var int $total @var int $page @var int $pages @var string $source @var string $q @var array $stats @var ?array $filterUser */
+$userKey = $filterUser ? (int) $filterUser['id'] : null;
+$link = static fn (array $extra) => url('/admin/plans') . '?' . http_build_query(array_filter($extra + ['source' => $source ?: null, 'q' => $q ?: null, 'user' => $userKey]));
 $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
 ?>
 <div class="ad-grid ad-grid-4 ad-mb">
@@ -8,6 +9,9 @@ $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
     <div class="ad-card ad-stat"><span class="ad-stat-ic green"><?= icon('monitor') ?></span><span><small>From web app</small><strong><?= number_format($stats['source']['web'] ?? 0) ?></strong><em class="ad-muted">floorplandesigner.app/app</em></span></div>
     <div class="ad-card ad-stat"><span class="ad-stat-ic amber"><?= icon('device') ?></span><span><small>From mobile apps</small><strong><?= number_format(($stats['source']['android'] ?? 0) + ($stats['source']['ios'] ?? 0)) ?></strong><em class="ad-muted"><?= (int) ($stats['source']['android'] ?? 0) ?> Android · <?= (int) ($stats['source']['ios'] ?? 0) ?> iOS</em></span></div>
 </div>
+<?php if ($filterUser): ?>
+    <div class="ad-note ad-mb"><?= icon('user') ?><span>Showing plans of <a href="<?= e(url('/admin/app-users/' . $filterUser['id'])) ?>"><strong><?= e($filterUser['email']) ?></strong></a>. <a href="<?= e(url('/admin/plans')) ?>">Show all plans</a></span></div>
+<?php endif; ?>
 <section class="ad-card">
     <div class="ad-toolbar">
         <nav class="ad-tabs" aria-label="Source">
@@ -18,7 +22,8 @@ $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
         </nav>
         <form class="ad-search" method="get" action="<?= e(url('/admin/plans')) ?>" role="search">
             <?php if ($source !== ''): ?><input type="hidden" name="source" value="<?= e($source) ?>"><?php endif; ?>
-            <input type="search" name="q" value="<?= e($q) ?>" placeholder="Search plan names…" aria-label="Search plans">
+            <?php if ($userKey): ?><input type="hidden" name="user" value="<?= $userKey ?>"><?php endif; ?>
+            <input type="search" name="q" value="<?= e($q) ?>" placeholder="Search plans or user email…" aria-label="Search plans">
             <button class="ad-btn" type="submit"><?= icon('search') ?></button>
         </form>
     </div>
@@ -31,12 +36,13 @@ $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
         </div>
         <?php if ($plans): ?>
             <div class="ad-table-wrap"><table class="ad-table">
-                <thead><tr><th class="w-check"><input type="checkbox" data-check-all aria-label="Select all"></th><th>Plan</th><th>Source</th><th class="num">Floors</th><th class="num">Rooms</th><th class="num">Area</th><th class="num">Size</th><th class="num">Last saved</th></tr></thead>
+                <thead><tr><th class="w-check"><input type="checkbox" data-check-all aria-label="Select all"></th><th>Plan</th><th>User</th><th>Source</th><th class="num">Floors</th><th class="num">Rooms</th><th class="num">Area</th><th class="num">Size</th><th class="num">Last saved</th></tr></thead>
                 <tbody>
                 <?php foreach ($plans as $p): ?>
                     <tr>
                         <td class="w-check"><input type="checkbox" name="ids[]" value="<?= (int) $p['id'] ?>" aria-label="Select <?= e($p['name']) ?>"></td>
                         <td><a href="<?= e(url('/admin/plans/' . $p['id'])) ?>"><strong><?= e($p['name']) ?></strong></a><br><span class="ad-muted" style="font-size:12px"><?= (int) $p['walls'] ?> walls · <?= (int) $p['items'] ?> items</span></td>
+                        <td><?php if (!empty($p['user_email'])): ?><a href="<?= e(url('/admin/app-users/' . $p['user_id'])) ?>"><?= e($p['user_email']) ?></a><?php else: ?><span class="ad-muted"><?= $p['source'] === 'web' ? 'No account (before sign-in)' : 'Mobile device' ?></span><?php endif; ?></td>
                         <td><span class="ad-pill <?= $srcPill[$p['source']] ?? '' ?>"><?= e(PlanStore::SOURCES[$p['source']] ?? $p['source']) ?></span></td>
                         <td class="num"><?= (int) $p['floors'] ?></td>
                         <td class="num"><?= (int) $p['rooms'] ?></td>
@@ -51,5 +57,5 @@ $srcPill = ['web' => 'blue', 'android' => 'green', 'ios' => 'amber'];
             <p class="ad-empty"><?= $q !== '' || $source !== '' ? 'No plans match these filters.' : 'No plans saved yet. Plans appear here as soon as someone saves one in the web app or the mobile app.' ?></p>
         <?php endif; ?>
     </form>
-    <?= AdminApp::pager($page, $pages, array_filter(['source' => $source ?: null, 'q' => $q ?: null])) ?>
+    <?= AdminApp::pager($page, $pages, array_filter(['source' => $source ?: null, 'q' => $q ?: null, 'user' => $userKey])) ?>
 </section>

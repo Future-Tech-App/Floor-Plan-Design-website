@@ -62,7 +62,7 @@ jobs:
           sleep 2
           fail=0
           for p in / /features /download /support /contact /privacy-policy /terms-of-use \
-                   /sitemap.xml /app-ads.txt /.well-known/assetlinks.json /admin/login \
+                   /sitemap.xml /app-ads.txt /.well-known/assetlinks.json /admin/login /admin/assets/admin.css \
                    /app /app/editor /app/templates /app/plans /app/notes /app/about \
                    /app/calculators /app/calculators/area "/app/calculators/area?calc=1" \
                    /app/ai /app/ai/analyzer \
@@ -119,7 +119,7 @@ jobs:
         run: |
           mkdir -p deploy/public_html deploy/data
           cp -R public/. deploy/public_html/
-          cp -R src views config bin deploy/
+          cp -R src views admin config bin deploy/
           touch deploy/data/.gitkeep
           rm -f deploy/config/local.php deploy/config/secrets.php deploy/config/setup_token.txt
           # AI proxy key for the web app (/api/v1/ai.php). Lives outside the web
@@ -168,6 +168,8 @@ jobs:
           check /.well-known/assetlinks.json "com.buildsmart.homedesigns"
           check /sitemap.xml "<urlset"
           check /privacy-policy "Privacy Policy"
+          check /admin/login "/admin/assets/admin.css"
+          check /admin/assets/admin.css "ad-"
           check /app "Floor Plan Designer"
           check /app/editor "editor.js"
           check /app/calculators "calc-tile"
