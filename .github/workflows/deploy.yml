@@ -1,4 +1,6 @@
 # Deploys the website to floorplandesigner.app (cPanel) over FTPS on every push to main.
+# Uploads only into a folder marked with floorplan-deploy-target.txt (see README), so other
+# websites on the same hosting account are never touched.
 #
 # Required repository secrets (Settings → Secrets and variables → Actions):
 #   FTP_SERVER    e.g. ftp.floorplandesigner.app  (or the server host, cloud526.thundercloud.uk)
@@ -117,13 +119,39 @@ jobs:
             exit 1
           fi
 
-      - name: Stage cPanel home-folder layout
+      # Safety stop for hosting accounts with several websites: upload only into a folder that
+      # contains the marker file floorplan-deploy-target.txt (created by hand in cPanel), so a
+      # wrong FTP account or FTP_SERVER_DIR can never overwrite another domain's files.
+      # Nothing from the server is printed (the log may be public).
+      - name: Check the target folder belongs to this site
+        env:
+          FTP_SERVER: ${{ secrets.FTP_SERVER }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+          FTP_DIR: ${{ vars.FTP_SERVER_DIR }}
+        run: |
+          dir="${FTP_DIR#./}"; dir="${dir#/}"; dir="${dir%/}"
+          set +e
+          curl -s --ssl-reqd --max-time 60 --user "$FTP_USERNAME:$FTP_PASSWORD" \
+               -o /dev/null "ftp://$FTP_SERVER/${dir:+$dir/}floorplan-deploy-target.txt"
+          code=$?
+          set -e
+          case $code in
+            0)  echo "Target folder confirmed (floorplan-deploy-target.txt found)." ;;
+            78) echo "::error::Safety stop: floorplan-deploy-target.txt is not in the FTP target folder. Nothing was uploaded. Create that empty file in floorplandesigner.app's own folder (see README → Deploy with GitHub Actions)."; exit 1 ;;
+            67) echo "::error::FTP login failed: check FTP_USERNAME and FTP_PASSWORD."; exit 1 ;;
+            *)  echo "::error::Could not reach the FTP server over FTPS (curl exit $code): check FTP_SERVER."; exit 1 ;;
+          esac
+
+      - name: Stage the site folder
         env:
           ADMIN_SETUP_TOKEN: ${{ secrets.ADMIN_SETUP_TOKEN }}
           GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
         run: |
-          mkdir -p deploy/public_html deploy/data
-          cp -R public/. deploy/public_html/
+          # One self-contained folder: public/ is floorplandesigner.app's document root;
+          # src/ views/ admin/ config/ bin/ data/ sit next to it, outside the web root.
+          mkdir -p deploy/public deploy/data
+          cp -R public/. deploy/public/
           cp -R src views admin config bin deploy/
           touch deploy/data/.gitkeep
           rm -f deploy/config/local.php deploy/config/secrets.php deploy/config/setup_token.txt
@@ -158,7 +186,8 @@ jobs:
           port: 21
           local-dir: ./deploy/
           server-dir: ${{ vars.FTP_SERVER_DIR || './' }}
-          log-level: standard
+          dangerous-clean-slate: false   # never wipe the folder; only sync files this workflow uploaded
+          log-level: minimal
 
       - name: Verify the live site
         run: |

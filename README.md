@@ -154,6 +154,8 @@ The SQLite database is created automatically at `data/floorplan.sqlite` the firs
 
 ### Switching floorplandesigner.app from the React site
 
+Manual zip method for a hosting account that holds only this website. If the account hosts other websites, use the GitHub Actions setup below instead: it keeps everything inside the site's own folder.
+
 The domain is hosted on Thundercloud: its nameservers are `ns0/ns1.thundercloud.uk` and the server sends an `nginx` header. If the account uses cPanel, the site files live in `public_html/`.
 
 SSH is closed on this server, so deploy through cPanel's File Manager with the prebuilt zip:
@@ -173,24 +175,29 @@ SSH is closed on this server, so deploy through cPanel's File Manager with the p
 
 ### Automatic deploys (GitHub Actions)
 
-`.github/workflows/deploy.yml` runs on every push to `main` and can also be started by hand from the *Actions* tab via *Run workflow*. It runs three stages:
+`.github/workflows/deploy.yml` runs on every push to `main` (or by hand: *Actions → Run workflow*):
 
-1. **Check:** lints every PHP file and smoke-tests all pages and APIs with PHP's built-in server. If anything fails, nothing is deployed.
-2. **Deploy:** uploads to the cPanel home folder over FTPS, using the same layout as the zip (`public_html/` plus the private folders). Only changed files are uploaded. The workflow never deletes or overwrites files it didn't upload itself, so `data/` (the database), `config/local.php`, mail and everything else on the account are left alone.
-3. **Verify:** checks the live `app-ads.txt`, `assetlinks.json` (on both the apex domain and `www.`), `sitemap.xml`, the privacy policy and the version API.
+1. **Check:** lints every PHP file and smoke-tests all pages and APIs. If anything fails, nothing is deployed.
+2. **Safety check:** logs in over FTPS and confirms the target folder contains `floorplan-deploy-target.txt`. If it doesn't, it stops before uploading anything, so a wrong FTP account can never overwrite another website on the same hosting account.
+3. **Deploy:** uploads one self-contained site folder: `public/` (the document root) plus `src/ views/ admin/ config/ bin/ data/` next to it. Only changed files are uploaded, and files it didn't upload (the database in `data/`, `config/local.php`, anything else) are never deleted or overwritten.
+4. **Verify:** checks the live `app-ads.txt`, `assetlinks.json` (apex and `www.`), `sitemap.xml`, the privacy policy, admin CSS and the version API.
 
-**One-time setup:** in GitHub → *Settings → Secrets and variables → Actions*, add three repository secrets:
+**One-time setup** (safe on a cPanel account that hosts several websites):
+
+1. Use an FTP account locked to this site's folder only, e.g. `deploy@hhealthcare.net` with directory `/home/hhealthc/floorplandesigner.app`.
+2. In that folder, create an empty file `floorplan-deploy-target.txt` (cPanel → File Manager → *+ File*).
+3. Add repository secrets (GitHub → *Settings → Secrets and variables → Actions*):
 
 | Secret | Value |
 |---|---|
-| `FTP_SERVER` | `ftp.floorplandesigner.app` (or `cloud526.thundercloud.uk`) |
-| `FTP_USERNAME` | your **main cPanel FTP user**, whose root is the home folder that contains `public_html`. Don't use an FTP account restricted to `public_html`. |
-| `FTP_PASSWORD` | that user's password |
-| `GROQ_API_KEY` | *(optional)* the Groq key for the web app's AI tools. It's written to `config/secrets.php`, outside the web root. |
+| `FTP_SERVER` | `ftp.hhealthcare.net` |
+| `FTP_USERNAME` | `deploy@hhealthcare.net` |
+| `FTP_PASSWORD` | that account's password |
+| `GROQ_API_KEY` | *(optional)* Groq key for the AI tools, written to `config/secrets.php` outside the web root |
 
-If your FTP root isn't the home folder, also add a repository **variable** `FTP_SERVER_DIR` with the remote path of the home folder, for example `/home/username/`.
+4. Run the deploy, then in cPanel → *Domains* set floorplandesigner.app's **document root to `floorplandesigner.app/public`**, so `src/`, `config/` and `data/` stay outside the web root. Set PHP 8.1+ for the domain in *MultiPHP Manager*. Re-run the workflow's Verify step after switching.
 
-Before the first automatic deploy, back up `public_html/` and remove the React files (deployment steps 2 and 3 above), and set the PHP version (step 5).
+Leave `FTP_SERVER_DIR` unset when the FTP account is locked to the site folder. Only set it (ending in `/`) if the account's root is above that folder.
 
 **First admin without SSH:**
 
@@ -204,8 +211,8 @@ You can skip this if you already created an admin with the zip's setup link.
 **Troubleshooting**
 
 - **"unable to open database file":** PHP can't write to `data/`. Set its permissions to 755 in File Manager, or 775 if PHP runs as a different user.
-- **Too many redirects:** the host's proxy isn't passing an HTTPS signal. Comment out the second redirect block in `public_html/.htaccess` and enable *Force HTTPS Redirect* in cPanel → *Domains* instead.
-- **The old React page still shows:** a leftover `index.html` is cached or still present. Delete it from `public_html/`.
+- **Too many redirects:** the host's proxy isn't passing an HTTPS signal. Comment out the second redirect block in `public/.htaccess` and enable *Force HTTPS Redirect* in cPanel → *Domains* instead.
+- **The old React page still shows:** the domain's document root still points at the old folder. Set it to `floorplandesigner.app/public` (see setup step 4).
 
 `.htaccess` 301-redirects `http://` and `www.` to `https://floorplandesigner.app`. `/.well-known/` is excluded, because Android won't follow redirects when it verifies App Links. If the server runs Nginx only, without Apache behind it, `.htaccess` is ignored and the host must apply the Nginx rules below.
 
